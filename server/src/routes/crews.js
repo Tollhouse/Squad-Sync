@@ -16,7 +16,7 @@ router.post("/crews", async (req, res) => {
   }else{
     try{
       const user_input = await knex("crews")
-      .insert({crew_name: crew_name})
+      .insert({crew_name})
       .returning("*")
       res.status(200).json(user_input)
     }catch (error){
@@ -33,7 +33,7 @@ route.patch("/crews/:id", async (req, res) => {
     try{
       const user_input = await knex("crews")
       .where('id',id)
-      .update({crew_name: crew_name})
+      .update({crew_name})
       .returning("*")
       res.status(200).json(user_input)
     }catch (error){
