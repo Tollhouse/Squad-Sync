@@ -1,6 +1,6 @@
-//Authored by Curtis Bonham
+//Authored by Curtis 
 //This is incomplete, need enpoints from the backend for the GET and PATCH
-//Need to run install  npm i @tanstack/react-virtual @tanstack/react-table @tanstack/react-router
+//Not sure if the right dependencies were installed (npm i @tanstack/react-virtual @tanstack/react-table @tanstack/react-router)
 
 import React, { useState, useEffect, useMemo } from 'react'
 import Navbar from '../Navbar/Navbar.jsx'
