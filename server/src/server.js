@@ -21,6 +21,8 @@ app.use('/courses', coursesRoute);
 app.use('/crews', crewsRoute);
 app.use('/crewRotations', crewRotationsRoute);
 
+app.use(express.json())
+
 //Basic home route - UPDATE LATER
 app.get('/', (req, res) => res.send('Hello World!'))
 
