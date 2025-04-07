@@ -25,5 +25,22 @@ describe('POST testing of /crewRotations route', () => {
         expect(res.status).toBe(201)
     })
 
-    // it('returns id of created ')
+    it('returns id of created crew rotation', async () => {
+        const res = await request(app).post('/crewRotations').send(post_body)
+        expect(res.status).toBe(201)
+        expect(typeof res.body[0].id).toBe('number')
+    })
+
+    it('created crew rotation is visible in subsequent GET request', async () => {
+        let res = await request(app).post('/crewRotations').send(post_body)
+        expect(res.status).toBe(201)
+        expect(typeof res.body[0].id).toBe('number')
+        res = await request(app).get('/crewRotations')
+        expect(res.body[res.body.length - 1].crew_id).toBe(1)
+        expect(res.body[res.body.length - 1].date_start).toBe("2018-11-29")
+        expect(res.body[res.body.length - 1].date_end).toBe("2019-11-29")
+        expect(res.body[res.body.length - 1].shift_type).toBe("swing")
+        expect(res.body[res.body.length - 1].shift_duration).toBe(8)
+        expect(res.body[res.body.length - 1].experience_type).toBe("yellow")
+    })
 })
