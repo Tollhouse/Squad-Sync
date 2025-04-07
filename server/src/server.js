@@ -16,7 +16,7 @@ const crewsRoute = require('./routes/crews');
 const crewRotationsRoute = require('./routes/crewRotations');
 
 app.use('/users', usersRoute);
-app.use('/couresRegistration', courseRegistrationRoute);
+app.use('/courseRegistration', courseRegistrationRoute);
 app.use('/courses', coursesRoute);
 app.use('/crews', crewsRoute);
 app.use('/crewRotations', crewRotationsRoute);
