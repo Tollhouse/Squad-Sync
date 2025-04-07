@@ -1,5 +1,4 @@
-// code by Lorena
-// using MUI for styling
+// code by Lorena - using MUI for styling
 
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
