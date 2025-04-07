@@ -6,7 +6,7 @@ const path = require('path');
 const cors = require('cors');
 
 app.use(cors());
-app.use(expres.json());
+app.use(express.json());
 
 //Route setup
 const usersRoute = require('./routes/users');
