@@ -42,7 +42,7 @@ router.post("/users", async (req, res) => {
     }else{
         try{
             const user_input = await knex("users")
-            .insert({user_name: user_name, first_name: first_name, last_name: last_name, password: password, crew_id: crew_id, role: role, experience_type: experience_type})
+            .insert({user_name, first_name, last_name, password, crew_id, role,experience_type})
             .returning("*")
             res.status(200).json(user_input)
         }catch (error){
