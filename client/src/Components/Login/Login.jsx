@@ -1,7 +1,16 @@
-// code by Lorena (tried to match Harmon's signup page)
+// code by Lorena
+// using MUI for styling
 
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import {
+  Button,
+  TextField,
+  Container,
+  Box,
+  Typography,
+  Stack,
+} from "@mui/material";
 
 export default function Login() {
   const [formData, setFormData] = useState({
@@ -16,20 +25,26 @@ export default function Login() {
 
   if (loggedIn) {
     return (
-      <div>
-        <p>You are already logged in as {username}</p>
-        <p>Not {username}?</p>
-        <button
-          type="button"
-          onClick={() => {
-            localStorage.removeItem("username");
-            setLoggedIn(false);
-            navigate("/Logout");
-          }}
-        >
-          Logout
-        </button>
-      </div>
+      <Container maxWidth="sm">
+        <Box sx={{ mt: 4, textAlign: "center" }}>
+          <Typography variant="h6">
+            You are already logged in as {username}
+          </Typography>
+          <Typography variant="body1">Not {username}?</Typography>
+          <Button
+            variant="contained"
+            color="secondary"
+            sx={{ mt: 2 }}
+            onClick={() => {
+              localStorage.removeItem("username");
+              setLoggedIn(false);
+              navigate("/Logout");
+            }}
+          >
+            Logout
+          </Button>
+        </Box>
+      </Container>
     );
   }
 
@@ -66,28 +81,51 @@ export default function Login() {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      {error && <p>{error}</p>}
-      <h2>Login</h2>
-      <input
-        type="text"
-        name="username"
-        placeholder="Username"
-        value={formData.username}
-        onChange={handleChange}
-      />
-      <input
-        type="password"
-        name="password"
-        placeholder="Password"
-        value={formData.password}
-        onChange={handleChange}
-      />
-      <button type="submit">Login</button>
-      <p>Don't have an account?</p>
-      <button type="button" onClick={() => navigate("/Signup")}>
-        Sign Up
-      </button>
-    </form>
+    <Container maxWidth="sm">
+      <Box sx={{ mt: 4 }}>
+        {error && (
+          <Typography variant="body1" color="error" sx={{ mb: 2 }}>
+            {error}
+          </Typography>
+        )}
+        <Typography variant="h4" sx={{ mb: 3, textAlign: "center" }}>
+          Login
+        </Typography>
+        <Box component="form" onSubmit={handleSubmit}>
+          <Stack spacing={2}>
+            <TextField
+              variant="outlined"
+              name="username"
+              label="Username"
+              value={formData.username}
+              onChange={handleChange}
+              fullWidth
+            />
+            <TextField
+              variant="outlined"
+              name="password"
+              label="Password"
+              type="password"
+              value={formData.password}
+              onChange={handleChange}
+              fullWidth
+            />
+            <Button type="submit" variant="contained" color="primary">
+              Login
+            </Button>
+            <Typography variant="body1" align="center">
+              Don't have an account?
+            </Typography>
+            <Button
+              type="button"
+              variant="outlined"
+              onClick={() => navigate("/Signup")}
+            >
+              Sign Up
+            </Button>
+          </Stack>
+        </Box>
+      </Box>
+    </Container>
   );
 }

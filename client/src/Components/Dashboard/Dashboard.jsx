@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import './Dashboard.css';
 
 export default function Dashboard() {
   const mockUser = {
