@@ -5,7 +5,7 @@
 exports.up = function(knex) {
   return knex.schema.createTable('crews', table => {
     table.increments('id');
-    table.string('name').notNullable();
+    table.string('crew_name').notNullable();
   });
 };
 
