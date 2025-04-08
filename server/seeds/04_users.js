@@ -1,4 +1,4 @@
-import { faker } from '@faker-js/faker';
+const { faker } = require('@faker-js/faker');
 
 const numberOfUsers = 25;
 const numberOfCrews = 6;
@@ -22,8 +22,10 @@ for (let i = 0; i < numberOfUsers; i++) {
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-export async function seed(knex) {
+async function seed(knex) {
   // Deletes ALL existing entries
   await knex('users').del()
   await knex('users').insert(userArray);
-};
+}
+
+module.exports = { seed };

@@ -18,8 +18,8 @@ services:
     container_name: server_cont
     ports:
       - 8080:8080
-    # volumes:
-    #   - ./server/src:/client/src
+    volumes:
+      - ./server/src:/server/src
     env_file:
       - ./server/.env
     depends_on:
