@@ -127,6 +127,20 @@ Everything should be ready now to start the API server by running:
 | `/courses/:id` | delete course from the list|
 
 
+## TESTING
+
+- To run tests of the API endpoints from our back-end server:
+  - Ensure both containers are running. You can use the docker-compose command from the installation instructions.
+  - Run the following command to navigate into the server container
+  ```bash
+    docker exec -it server_cont /bin/bash
+  ```
+  - Run the test command:
+  ```bash
+    npm test
+  ```
+
+
 
 ## Roadmap
 
