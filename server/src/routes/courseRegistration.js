@@ -56,8 +56,8 @@ router.delete("/:id", async (req, res) => {
     res.status(400).json({ error: 'Invalid or missing request field. ID must match an id of a user registered for this course.' })
     return
   } else{
-      const user = await knex("course_registration").where('user_id',id).del()
-      res.status(200).json({message: "Course registration successfully deleted."})
+      const course_reg = await knex("course_registration").where('id',id).del()
+      res.status(201).json({message: "Course registration successfully deleted."})
   }
 });
 

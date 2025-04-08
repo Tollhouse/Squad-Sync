@@ -57,7 +57,7 @@ router.delete("/:id", async (req, res) => {
     return
   } else{
       const user = await knex("courses").where('id',id).del()
-      res.status(200).json({message: "Course successfully deleted."})
+      res.status(201).json({message: "Course successfully deleted."})
   }
 });
 

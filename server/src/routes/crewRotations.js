@@ -59,7 +59,7 @@ router.delete("/:id", async (req, res) => {
     return
   } else{
       const user = await knex("crew_rotations").where('id',id).del()
-      res.status(200).json({message: "Crew Rotation successfully deleted."})
+      res.status(201).json({message: "Crew Rotation successfully deleted."})
   }
 })
 
