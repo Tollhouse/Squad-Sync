@@ -1,27 +1,27 @@
 version: '3.8'
 
 services:
-  client:
-    build: ./client
-    image: client_img
-    container_name: client_cont
-    # ports:
-      # - 8081:8081 change based on front end
-    # volumes:
-    #   - ./client/src:/client/src
-    depends_on:
-      - server
+  # client:
+  #   build: ./client
+  #   image: client_img
+  #   container_name: client_cont
+  #   # ports:
+  #     # - 8081:8081 change based on front end
+  #   # volumes:
+  #   #   - ./client/src:/client/src
+  #   depends_on:
+  #     - server
 
   server:
-    build: ./client
+    build: ./server
     image: server_img
     container_name: server_cont
     ports:
       - 8080:8080
-    volumes:
-      - ./server/src:/client/src
+    # volumes:
+    #   - ./server/src:/client/src
     env_file:
-      - .env
+      - ./server/.env
     depends_on:
       database:
         condition: service_healthy
@@ -30,7 +30,7 @@ services:
     image: postgres:latest
     container_name: db_cont
     env_file:
-      - .env
+      - ./server/.env
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 3s

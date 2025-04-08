@@ -132,6 +132,37 @@ Everything should be ready now to start the API server by running:
 
 - [Figma Project Board](https://www.figma.com/board/U4zadFU39gYksswWp5EmW7/Supra-Coder-Capstone?node-id=0-1&p=f&t=nAqGW8a3c7aBlyi4-0)
 
+## DEV NOTES
+- Ensure you have a .env file in the server directory with your connection string
+- Running the database as a container, but not the server:
+    - Start the database with the following command:
+    ```bash
+        docker run -d \
+        --name capstone_db \
+        -e POSTGRES_USER=postgres \
+        -e POSTGRES_PASSWORD=*insert_password_here* \
+        -e POSTGRES_DB=capstone \
+        -p 5432:5432 \
+        postgres
+    ```
+    - Start the server with the following commands:
+    ```bash
+        cd server
+        npm start
+    ```
+- Running the database and server as containers (uses docker compose)
+    - Add the following to the .env file:
+    ```
+      POSTGRES_USER=postgres
+      POSTGRES_PASSWORD=*insert_same_pass_from_above*
+      POSTGRES_DB=capstone
+    ```
+    - Start the database with the following command from the projects root directory
+    ```bash
+      docker-compose up --build
+    ```
+
+
 
 
 
