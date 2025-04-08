@@ -4,7 +4,6 @@ const numberOfCourses = 3;
 
 for (let i = 0; i < numberOfUsers; i++) {
   let registeredCourse = {};
-  registeredCourse.user_id = i + 1;
   registeredCourse.course_id = Math.ceil(Math.random() * numberOfCourses);
   registeredCourse.in_progress = 'scheduled';
   registeredCourse.cert_earned = false;

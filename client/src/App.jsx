@@ -1,35 +1,43 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+// Incomplete code, need to match backend and the wireframe
+// How to authenticate a user or session? localstorage of cookie or JWT?
+// code partially updated by Harman
 
-function App() {
-  const [count, setCount] = useState(0)
+import { useState } from 'react'
+import { Link, Routes, Route } from 'react-router-dom'
+import './App.css'
+import Home from "./Components/Home/Home.jsx"
+import Login from './Components/Login/Login.jsx'
+import Logout from './Components/Logout/Logout.jsx'
+import Signup from './Components/Signup/Signup.jsx'
+import Footer from './Components/Footer/Footer.jsx'
+import Navbar from './Components/Navbar/Navbar.jsx'
+import User from './Components/User/User.jsx'
+import Commander from "../src/Components/Commander/Commander.jsx";
+import Courses from "./Components/Courses/Courses.jsx";
+import Dashboard from './Components/Dashboard/Dashboard.jsx';
+import NotFound from './Components/NotFound/NotFound.jsx'
+
+export default function App() {
+  const isAuthenticated = localStorage.getItem('session_id');
+  const username = localStorage.getItem('username');
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+    <Navbar isAuthenticated={isAuthenticated} username = {username}/>
+    <Routes>
+      <Route path='/' element={<Home />}/>
+      <Route path='/login' element={<Login />}/>
+      <Route path="/logout" element={<Logout />} />
+      <Route path='/signup' element={<Signup />}/>
+      <Route path='/user/:id' element={<User />}/>
+      <Route path='/commander' element={<Commander />}/>
+      <Route path='/courses' element={<Courses />}/>
+      <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+
+    <Footer />
     </>
   )
 }
 
-export default App
