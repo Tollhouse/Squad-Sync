@@ -1,10 +1,18 @@
-// Signup incomplete, need to match with backend... 
+// Signup incomplete, need to match with backend...
 // Fetch needs to be updated to match the api
 // return information needs better user interface.. update the css
 // Code written by Harman
- 
+
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import {
+  Button,
+  TextField,
+  Container,
+  Box,
+  Typography,
+  Stack,
+} from "@mui/material";
 
 export default function Signup() {
   const [formData, setFormData] = useState({
@@ -39,37 +47,56 @@ export default function Signup() {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      {error && <p>{error}</p>}
-      <input
-        type="text"
-        name="first_name"
-        placeholder="First Name"
-        value={formData.first_name}
-        onChange={handleChange}
-      />
-      <input
-        type="text"
-        name="last_name"
-        placeholder="Last Name"
-        value={formData.last_name}
-        onChange={handleChange}
-      />
-      <input
-        type="text"
-        name="username"
-        placeholder="Username"
-        value={formData.username}
-        onChange={handleChange}
-      />
-      <input
-        type="password"
-        name="password"
-        placeholder="Password"
-        value={formData.password}
-        onChange={handleChange}
-      />
-      <button type="submit">Sign Up</button>
-    </form>
+    <Container maxWidth="sm">
+      <Box
+        component="form"
+        onSubmit={handleSubmit}
+        sx={{ mt: 4 }}
+      >
+        {error && (
+          <Typography variant="body1" color="error" sx={{ mb: 2 }}>
+            {error}
+          </Typography>
+        )}
+        <Stack spacing={2}>
+          <TextField
+            label="First Name"
+            variant="outlined"
+            name="first_name"
+            value={formData.first_name}
+            onChange={handleChange}
+            fullWidth
+          />
+          <TextField
+            label="Last Name"
+            variant="outlined"
+            name="last_name"
+            value={formData.last_name}
+            onChange={handleChange}
+            fullWidth
+          />
+          <TextField
+            label="Username"
+            variant="outlined"
+            name="username"
+            value={formData.username}
+            onChange={handleChange}
+            fullWidth
+          />
+          <TextField
+            label="Password"
+            type="password"
+            variant="outlined"
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
+            fullWidth
+          />
+          <Button type="submit" variant="contained" color="primary">
+            Sign Up
+          </Button>
+        </Stack>
+      </Box>
+    </Container>
   );
 }
