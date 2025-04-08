@@ -9,7 +9,7 @@ router.get("/", (req, res) => {
     .catch((err) => res.status(500).json({ error: err.message }));
 });
 
-router.post("/crew_rotations", async (req, res) => {
+router.post("/", async (req, res) => {
   const { crew_id, date_start, date_end, shift_type, shift_duration, experience_type } = req.body
   if(
       isNaN(Date.parse(date_start)) || typeof date_start !== "string" ||
@@ -32,7 +32,7 @@ router.post("/crew_rotations", async (req, res) => {
   }
 });
 
-router.patch("/crew_rotations/:id", async (req, res) => {
+router.patch("/:id", async (req, res) => {
   const id = parseInt(req.params.id);
   if (typeof id !== 'number' || isNaN(id)) {
       res.status(400).json({ error: 'Must include id of the crew rotation to update if updating from this endpoint' });
@@ -52,7 +52,7 @@ router.patch("/crew_rotations/:id", async (req, res) => {
   }
 });
 
-router.delete("/crew_rotations/:id", async (req, res) => {
+router.delete("/:id", async (req, res) => {
   const id = parseInt(req.params.id)
   if(typeof id !== "number" || isNaN(id)){
     res.status(400).json({ error: 'Invalid or missing request field. ID must match an id of a crew rotation.' })
