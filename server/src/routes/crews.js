@@ -26,6 +26,7 @@ router.post("/", async (req, res) => {
 });
 
 router.patch("/:id", async (req, res) => {
+  const id = parseInt(req.params.id)
   const { crew_name } = req.body
   if(crew_name.trim() == "" || typeof crew_name !== "string"){
     return res.status(400).json({ message: 'Submitted information is in the invalid format.' });
