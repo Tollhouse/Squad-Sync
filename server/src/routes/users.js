@@ -12,11 +12,11 @@ router.get("/", (req, res) => {
       .catch((err) => res.status(500).json({ error: err.message }));
   });
 
-router.get('/users', async (req, res) => {
+router.get('/', async (req, res) => {
     res.status(200).json({message:"Working route."})
 });
 
-router.get("/users/:id", async (req, res) => {
+router.get("/:id", async (req, res) => {
     const id = parseInt(req.params.id)
     if(typeof id !== "number" || isNaN(id)){
         res.status(400).json({ error: 'Invalid or missing request field. ID must match an id of user.' })
@@ -27,10 +27,10 @@ router.get("/users/:id", async (req, res) => {
     }
 });
 
-router.post("/users", async (req, res) => {
+router.post("/", async (req, res) => {
     const { user_name, first_name, last_name, password, crew_id, role, experience_type } = req.body
     if(
-        user_name.trim() == "" || typeof username !== "string" ||
+        user_name.trim() == "" || typeof user_name !== "string" ||
         first_name.trim() == "" || typeof first_name !== "string" ||
         last_name.trim() == "" || typeof last_name !== "string" ||
         password.trim() == "" || typeof password !== "string" ||
@@ -51,7 +51,7 @@ router.post("/users", async (req, res) => {
     }
 });
 
-router.patch("/users/:id", async (req, res) => {
+router.patch("/:id", async (req, res) => {
     const id = parseInt(req.params.id);
     if (typeof id !== 'number' || isNaN(id)) {
         res.status(400).json({ error: 'Must include id of employee to update if updating from this endpoint' });
@@ -71,7 +71,7 @@ router.patch("/users/:id", async (req, res) => {
     }
 });
 
-router.delete("/users/:id", async (req, res) => {
+router.delete("/:id", async (req, res) => {
     const id = parseInt(req.params.id)
     if(typeof id !== "number" || isNaN(id)){
         res.status(400).json({ error: 'Invalid or missing request field. ID must match an id of user.' })

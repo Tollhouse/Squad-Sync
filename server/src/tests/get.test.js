@@ -18,7 +18,7 @@ describe('GET /crewRotations', () => {
     });
 
     it('an individual element of the array should be a "crewRotations" element', async () => {
-        const col_names = ['pk_id', 'crew_id', 'date_start', 'date_end', 'shift_type', 'shift_duration', 'experience_type']
+        const col_names = ['id', 'crew_id', 'date_start', 'date_end', 'shift_type', 'shift_duration', 'experience_type']
         const response = await request(app).get('/crewRotations');
         expect(response.status).toBe(200);
         expect(Array.isArray(response.body)).toBe(true)
@@ -26,12 +26,13 @@ describe('GET /crewRotations', () => {
     });
 
     it('all returned element properties should match the type definition in the ERD', async () => {
-        const col_names = ['pk_id', 'crew_id', 'date_start', 'date_end', 'shift_type', 'shift_duration', 'experience_type']
+        const col_names = ['id', 'crew_id', 'date_start', 'date_end', 'shift_type', 'shift_duration', 'experience_type']
         const col_types = ['number', 'number', 'string', 'string', 'string', 'number', 'string']
         const response = await request(app).get('/crewRotations');
         expect(response.status).toBe(200);
         expect(Array.isArray(response.body)).toBe(true)
         // this is checking to see if all the objects in the returned body have the right keys and that the value of each key is the right type
+        // console.log(response.body[0])
         response.body.forEach(crew_rotation => {
             const valid = isValidObject(crew_rotation, col_names, col_types);
             expect(valid).toBe(true);
@@ -39,7 +40,7 @@ describe('GET /crewRotations', () => {
     });
 
     it('all values of the fields "shift_type" and "experience_type" should be one of the values defined in the ERD', async () => {
-        const shift_values = ['day', 'swing', 'mid']
+        const shift_values = ['day', 'swing', 'mid', 'rest', 'night']
         const experience_values = ['red', 'yellow', 'green']
         const response = await request(app).get('/crewRotations');
         expect(response.status).toBe(200);
@@ -68,7 +69,7 @@ describe('GET /crews', () => {
     });
 
     it('an individual element of the array should be a "crew" element', async () => {
-        const col_names = ['pk_id', 'crew_name']
+        const col_names = ['id', 'crew_name']
         const response = await request(app).get('/crews');
         expect(response.status).toBe(200);
         expect(Array.isArray(response.body)).toBe(true)
@@ -76,7 +77,7 @@ describe('GET /crews', () => {
     });
 
     it('all returned element properties should match the type definition in the ERD', async () => {
-        const col_names = ['pk_id', 'crew_name']
+        const col_names = ['id', 'crew_name']
         const col_types = ['number', 'string']
         const response = await request(app).get('/crews');
         expect(response.status).toBe(200);
@@ -103,7 +104,7 @@ describe('GET /users', () => {
     });
 
     it('an individual element of the array should be a "user" element', async () => {
-        const col_names = ['pk_id', 'user_name', 'first_name', 'last_name', 'password', 'squadron_id', 'crew_id', 'role', 'experience_type']
+        const col_names = ['id', 'user_name', 'first_name', 'last_name', 'password', 'crew_id', 'role', 'experience_type']
         const response = await request(app).get('/users');
         expect(response.status).toBe(200);
         expect(Array.isArray(response.body)).toBe(true)
@@ -111,8 +112,8 @@ describe('GET /users', () => {
     });
 
     it('all returned element properties should match the type definition in the ERD', async () => {
-        const col_names = ['pk_id', 'user_name', 'first_name', 'last_name', 'password', 'squadron_id', 'crew_id', 'role', 'experience_type']
-        const col_types = ['number', 'string', 'string', 'string', 'string', 'number', 'number', 'string', 'string']
+        const col_names = ['id', 'user_name', 'first_name', 'last_name', 'password', 'crew_id', 'role', 'experience_type']
+        const col_types = ['number', 'string', 'string', 'string', 'string', 'number', 'string', 'string']
         const response = await request(app).get('/users');
         expect(response.status).toBe(200);
         expect(Array.isArray(response.body)).toBe(true)
@@ -150,7 +151,7 @@ describe('GET /courseRegistration', () => {
     });
 
     it('an individual element of the array should be a "courseRegistration" element', async () => {
-        const col_names = ['pk_id', 'user_id', 'course_id', 'start_date', 'end_date', 'cert_granted', 'in_progress', 'cert_earned']
+        const col_names = ['id', 'user_id', 'course_id', 'in_progress', 'cert_earned']
         const response = await request(app).get('/courseRegistration');
         expect(response.status).toBe(200);
         expect(Array.isArray(response.body)).toBe(true)
@@ -158,7 +159,7 @@ describe('GET /courseRegistration', () => {
     });
 
     it('all returned element properties should match the type definition in the ERD', async () => {
-        const col_names = ['pk_id', 'user_id', 'course_id', 'in_progress', 'cert_earned']
+        const col_names = ['id', 'user_id', 'course_id', 'in_progress', 'cert_earned']
         const col_types = ['number', 'number', 'number', 'string', 'boolean']
         const response = await request(app).get('/courseRegistration');
         expect(response.status).toBe(200);
@@ -197,7 +198,7 @@ describe('GET /courses', () => {
     });
 
     it('an individual element of the array should be a "course" element', async () => {
-        const col_names = ['pk_id', 'course_name', 'date_start', 'date_end', 'cert_granted']
+        const col_names = ['id', 'course_name', 'date_start', 'date_end', 'cert_granted']
         const response = await request(app).get('/courses');
         expect(response.status).toBe(200);
         expect(Array.isArray(response.body)).toBe(true)
@@ -205,7 +206,7 @@ describe('GET /courses', () => {
     });
 
     it('all returned element properties should match the type definition in the ERD', async () => {
-        const col_names = ['pk_id', 'course_name', 'date_start', 'date_end', 'cert_granted']
+        const col_names = ['id', 'course_name', 'date_start', 'date_end', 'cert_granted']
         const col_types = ['number', 'string', 'string', 'string', 'string']
         const response = await request(app).get('/courses');
         expect(response.status).toBe(200);

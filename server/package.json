@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "dev": "node ./src/server.js",
-    "test": "jest"
+    "start": "npx knex migrate:rollback && npx knex migrate:latest && npx knex seed:run && node ./src/server.js",
+    "test": "jest --watchAll --detectOpenHandles"
   },
   "repository": {
     "type": "git",

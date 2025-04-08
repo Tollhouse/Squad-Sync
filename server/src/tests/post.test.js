@@ -1,5 +1,22 @@
 const request = require('supertest')
-const app = require('../server.js')
+const { app } = require('../server.js')
+
+// let knex = require('knex')(require('../../knexfile.js')['development']);
+let config = require('../../knexfile.js')['development'];
+console.log(config);  // Check if the config object has 'client' and 'connection'
+let knex = require('knex')(config);
+
+
+beforeEach(async () => {
+    knex = require('knex')(config);
+    await knex.migrate.rollback();
+    await knex.migrate.latest();
+    await knex.seed.run();
+});
+
+afterEach(async () => {
+    await knex.destroy();
+});
 
 describe('POST testing of /crewRotations route', () => {
     it('incorrect body should receive 400 error status', async () => {

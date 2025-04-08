@@ -9,7 +9,7 @@ router.get("/", (req, res) => {
     .catch((err) => res.status(500).json({ error: err.message }));
 });
 
-router.post("/crews", async (req, res) => {
+router.post("/", async (req, res) => {
   const { crew_name } = req.body
   if(crew_name.trim() == "" || typeof crew_name !== "string"){
     return res.status(400).json({ message: 'Submitted information is in the invalid format.' });
@@ -25,7 +25,7 @@ router.post("/crews", async (req, res) => {
   }
 });
 
-router.patch("/crews/:id", async (req, res) => {
+router.patch("/:id", async (req, res) => {
   const { crew_name } = req.body
   if(crew_name.trim() == "" || typeof crew_name !== "string"){
     return res.status(400).json({ message: 'Submitted information is in the invalid format.' });
@@ -42,7 +42,7 @@ router.patch("/crews/:id", async (req, res) => {
   }
 })
 
-router.delete("/crews/:id", async (req, res) => {
+router.delete("/:id", async (req, res) => {
   const id = parseInt(req.params.id)
   if(typeof id !== "number" || isNaN(id)){
     res.status(400).json({ error: 'Invalid or missing request field. ID must match an id of crew.' })
