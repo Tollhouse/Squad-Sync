@@ -177,11 +177,6 @@ export default function User () {
   return (
     <>
     <div className='user-container'>
-
-      <div className='navbar-container'>
-        <Navbar />
-      </div>
-
       <div className='header'>
         <h1>Welcome, user </h1>
       </div>
