@@ -146,7 +146,7 @@ export default function User () {
       }
     }
   ]
-  console.log('Rows passed to DataGrid:', userInformation);
+  
   return (
 
     <div className='user-container'>
@@ -184,8 +184,6 @@ export default function User () {
           hideFooter={true}
           />
           </Box>
-
     </div>
-
   )
 }
