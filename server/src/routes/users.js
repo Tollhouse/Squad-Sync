@@ -42,7 +42,7 @@ router.post("/", async (req, res) => {
         password.trim() == "" || typeof password !== "string" ||
         typeof crew_id !== "number" ||
         role.trim() == "" || typeof role !== "string" ||
-        experience_type == "" || typeof experience_type !== "string"
+        experience_type.trim() == "" || typeof experience_type !== "string"
     ){
         return res.status(400).json({ message: 'Submitted information is in the invalid format.' });
     }else{
