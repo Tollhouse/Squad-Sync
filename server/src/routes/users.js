@@ -4,13 +4,19 @@ const router = express.Router();
 const knex = require("knex")(require("../../knexfile")["development"]);
 router.use(express.json())
 router.use(cors())
+const bcrypt = require('bcrypt');
+
+const hashPassword = async (password) => {
+    const saltRounds = 12;
+    return await bcrypt.hash(password, saltRounds);
+};
 
 router.get("/", (req, res) => {
     knex("users")
       .select("*")
       .then((user) => res.status(200).json(user))
       .catch((err) => res.status(500).json({ error: err.message }));
-  });
+});
 
 router.get('/', async (req, res) => {
     res.status(200).json({message:"Working route."})
@@ -41,8 +47,9 @@ router.post("/", async (req, res) => {
         return res.status(400).json({ message: 'Submitted information is in the invalid format.' });
     }else{
         try{
+            const hashedPassword = hashPassword(password);
             const user_input = await knex("users")
-            .insert({user_name, first_name, last_name, password, crew_id, role,experience_type})
+            .insert({user_name, first_name, last_name, password: hashedPassword, crew_id, role,experience_type})
             .returning("*")
             res.status(201).json(user_input)
         }catch (error){
@@ -50,6 +57,28 @@ router.post("/", async (req, res) => {
         }
     }
 });
+
+router.post('/login', (req, res) => {
+    const {user_name, password} = req.body;
+
+    knex('users')
+    .select('*')
+    .where('user_name', user_name)
+    .then(user => {
+      if (user.length == 0) {
+        return res.status(404).json({message: 'User not found.'})
+      } else {
+        return bcrypt.compare(password, user[0].password)
+        .then((matches) => {
+          return matches == true
+                  ? res.status(200).json({ message: 'Login successful', id: user[0].id })
+                  : res.status(401).json({message: 'Password is incorrect.'})
+        })
+      }})
+    .catch((err) => {
+      return res.status(500).json({message: 'Unable to get login information.', error: err})
+    })
+})
 
 router.patch("/:id", async (req, res) => {
     const id = parseInt(req.params.id);
