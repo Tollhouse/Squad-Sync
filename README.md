@@ -8,7 +8,6 @@ This app aims to provided a single source of truth for unit scheduling requireme
 
 <!-- ![App Screenshot](https://via.placeholder.com/468x300?text=App+Screenshot+Here) -->
 
-
 ## Run Locally
 
 Clone the project
@@ -35,6 +34,39 @@ Start the server
   npm run start
 ```
 
+
+## Database and API Server instructions
+To run this app on your own machine you will need to create your own database using your preferred software. This app was developed with a PostgreSQL database running in a docker container. The app can be spun up two different ways as shown below. The *`docker compose up` requires docker to spin up each portion of the app (Client browser app, API, and database) in their own docker containers. This will require the fewest steps to run the app as is, but may make it a bit difficult to see live updates to the code. Node.js will require that you have a node environment installed. This will require some additional steps, but will give you more control over each portion of the app.
+### Docker Compose
+
+### Node.js
+To run the app using a node environment you will need to create a file called `.env` in the server folder. In this folder you will create a variable called `DB_CONNECTION_STRING` that will contain the environment variable of your database. An example of our variable is:
+
+` DB_CONNECTION_STRING=postgresql://[username]:[password]@[url]:[port]/[database name]`
+
+Once this variable is created you can run:
+
+```bash
+  npm install
+```
+
+To install all dependencies followed by:
+
+```bash
+  npx knex migrate:latest
+```
+
+This will create all of the table in your database and if you want some sample data you can run:
+
+```bash
+  npx knex seed:run
+```
+
+Everything should be ready now to start the API server by running:
+
+```bash
+  npm run dev
+```
 
 ## API Endpoints
 
@@ -113,6 +145,7 @@ Start the server
 - [Lorena Longoria](https://www.github.com/lorenalongoria)
 - [Michael Thomas](https://www.github.com/m-h-thomas)
 - [Erik Voss](https://www.github.com/Chaos66-dev)
+- [Landon Spencer](https://github.com/Landon-Spencer)
 
 
 
