@@ -47,7 +47,7 @@ router.post("/", async (req, res) => {
         return res.status(400).json({ message: 'Submitted information is in the invalid format.' });
     }else{
         try{
-            const hashedPassword = hashPassword(password);
+            const hashedPassword = await hashPassword(password);
             const user_input = await knex("users")
             .insert({user_name, first_name, last_name, password: hashedPassword, crew_id, role,experience_type})
             .returning("*")
