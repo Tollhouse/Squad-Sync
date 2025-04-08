@@ -16,10 +16,10 @@ const crewsRoute = require('./routes/crews');
 const crewRotationsRoute = require('./routes/crewRotations');
 
 app.use('/users', usersRoute);
-app.use('/courseRegistration', courseRegistrationRoute);
+app.use('/course_registration', courseRegistrationRoute);
 app.use('/courses', coursesRoute);
 app.use('/crews', crewsRoute);
-app.use('/crewRotations', crewRotationsRoute);
+app.use('/crew_rotations', crewRotationsRoute);
 
 app.use(express.json())
 
