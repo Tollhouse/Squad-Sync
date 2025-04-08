@@ -44,7 +44,7 @@ router.post("/", async (req, res) => {
             const user_input = await knex("users")
             .insert({user_name, first_name, last_name, password, crew_id, role,experience_type})
             .returning("*")
-            res.status(200).json(user_input)
+            res.status(201).json(user_input)
         }catch (error){
             return res.status(500).json({ error: 'Internal Server Error' });
         }
