@@ -8,6 +8,7 @@ for (let i = 0; i < numberOfUsers; i++) {
   registeredCourse.user_id = Math.ceil(Math.random() * numberOfUsers);
   registeredCourse.in_progress = 'scheduled';
   registeredCourse.cert_earned = false;
+  registeredCourse.user_id = Math.ceil(Math.random() * numberOfUsers)
   registeredUsers.push(registeredCourse);
 }
 
