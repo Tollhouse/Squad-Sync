@@ -94,7 +94,9 @@ router.get("/:id", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
-    const { user_name, first_name, last_name, password, crew_id, role, experience_type } = req.body
+    const { user_name, first_name, last_name, password, crew_id, role, experience_type } = req.body;
+    const hashedPassword = await hashPassword(password);
+
     if(
         user_name.trim() == "" || typeof user_name !== "string" ||
         first_name.trim() == "" || typeof first_name !== "string" ||
@@ -107,11 +109,24 @@ router.post("/", async (req, res) => {
         return res.status(400).json({ message: 'Submitted information is in the invalid format.' });
     }else{
         try{
-            const hashedPassword = await hashPassword(password);
-            const user_input = await knex("users")
-            .insert({user_name, first_name, last_name, password: hashedPassword, crew_id, role,experience_type})
-            .returning("*")
-            res.status(201).json(user_input)
+            knex('users')
+                .where('user_name', user_name)
+                .first()
+                .then(foundUser => {
+                if (foundUser) {
+                    return res.status(404).json('Username already exists.')
+                } else {
+                    return knex('users')
+                        .insert({first_name, last_name, user_name, password: hashedPassword, crew_id, role, experience_type}, ['id'])
+                        .then((id) => {
+                            return res.status(201).json({id: id[0].id, message: `Welcome ${first_name}, your username is ${user_name}.`})
+                        })
+                        .catch(err => {
+                            console.log(err);
+                            return res.status(500).json('Error creating user. Error: ' + err)
+                        })
+                }
+                })
         }catch (error){
             return res.status(500).json({ error: 'Internal Server Error' });
         }
@@ -126,13 +141,13 @@ router.post('/login', (req, res) => {
     .where('user_name', user_name)
     .then(user => {
       if (user.length == 0) {
-        return res.status(404).json({message: 'User not found.'})
+        return res.status(404).json({ message: 'User not found.'})
       } else {
         return bcrypt.compare(password, user[0].password)
         .then((matches) => {
           return matches == true
                   ? res.status(200).json({ message: 'Login successful', id: user[0].id })
-                  : res.status(401).json({message: 'Password is incorrect.'})
+                  : res.status(401).json({ message: 'Password is incorrect.'})
         })
       }})
     .catch((err) => {
