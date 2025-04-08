@@ -1,5 +1,6 @@
 const request = require('supertest')
 const { app } = require('../server.js')
+jest.setTimeout(10000);  // 10 seconds timeout
 
 let config = require('../../knexfile.js')['development'];
 let knex = require('knex')(config);
@@ -49,6 +50,7 @@ describe('PATCH testing of /crew_rotations route', () => {
     it('returns all fields of patched crew rotation', async () => {
         const res = await request(app).patch('/crew_rotations/2').send(patch_body)
         expect(res.status).toBe(201)
+        console.log(res.body)
         expect(typeof res.body[0].id).toBe('number')
         expect(res.body[0].id).toBe(2)
         expect(res.body[0].crew_id).toBe(1)

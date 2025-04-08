@@ -4,6 +4,13 @@ const router = express.Router();
 const knex = require("knex")(require("../../knexfile")["development"]);
 router.use(express.json())
 router.use(cors())
+const bcrypt = require('bcryptjs');
+
+const hashPassword = async (password) => {
+    const saltRounds = 12;
+    // const saltRounds = 3;
+    return await bcrypt.hash(password, saltRounds);
+};
 
 router.get("/", (req, res) => {
     knex("users")

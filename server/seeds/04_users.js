@@ -1,4 +1,11 @@
 const { faker } = require('@faker-js/faker');
+const { hashSync, hash } = require('bcryptjs');
+
+const hashPassword = async (password) => {
+  const saltRounds = 12;
+  // const saltRounds = 3;
+  return await hash(password, saltRounds);
+};
 
 const numberOfUsers = 25;
 const numberOfCrews = 6;
@@ -11,7 +18,12 @@ for (let i = 0; i < numberOfUsers; i++) {
   inputItem.first_name = faker.person.firstName();
   inputItem.last_name = faker.person.firstName();
   inputItem.user_name = inputItem.first_name;
-  inputItem.password = inputItem.last_name;
+
+  // Using hashPassword and assigning it to the password field
+  await hashPassword(inputItem.last_name).then((password) => {
+    inputItem.password = password;
+  });
+
   inputItem.crew_id = Math.ceil(Math.random() * numberOfCrews);
   inputItem.role = roles[Math.floor(Math.random() * roles.length)];
   inputItem.experience_type = experience[Math.floor(Math.random() * experience.length)];
