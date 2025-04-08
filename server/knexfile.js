@@ -2,7 +2,7 @@
 require('dotenv').config();
 
 
-console.log('Database Connection String:', process.env.DB_CONNECTION_STRING);
+// console.log('Database Connection String:', process.env.DB_CONNECTION_STRING);
 
 /**
  * @type { Object.<string, import("knex").Knex.Config> }
