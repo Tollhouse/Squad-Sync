@@ -1,4 +1,4 @@
-//Authored by Curtis 
+//Authored by Curtis
 //This is incomplete, need enpoints from the backend for the GET and PATCH
 //Not sure if the right dependencies were installed (npm i @tanstack/react-virtual @tanstack/react-table @tanstack/react-router)
 
@@ -13,9 +13,10 @@ export default function User () {
   const [userInformation, setUserInformation] = useState([])
 
   //HANDLES GETTING USER INFORMATION
-  const getUserInformation = async () => {
+  useEffect(() => {
+    const id = parseInt(req.params.id)
 
-    const response = await fetch(`http://localhost:PORT/ENDPOINTFORUSERINFORMATION`)
+    const response = fetch(`http://localhost:8080/users/${id}`)
       .then(res => res.json())
       .then(data => {
         if(data.length === 0){
@@ -25,9 +26,9 @@ export default function User () {
       }})
         .catch(err => {
           console.error('Error fetching user information:', err)
-        }) 
-    }
-  
+        })
+    })
+
   //HANDLES UPDATING SELECTED USER INFORMATION
   const updateUserInformation = (rowIndex, columnId, value) => {
 
@@ -35,7 +36,7 @@ export default function User () {
       id: userInformation[rowIndex].id,
       [columnId]:value
     }
-    
+
     fetch(`http://localhost:PORT/ENDPOINT `, {
       method: 'PATCH',
       headers: {'Content-Type': 'application/json'},
@@ -46,13 +47,13 @@ export default function User () {
         throw new Error('Failed to update inventory');
       }
       return response.json();
-      
+
     })
     .then((data) => {
       alert('Update successful', data)
     })
     .catch((error) => {
-      console.error('Error updating user information:', error); 
+      console.error('Error updating user information:', error);
     })
   }
 
@@ -91,7 +92,7 @@ export default function User () {
         const isEditing = editingCell?.rowIndex === row.index && editingCell?.columnId === column.id;
         const value = row.original[column.id];
         return isEditing ? (
-          <input type='text' value={value} 
+          <input type='text' value={value}
           onChange={(e) => handleEdit(row.index, column.id, e.target.value)}
           onBlur={(e) => handleBlur(row.index, column.id, e.target.value)}
           onKeyDown={(e) => handleKeyDown(e, row.index, column.id, e.target.value)}
@@ -109,7 +110,7 @@ export default function User () {
         const isEditing = editingCell?.rowIndex === row.index && editingCell?.columnId === column.id;
         const value = row.original[column.id];
         return isEditing ? (
-          <input type='text' value={value} 
+          <input type='text' value={value}
           onChange={(e) => handleEdit(row.index, column.id, e.target.value)}
           onBlur={(e) => handleBlur(row.index, column.id, e.target.value)}
           onKeyDown={(e) => handleKeyDown(e, row.index, column.id, e.target.value)}
@@ -127,7 +128,7 @@ export default function User () {
         const isEditing = editingCell?.rowIndex === row.index && editingCell?.columnId === column.id;
         const value = row.original[column.id];
         return isEditing ? (
-          <input type='text' value={value} 
+          <input type='text' value={value}
           onChange={(e) => handleEdit(row.index, column.id, e.target.value)}
           onBlur={(e) => handleBlur(row.index, column.id, e.target.value)}
           onKeyDown={(e) => handleKeyDown(e, row.index, column.id, e.target.value)}
@@ -150,13 +151,13 @@ export default function User () {
       accessorKey: 'experience_type',
       header: 'Experience Level'
     }
-  
+
   ], [userInformation, editingCell]);
 
   const table = useReactTable({
-    userInformation, 
+    userInformation,
     columns,
-    getCoreRowModel: getCoreRowModel() 
+    getCoreRowModel: getCoreRowModel()
   })
 
   return (
@@ -166,13 +167,13 @@ export default function User () {
       <div className='navbar-container'>
         <Navbar />
       </div>
-    
+
       <div className='header'>
         <h1>Welcome, user </h1>
       </div>
 
       <div className='user-information'>
-        <table> 
+        <table>
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
@@ -197,7 +198,7 @@ export default function User () {
           </tbody>
         </table>
       </div>
-      
+
     </div>
     </>
   )

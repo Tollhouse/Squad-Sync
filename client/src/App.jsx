@@ -1,11 +1,6 @@
-<<<<<<< HEAD
-import { useState } from 'react'
-import './App.css'
-=======
 // Incomplete code, need to match backend and the wireframe
 // How to authenticate a user or session? localstorage of cookie or JWT?
 // code partially updated by Harman
->>>>>>> front-end
 
 import { useState } from 'react'
 import { Link, Routes, Route } from 'react-router-dom'
@@ -28,16 +23,13 @@ export default function App() {
 
   return (
     <>
-<<<<<<< HEAD
-
-=======
     <Navbar isAuthenticated={isAuthenticated} username = {username}/>
     <Routes>
       <Route path='/' element={<Home />}/>
       <Route path='/login' element={<Login />}/>
       <Route path="/logout" element={<Logout />} />
       <Route path='/signup' element={<Signup />}/>
-      <Route path='/user/:id' element={<User />}/>
+      <Route path='/users/:id' element={<User />}/>
       <Route path='/commander' element={<Commander />}/>
       <Route path='/courses' element={<Courses />}/>
       <Route path="/dashboard" element={<Dashboard />} />
@@ -45,8 +37,6 @@ export default function App() {
     </Routes>
 
     <Footer />
->>>>>>> front-end
     </>
   )
 }
-
