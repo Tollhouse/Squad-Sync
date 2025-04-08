@@ -12,10 +12,10 @@ router.get("/", (req, res) => {
 router.post("/", async (req, res) => {
   const { user_id, course_id, in_progress, cert_earned } = req.body
   if(
-      typeof user_id == "number" ||
-      typeof course_id == "number" ||
+      typeof user_id !== "number" ||
+      typeof course_id !== "number" ||
       in_progress.trim() == "" || typeof in_progress !== "string" ||
-      cert_earned.trim() == "" || typeof cert_earned !== "string"
+      typeof cert_earned !== "boolean"
   ){
       return res.status(400).json({ message: 'Submitted information is in the invalid format.' });
   }else{
