@@ -1,4 +1,11 @@
-const { faker } = require('@faker-js/faker');
+import { faker } from '@faker-js/faker';
+import { hashSync } from 'bcrypt';
+// const bcrypt = require('bcrypt');
+
+const hashPassword = async (password) => {
+    const saltRounds = 12;
+    return hashSync(password, saltRounds);
+};
 
 const numberOfUsers = 25;
 const numberOfCrews = 6;
@@ -11,7 +18,7 @@ for (let i = 0; i < numberOfUsers; i++) {
   inputItem.first_name = faker.person.firstName();
   inputItem.last_name = faker.person.firstName();
   inputItem.user_name = inputItem.first_name;
-  inputItem.password = inputItem.last_name;
+  let hashedPassword = hashPassword(inputItem.last_name).then((password) => inputItem.password = password);
   inputItem.crew_id = Math.ceil(Math.random() * numberOfCrews);
   inputItem.role = roles[Math.floor(Math.random() * roles.length)];
   inputItem.experience_type = experience[Math.floor(Math.random() * experience.length)];
@@ -22,10 +29,10 @@ for (let i = 0; i < numberOfUsers; i++) {
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-async function seed(knex) {
+export async function seed(knex) {
   // Deletes ALL existing entries
   await knex('users').del()
   await knex('users').insert(userArray);
 }
 
-module.exports = { seed };
+// export default { seed };

@@ -23,7 +23,7 @@ router.post("/", async (req, res) => {
           const course_input = await knex("course_registration")
           .insert({ user_id, course_id, in_progress, cert_earned })
           .returning("*")
-          res.status(200).json(course_input)
+          res.status(201).json(course_input)
       }catch (error){
           return res.status(500).json({ error: 'Internal Server Error' });
       }

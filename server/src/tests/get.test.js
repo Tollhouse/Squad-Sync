@@ -5,21 +5,21 @@ const { isValidObject, checkEnums } = require('./test_utils.js')
 // TODO check foreign keys?
 
 // -------------------------------------------------------  CREW ROTATIONS  -------------------------------------------------------
-describe('GET /crewRotations', () => {
+describe('GET /crew_rotations', () => {
     it('should return a 200 status ', async () => {
-      const response = await request(app).get('/crewRotations');
+      const response = await request(app).get('/crew_rotations');
       expect(response.status).toBe(200);
     });
 
     it('should return an array ', async () => {
-      const response = await request(app).get('/crewRotations');
+      const response = await request(app).get('/crew_rotations');
       expect(response.status).toBe(200);
       expect(Array.isArray(response.body)).toBe(true)
     });
 
-    it('an individual element of the array should be a "crewRotations" element', async () => {
+    it('an individual element of the array should be a "crew_rotations" element', async () => {
         const col_names = ['id', 'crew_id', 'date_start', 'date_end', 'shift_type', 'shift_duration', 'experience_type']
-        const response = await request(app).get('/crewRotations');
+        const response = await request(app).get('/crew_rotations');
         expect(response.status).toBe(200);
         expect(Array.isArray(response.body)).toBe(true)
         expect(col_names.every(col => Object.hasOwn(response.body[0], col))).toBe(true)
@@ -28,7 +28,7 @@ describe('GET /crewRotations', () => {
     it('all returned element properties should match the type definition in the ERD', async () => {
         const col_names = ['id', 'crew_id', 'date_start', 'date_end', 'shift_type', 'shift_duration', 'experience_type']
         const col_types = ['number', 'number', 'string', 'string', 'string', 'number', 'string']
-        const response = await request(app).get('/crewRotations');
+        const response = await request(app).get('/crew_rotations');
         expect(response.status).toBe(200);
         expect(Array.isArray(response.body)).toBe(true)
         // this is checking to see if all the objects in the returned body have the right keys and that the value of each key is the right type
@@ -42,7 +42,7 @@ describe('GET /crewRotations', () => {
     it('all values of the fields "shift_type" and "experience_type" should be one of the values defined in the ERD', async () => {
         const shift_values = ['day', 'swing', 'mid', 'rest', 'night']
         const experience_values = ['red', 'yellow', 'green']
-        const response = await request(app).get('/crewRotations');
+        const response = await request(app).get('/crew_rotations');
         expect(response.status).toBe(200);
         expect(Array.isArray(response.body)).toBe(true)
         // this is checking to see if all the objects in the returned body have the right keys and that the value of each key is the right type
@@ -138,21 +138,21 @@ describe('GET /users', () => {
 });
 
 // -------------------------------------------------------   Course Registrations   -------------------------------------------------------
-describe('GET /courseRegistration', () => {
+describe('GET /course_registration', () => {
     it('should return a 200 status ', async () => {
-      const response = await request(app).get('/courseRegistration');
+      const response = await request(app).get('/course_registration');
       expect(response.status).toBe(200);
     });
 
     it('should return an array ', async () => {
-      const response = await request(app).get('/courseRegistration');
+      const response = await request(app).get('/course_registration');
       expect(response.status).toBe(200);
       expect(Array.isArray(response.body)).toBe(true)
     });
 
-    it('an individual element of the array should be a "courseRegistration" element', async () => {
+    it('an individual element of the array should be a "course_registration" element', async () => {
         const col_names = ['id', 'user_id', 'course_id', 'in_progress', 'cert_earned']
-        const response = await request(app).get('/courseRegistration');
+        const response = await request(app).get('/course_registration');
         expect(response.status).toBe(200);
         expect(Array.isArray(response.body)).toBe(true)
         expect(col_names.every(col => Object.hasOwn(response.body[0], col))).toBe(true)
@@ -161,7 +161,7 @@ describe('GET /courseRegistration', () => {
     it('all returned element properties should match the type definition in the ERD', async () => {
         const col_names = ['id', 'user_id', 'course_id', 'in_progress', 'cert_earned']
         const col_types = ['number', 'number', 'number', 'string', 'boolean']
-        const response = await request(app).get('/courseRegistration');
+        const response = await request(app).get('/course_registration');
         expect(response.status).toBe(200);
         expect(Array.isArray(response.body)).toBe(true)
         // this is checking to see if all the objects in the returned body have the right keys and that the value of each key is the right type
@@ -173,7 +173,7 @@ describe('GET /courseRegistration', () => {
 
     it('all values of the field "in_progress" should be one of the values defined in the ERD', async () => {
         const in_progress_values = ['scheduled', 'in_progress', 'completed']
-        const response = await request(app).get('/courseRegistration');
+        const response = await request(app).get('/course_registration');
         expect(response.status).toBe(200);
         expect(Array.isArray(response.body)).toBe(true)
         // this is checking to see if all the objects in the returned body have the right keys and that the value of each key is the right type
