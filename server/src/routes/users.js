@@ -30,7 +30,7 @@ router.get("/:id", async (req, res) => {
 router.post("/", async (req, res) => {
     const { user_name, first_name, last_name, password, crew_id, role, experience_type } = req.body
     if(
-        user_name.trim() == "" || typeof username !== "string" ||
+        user_name.trim() == "" || typeof user_name !== "string" ||
         first_name.trim() == "" || typeof first_name !== "string" ||
         last_name.trim() == "" || typeof last_name !== "string" ||
         password.trim() == "" || typeof password !== "string" ||
