@@ -51,7 +51,7 @@ router.get("/schedule", async (req, res) => {
 
 });
 
-// get route to get the schedule of every user
+// get route to get the schedule of a specific user
 router.get("/schedule/:id", async (req, res) => {
     const id = parseInt(req.params.id)
     let data = []
