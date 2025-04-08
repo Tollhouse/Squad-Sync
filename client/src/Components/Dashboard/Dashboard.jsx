@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Commander from "../Commander/Commander";
-import User from "../User/User";
+
 
 export default function Dashboard() {
   const [user, setUser] = useState(null);
