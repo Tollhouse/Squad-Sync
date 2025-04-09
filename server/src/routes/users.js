@@ -74,6 +74,8 @@ router.patch("/users/:id", async (req, res) => {
         const updated_user = await knex("users")
         .where('id',id)
         .update(updates)
+        .returning("*")
+        
         res.status(201).json(updated_user)
     }catch (error){
         return res.status(500).json({ error: 'Internal Server Error' });
