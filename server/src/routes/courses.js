@@ -9,7 +9,18 @@ router.get("/", (req, res) => {
     .catch((err) => res.status(500).json({ error: err.message }));
 });
 
-router.post("/courses", async (req, res) => {
+router.get("/:id", async (req, res) => {
+  const id = parseInt(req.params.id)
+  if(typeof id !== "number" || isNaN(id)){
+      res.status(400).json({ error: 'Invalid or missing request field. ID must match an id of course.' })
+      return
+  } else{
+      const course = await knex("courses").select("*").where('id',id)
+      res.status(200).json(course)
+  }
+});
+
+router.post("/", async (req, res) => {
   const { course_name, date_start, date_end, cert_granted } = req.body
   if(
       isNaN(Date.parse(date_start)) || typeof date_start !== "string" ||
@@ -23,14 +34,14 @@ router.post("/courses", async (req, res) => {
           const course_input = await knex("courses")
           .insert({ course_name, date_start, date_end, cert_granted })
           .returning("*")
-          res.status(200).json(course_input)
+          res.status(201).json(course_input)
       }catch (error){
           return res.status(500).json({ error: 'Internal Server Error' });
       }
   }
 });
 
-router.patch("/courses/:id", async (req, res) => {
+router.patch("/:id", async (req, res) => {
   const id = parseInt(req.params.id);
   if (typeof id !== 'number' || isNaN(id)) {
       res.status(400).json({ error: 'Must include id of the course to update if updating from this endpoint' });
@@ -44,20 +55,21 @@ router.patch("/courses/:id", async (req, res) => {
       const updated_course = await knex("courses")
       .where('id',id)
       .update(updates)
+      .returning("*")
       res.status(201).json(updated_course)
   }catch (error){
       return res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 
-router.delete("/courses/:id", async (req, res) => {
+router.delete("/:id", async (req, res) => {
   const id = parseInt(req.params.id)
   if(typeof id !== "number" || isNaN(id)){
     res.status(400).json({ error: 'Invalid or missing request field. ID must match an id of a course.' })
     return
   } else{
       const user = await knex("courses").where('id',id).del()
-      res.status(200).json({message: "Course successfully deleted."})
+      res.status(201).json({message: "Course successfully deleted."})
   }
 });
 

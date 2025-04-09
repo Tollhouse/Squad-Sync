@@ -8,7 +8,6 @@ This app aims to provided a single source of truth for unit scheduling requireme
 
 <!-- ![App Screenshot](https://via.placeholder.com/468x300?text=App+Screenshot+Here) -->
 
-
 ## Run Locally
 
 Clone the project
@@ -35,6 +34,39 @@ Start the server
   npm run start
 ```
 
+
+## Database and API Server instructions
+To run this app on your own machine you will need to create your own database using your preferred software. This app was developed with a PostgreSQL database running in a docker container. The app can be spun up two different ways as shown below. The *`docker compose up` requires docker to spin up each portion of the app (Client browser app, API, and database) in their own docker containers. This will require the fewest steps to run the app as is, but may make it a bit difficult to see live updates to the code. Node.js will require that you have a node environment installed. This will require some additional steps, but will give you more control over each portion of the app.
+### Docker Compose
+
+### Node.js
+To run the app using a node environment you will need to create a file called `.env` in the server folder. In this folder you will create a variable called `DB_CONNECTION_STRING` that will contain the environment variable of your database. An example of our variable is:
+
+` DB_CONNECTION_STRING=postgresql://[username]:[password]@[url]:[port]/[database name]`
+
+Once this variable is created you can run:
+
+```bash
+  npm install
+```
+
+To install all dependencies followed by:
+
+```bash
+  npx knex migrate:latest
+```
+
+This will create all of the table in your database and if you want some sample data you can run:
+
+```bash
+  npx knex seed:run
+```
+
+Everything should be ready now to start the API server by running:
+
+```bash
+  npm run dev
+```
 
 ## API Endpoints
 
@@ -95,10 +127,55 @@ Start the server
 | `/courses/:id` | delete course from the list|
 
 
+## TESTING
+
+- To run tests of the API endpoints from our back-end server:
+  - Ensure both containers are running. You can use the docker-compose command from the installation instructions.
+  - Run the following command to navigate into the server container
+  ```bash
+    docker exec -it server_cont /bin/bash
+  ```
+  - Run the test command:
+  ```bash
+    npm test
+  ```
+
+
 
 ## Roadmap
 
 - [Figma Project Board](https://www.figma.com/board/U4zadFU39gYksswWp5EmW7/Supra-Coder-Capstone?node-id=0-1&p=f&t=nAqGW8a3c7aBlyi4-0)
+
+## DEV NOTES
+- Ensure you have a .env file in the server directory with your connection string
+- Running the database as a container, but not the server:
+    - Start the database with the following command:
+    ```bash
+        docker run -d \
+        --name capstone_db \
+        -e POSTGRES_USER=postgres \
+        -e POSTGRES_PASSWORD=*insert_password_here* \
+        -e POSTGRES_DB=capstone \
+        -p 5432:5432 \
+        postgres
+    ```
+    - Start the server with the following commands:
+    ```bash
+        cd server
+        npm start
+    ```
+- Running the database and server as containers (uses docker compose)
+    - Add the following to the .env file:
+    ```
+      POSTGRES_USER=postgres
+      POSTGRES_PASSWORD=*insert_same_pass_from_above*
+      POSTGRES_DB=capstone
+    ```
+    - Start the database with the following command from the projects root directory
+    ```bash
+      docker-compose up --build
+    ```
+
 
 
 
@@ -113,6 +190,7 @@ Start the server
 - [Lorena Longoria](https://www.github.com/lorenalongoria)
 - [Michael Thomas](https://www.github.com/m-h-thomas)
 - [Erik Voss](https://www.github.com/Chaos66-dev)
+- [Landon Spencer](https://github.com/Landon-Spencer)
 
 
 
