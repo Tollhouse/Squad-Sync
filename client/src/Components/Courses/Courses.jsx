@@ -58,9 +58,7 @@ export default function Courses() {
                 <TableCell>{course.course_name}</TableCell>
                 <TableCell>{course.date_start}</TableCell>
                 <TableCell>{course.date_end}</TableCell>
-                <TableCell>
-                  {course.cert_granted ? "Yes" : "No"}
-                </TableCell>
+                <TableCell>{course.cert_granted}</TableCell>
               </TableRow>
             ))}
           </TableBody>

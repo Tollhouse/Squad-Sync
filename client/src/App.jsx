@@ -14,6 +14,7 @@ import Navbar from './Components/Navbar/Navbar.jsx'
 import User from './Components/User/User.jsx'
 import Commander from "../src/Components/Commander/Commander.jsx";
 import Courses from "./Components/Courses/Courses.jsx";
+import CourseReg from './Components/Courses/CourseRegistrations.jsx';
 import Dashboard from './Components/Dashboard/Dashboard.jsx';
 import NotFound from './Components/NotFound/NotFound.jsx'
 import {Paper, Switch} from '@mui/material'
@@ -59,6 +60,7 @@ export default function App() {
       <Route path='/user/:id' element={<User />}/>
       <Route path='/commander' element={<Commander />}/>
       <Route path='/courses' element={<Courses />}/>
+      <Route path='/course_registrations' element={<CourseReg />}/>
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
