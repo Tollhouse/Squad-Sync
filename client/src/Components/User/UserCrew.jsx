@@ -26,26 +26,23 @@ export default function UserCrew () {
   useEffect(() => {
     const fetchUserCrew = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/users/schedule/crew/${id}`);
+        const response = await fetch(`http://localhost:8080/users/schedule/${id}`);
         const data = await response.json();
 
         if (!data || (Array.isArray(data) && data.length === 0)) {
           setUserCrew([]);
           console.warn('No user data was found');
-        } else if (!Array.isArray(data)){
-          setUserCrew([data]);
         } else {
-          setUserCrew(data)
+          const crewData = data.find((crew) => crew.crewDates)?.crewDates || [];
+          setUserCrew(crewData);
         }
       } catch (err) {
         console.error('Error fetching user information:', err);
       }
     };
-
     fetchUserCrew();
   }, [id]);
 
-  console.log("userCrew:", userCrew)
 return (
 <Container maxWidth="md">
       <Box sx={{ mt: 4, textAlign: "center" }}>
@@ -69,11 +66,11 @@ return (
           <TableBody>
             {userCrew.map((crew) => (
               <TableRow key={crew.id}>
-                <TableCell>{crew.id}</TableCell>
+                <TableCell>{crew.crew_id}</TableCell>
                 <TableCell>{crew.crew_name}</TableCell>
                 <TableCell>{crew.role}</TableCell>
-                <TableCell>{crew.crew_start}</TableCell>
-                <TableCell>{crew.crew_end}</TableCell>
+                <TableCell>{crew.date_start}</TableCell>
+                <TableCell>{crew.date_end}</TableCell>
                 <TableCell>{crew.shift_type}</TableCell>
                 <TableCell>{crew.shift_duration}</TableCell>
               </TableRow>

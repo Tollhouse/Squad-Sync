@@ -24,7 +24,6 @@ router.get('/', async (req, res) => {
 });
 
 
-// get route to get the schedule of every user
 router.get("/schedule", async (req, res) => {
     let data = []
 
@@ -51,49 +50,41 @@ router.get("/schedule", async (req, res) => {
     catch (error){
         return res.status(500).json({ error: error });
     }
-
 });
 
 // get route to get the schedule of a specific user
-router.get("/schedule/course/:id", async (req, res) => {
-    const id = req.params.id
+router.get("/schedule/:id", async (req, res) => {
+    const id = parseInt(req.params.id)
+    let data = []
 
     try{
         let courseDates = await knex("users")
         .join('course_registration', 'users.id', 'user_id')
         .join('courses', 'courses.id', 'course_id')
-        .select('users.id as user_id','first_name','last_name','course_registration.id as registration_id' ,'course_id','course_name', 'cert_granted', 'date_start as course_start', 'date_end as course_end')
+        .select('users.id as user_id','first_name','last_name','course_registration.id as registration_id' ,'course_id','course_name', 'cert_granted', 'date_start', 'date_end')
         .select(knex.raw(`'courses' as source`))
         .orderBy('course_id')
         .where('users.id', id);
 
-        return res.status(200).json(courseDates)
-    }
-    catch (error){
-        return res.status(500).json({ error: error });
-    }
-});
-
-router.get("/schedule/crew/:id", async (req, res) => {
-    const id = req.params.id
-
-    try{
-
         let crewDates = await knex("users")
-        .leftJoin('crews', 'users.crew_id', 'crews.id')
-        .leftJoin('crew_rotations', 'crews.id', 'crew_rotations.crew_id')
-        .select('users.id as id', 'date_start as crew_start', 'date_end as crew_end', 'shift_type', 'shift_duration', 'role ', 'crew_name')
+        .join('crews', 'users.crew_id', 'crews.id')
+        .join('crew_rotations', 'crews.id', 'crew_rotations.crew_id')
+        .select('users.id as user_id','first_name', 'last_name','crews.id as crew_id', 'crew_name','crew_rotations.id as rotation_id','shift_type',  'date_start', 'date_end', 'shift_duration', 'role')
         .select(knex.raw(`'crews' as source`))
         .orderBy('rotation_id')
         .where('users.id', id);
-        return res.status(200).json(crewDates)
 
+        data.push({crewDates})
+        data.push({courseDates})
+
+        return res.status(200).json(data)
     }
     catch (error){
         return res.status(500).json({ error: error });
     }
 
 });
+
 
 router.get("/:id", async (req, res) => {
     const id = parseInt(req.params.id)

@@ -26,16 +26,15 @@ export default function UserCourse () {
   useEffect(() => {
     const fetchUserCourse = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/users/schedule/course/${id}`);
+        const response = await fetch(`http://localhost:8080/users/schedule/${id}`);
         const data = await response.json();
 
         if (!data || (Array.isArray(data) && data.length === 0)) {
           setUserCourse([]);
           console.warn('No user data was found');
-        } else if (!Array.isArray(data)){
-          setUserCourse([data]);
         } else {
-          setUserCourse(data)
+          const courseData = data.find((course) => course.courseDates)?.courseDates || [];
+          setUserCourse(courseData);
         }
       } catch (err) {
         console.error('Error fetching user information:', err);
@@ -45,7 +44,6 @@ export default function UserCourse () {
     fetchUserCourse();
   }, [id]);
 
-  console.log("userCourse:", userCourse)
 return (
 <Container maxWidth="md">
       <Box sx={{ mt: 4, textAlign: "center" }}>
@@ -66,12 +64,12 @@ return (
           </TableHead>
           <TableBody>
             {userCourse.map((course) => (
-              <TableRow key={course.registration_idid}>
+              <TableRow key={course.registration_id}>
                 <TableCell>{course.registration_id}</TableCell>
                 <TableCell>{course.course_name}</TableCell>
-                <TableCell>{course.course_start}</TableCell>
-                <TableCell>{course.course_end}</TableCell>
-                <TableCell>{course.cert_type}</TableCell>
+                <TableCell>{course.date_start}</TableCell>
+                <TableCell>{course.date_end}</TableCell>
+                <TableCell>{course.cert_granted}</TableCell>
               </TableRow>
             ))}
           </TableBody>
