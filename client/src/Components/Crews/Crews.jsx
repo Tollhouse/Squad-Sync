@@ -190,10 +190,12 @@ export default function Crews() {
   };
 
   const selectedCrew = crews.find((c) => c.id === selectedCrewId);
-  const crewWithRotations = crews.map((crew) => {
-    const rotation = rotations.find((r) => r.crew_id === crew.id);
-    return { ...crew, ...rotation };
-  });
+  const crewWithRotations = crews
+    .map((crew) => {
+      const rotation = rotations.find((r) => r.crew_id === crew.id);
+      return { ...crew, ...rotation };
+    })
+    .sort((a, b) => a.id - b.id);
 
   const usersByCrew = users.filter((u) => u.crew_id === selectedCrewId);
 
