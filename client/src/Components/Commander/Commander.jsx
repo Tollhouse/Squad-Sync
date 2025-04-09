@@ -24,10 +24,14 @@ import {
   Legend,
 } from "chart.js";
 import { useTheme } from "@mui/material/styles";
+import { useLocation } from "react-router-dom";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 export default function Commander() {
+  const location = useLocation();
+  const user = location.state?.user;
+
   const [users, setUsers] = useState([]);
   const [courses, setCourses] = useState([]);
   const [registrations, setRegistrations] = useState([]);
@@ -122,7 +126,7 @@ export default function Commander() {
     <Fade in={!loading}>
       <Container sx={{ mt: 4 }}>
         <Typography variant="h4" align="center" gutterBottom>
-          🧭 Commander Dashboard
+          🧭 Commander Dashboard — Welcome, {user?.first_name}!
         </Typography>
 
         {/* Summary Panel */}
