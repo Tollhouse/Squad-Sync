@@ -86,11 +86,20 @@ router.get("/schedule/:id", async (req, res) => {
 router.get("/:id", async (req, res) => {
     const id = parseInt(req.params.id)
     if(typeof id !== "number" || isNaN(id)){
-        res.status(400).json({ error: 'Invalid or missing request field. ID must match an id of user.' })
-        return
-    } else{
-        const user = await knex("users").select("*").where('id',id)
-        res.status(200).json(user)
+       return res.status(400).json({ error: 'Invalid or missing request field. ID must match an id of user.' })
+    }
+    try{
+      const user = await knex("users")
+      .join("crews", "users.crew_id", '=', "crews.id")
+      .select("users.id", "users.user_name", "users.first_name", "users.last_name", "users.crew_id", "users.role", "users.experience_type", "crews.crew_name")
+      .where("users.id", id).first()
+      if(!user) {
+        return res.status(404).json({ error: 'User not found.' })
+      }
+      res.status(200).json(user)
+    } catch (error) {
+        console.error('Error fetching user:', error);
+        res.status(500).json({ error: 'Internal Server Error'})
     }
 });
 

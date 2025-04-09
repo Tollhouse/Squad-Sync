@@ -1,0 +1,11 @@
+.user-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centers horizontally */
+  height: 100vh; /* Full viewport height */
+  text-align: center; /* Centers text inside elements */
+}
+
+.data-grid-container {
+  width: 80%;
+}

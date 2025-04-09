@@ -12,16 +12,10 @@ export default function Home() {
 
   return (
     <>
-      <h3> Welcome to Home Page </h3>
+      <h3> Welcome to Squad Sync</h3>
       <div className="NavContainer">
-        <div className="button">
-          <a href="/login" className="iconeLink">
-            <button className="iconButton"> User Log In</button>
-          </a>
-          <a href="/signup" className="iconeLink">
-            <button className="iconButton"> New User Sign up</button>
-          </a>
-        </div>
+
+        <p>Our app strives to provide a one stop, scalable solution that provides command and user dashboards for monitoring and tracking as well as the ability for the scheduling lead to easily track availability, monitor gaps in mission support and mitigate those issues within a combat reliable timeframe.</p>
 
         <div className="userStatus">
           {username ? <p> Welcome, {username}!</p> : <p> Guest </p>}
