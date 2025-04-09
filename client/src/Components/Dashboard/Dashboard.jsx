@@ -12,7 +12,7 @@ export default function Dashboard() {
       try {
         const res = await fetch(`http://localhost:8080/users/${userId}`);
         const data = await res.json();
-        const currentUser = data[0];
+        const currentUser = data;
         setUser(currentUser);
 
         if (currentUser.role === "Crew Commander") {
