@@ -22,8 +22,8 @@ import { ThemeProvider, createTheme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery';
 
 export default function App() {
-  const isAuthenticated = localStorage.getItem('session_id');
-  const username = localStorage.getItem('username');
+  // const isAuthenticated = localStorage.getItem('session_id');
+  // const username = localStorage.getItem('username');
 
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
   const [mode, setMode] = useState(prefersDarkMode);
@@ -51,7 +51,7 @@ export default function App() {
           onChange={handleChange}
           inputProps={{ "aria-label": "controlled" }}
         />
-    <Navbar isAuthenticated={isAuthenticated} username = {username}/>
+    <Navbar />
     <Routes>
       <Route path='/' element={<Home />}/>
       <Route path='/login' element={<Login />}/>
