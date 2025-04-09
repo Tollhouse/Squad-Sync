@@ -13,6 +13,8 @@ exports.up = function(knex) {
     table.foreign('crew_id').references('crews.id').onDelete('CASCADE');
     table.string('role').notNullable();
     table.string('experience_type').notNullable();
+    table.string('privilege').notNullable();
+    table.string('flight').notNullable();
   })
 };
 
