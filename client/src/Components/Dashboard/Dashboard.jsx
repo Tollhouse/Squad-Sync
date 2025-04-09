@@ -1,18 +1,30 @@
 import React, { useEffect, useState } from "react";
-import Commander from "../Commander/Commander";
-
+import { useNavigate } from "react-router-dom";
 
 export default function Dashboard() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const userId = localStorage.getItem("userId");
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function fetchUser() {
       try {
         const res = await fetch(`http://localhost:8080/users/${userId}`);
         const data = await res.json();
-        setUser(data[0]); // returns an array with one user
+        const currentUser = data[0];
+        setUser(currentUser);
+
+        if (currentUser.role === "Crew Commander") {
+          navigate("/commander", { state: { user: currentUser } });
+        } else if (currentUser.role === "Scheduler") {
+          navigate("/scheduler", { state: { user: currentUser } });
+        } else if (currentUser.role === "Training Manager") {
+          navigate("/training-manager", { state: { user: currentUser } });
+        } else {
+          navigate("/not-authorized");
+        }
+
         setLoading(false);
       } catch (err) {
         console.error("Failed to fetch user:", err);
@@ -21,19 +33,8 @@ export default function Dashboard() {
     }
 
     fetchUser();
-  }, [userId]);
+  }, [userId, navigate]);
 
   if (loading) return <p>Loading dashboard...</p>;
-  if (!user) return <p>User not found.</p>;
-
-  return (
-    <>
-      <h1 style={{ textAlign: "center" }}>Welcome, {user.first_name}!</h1>
-      {user.role === "Crew Commander" ? (
-        <Commander />
-      ) : (
-        <User userId={user.id} />
-      )}
-    </>
-  );
+  return null;
 }
