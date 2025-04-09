@@ -3,6 +3,8 @@
 import React, { useState, useEffect, useMemo } from 'react'
 import './User.css'
 import { useParams } from 'react-router-dom'
+import UserCourse from './UserCourse.jsx'
+import UserCrew from './UserCrew.jsx'
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import AddIcon from '@mui/icons-material/Add';
@@ -70,7 +72,7 @@ export default function User () {
       throw error
     }
   }
-  //HANDLES THE ROW EDIT STOP
+  //HANDLES WHEN USER IS DONE EDITING ROW
   const handleRowEditStop = (params, event) => {
     if (params.reason === GridRowEditStopReasons.rowFocusOut) {
       event.defaultMuiPrevented = true
@@ -146,7 +148,7 @@ export default function User () {
       }
     }
   ]
-  
+
   return (
 
     <div className='user-container'>
@@ -184,6 +186,8 @@ export default function User () {
           hideFooter={true}
           />
           </Box>
+          <UserCourse />
+          <UserCrew />
     </div>
   )
 }
