@@ -38,8 +38,9 @@ export default function Crews() {
   const [confirmUserSaveOpen, setConfirmUserSaveOpen] = useState(false);
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
   const [pendingDeleteId, setPendingDeleteId] = useState(null);
+  const [confirmRotationSaveOpen, setConfirmRotationSaveOpen] = useState(false);
+  const [pendingRotationId, setPendingRotationId] = useState(null);
 
-  // FOR TESTING ONLY - hardcoding priveleges to see output
   const [userPrivilege, setUserPrivilege] = useState("scheduler");
   const canEdit = userPrivilege === "scheduler";
   const canSeeExperience = ["commander", "scheduler"].includes(userPrivilege);
@@ -91,9 +92,14 @@ export default function Crews() {
     setEditedUser((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSave = async (id) => {
+  const handleSave = (id) => {
+    setPendingRotationId(id);
+    setConfirmRotationSaveOpen(true);
+  };
+
+  const confirmRotationSave = async () => {
     try {
-      const rotationRes = await fetch(`http://localhost:8080/crew_rotations/${id}`, {
+      const rotationRes = await fetch(`http://localhost:8080/crew_rotations/${pendingRotationId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(editedRow),
@@ -108,7 +114,7 @@ export default function Crews() {
 
       const updatedRotation = await rotationRes.json();
       setRotations((prev) =>
-        prev.map((r) => (r.id === id ? updatedRotation[0] : r))
+        prev.map((r) => (r.id === pendingRotationId ? updatedRotation[0] : r))
       );
       setCrews((prev) =>
         prev.map((c) =>
@@ -118,6 +124,8 @@ export default function Crews() {
       setEditingRowId(null);
     } catch (err) {
       console.error(err);
+    } finally {
+      setConfirmRotationSaveOpen(false);
     }
   };
 
@@ -188,7 +196,6 @@ export default function Crews() {
   });
 
   const usersByCrew = users.filter((u) => u.crew_id === selectedCrewId);
-
 
   return (
     <>
@@ -319,16 +326,20 @@ export default function Crews() {
         </>
       )}
     </Container>
+    <ConfirmSaveModal
+        open={confirmRotationSaveOpen}
+        onClose={() => setConfirmRotationSaveOpen(false)}
+        onConfirm={confirmRotationSave}
+      />
       <ConfirmSaveModal
-      open={confirmUserSaveOpen}
-      onClose={() => setConfirmUserSaveOpen(false)}
-      onConfirm={confirmUserSave}
-    />
-
-    <ConfirmDeleteModal
-      open={confirmDeleteOpen}
-      onClose={() => setConfirmDeleteOpen(false)}
-      onConfirm={confirmDelete}
+        open={confirmUserSaveOpen}
+        onClose={() => setConfirmUserSaveOpen(false)}
+        onConfirm={confirmUserSave}
+      />
+      <ConfirmDeleteModal
+        open={confirmDeleteOpen}
+        onClose={() => setConfirmDeleteOpen(false)}
+        onConfirm={confirmDelete}
     />
   </>
 );
