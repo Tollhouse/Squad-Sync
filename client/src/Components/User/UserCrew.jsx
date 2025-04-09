@@ -64,7 +64,8 @@ return (
             </TableRow>
           </TableHead>
           <TableBody>
-            {userCrew.map((crew) => (
+            {userCrew.length > 0? (
+              userCrew.map((crew) => (
               <TableRow key={crew.id}>
                 <TableCell>{crew.crew_id}</TableCell>
                 <TableCell>{crew.crew_name}</TableCell>
@@ -74,7 +75,14 @@ return (
                 <TableCell>{crew.shift_type}</TableCell>
                 <TableCell>{crew.shift_duration}</TableCell>
               </TableRow>
-            ))}
+            ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={7} align="center">
+                  You have not been assigned to a crew
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </TableContainer>

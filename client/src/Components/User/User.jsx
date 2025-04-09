@@ -5,6 +5,7 @@ import './User.css'
 import { useParams } from 'react-router-dom'
 import UserCourse from './UserCourse.jsx'
 import UserCrew from './UserCrew.jsx'
+import GanttChart from './GanttChart.jsx'
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import AddIcon from '@mui/icons-material/Add';
@@ -187,7 +188,8 @@ export default function User () {
           />
           </Box>
           <UserCourse />
-          <UserCrew />
+          <UserCrew /><br/>
+          <GanttChart />
     </div>
   )
 }

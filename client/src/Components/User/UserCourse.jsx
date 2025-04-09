@@ -28,7 +28,7 @@ export default function UserCourse () {
       try {
         const response = await fetch(`http://localhost:8080/users/schedule/${id}`);
         const data = await response.json();
-
+        
         if (!data || (Array.isArray(data) && data.length === 0)) {
           setUserCourse([]);
           console.warn('No user data was found');
@@ -46,7 +46,7 @@ export default function UserCourse () {
 
 return (
 <Container maxWidth="md">
-      <Box sx={{ mt: 4, textAlign: "center" }}>
+      <Box sx={{ mt: 4, textAlign: "center"}}>
         <Typography variant="h4" gutterBottom>
           Your Courses
         </Typography>
@@ -63,7 +63,8 @@ return (
             </TableRow>
           </TableHead>
           <TableBody>
-            {userCourse.map((course) => (
+            {userCourse.length > 0 ? (
+            userCourse.map((course) => (
               <TableRow key={course.registration_id}>
                 <TableCell>{course.registration_id}</TableCell>
                 <TableCell>{course.course_name}</TableCell>
@@ -71,7 +72,14 @@ return (
                 <TableCell>{course.date_end}</TableCell>
                 <TableCell>{course.cert_granted}</TableCell>
               </TableRow>
-            ))}
+             ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={7} align="center">
+                    You have no upcoming courses
+                  </TableCell>
+                </TableRow>
+              )}
           </TableBody>
         </Table>
       </TableContainer>
