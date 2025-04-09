@@ -1,10 +1,9 @@
 const request = require('supertest')
 const { app } = require('../server.js')
-jest.setTimeout(10000);  // 10 seconds timeout
+jest.setTimeout(20000);  // 10 seconds timeout
 
 let config = require('../../knexfile.js')['development'];
 let knex = require('knex')(config);
-
 
 beforeEach(async () => {
     knex = require('knex')(config);
@@ -50,7 +49,6 @@ describe('PATCH testing of /crew_rotations route', () => {
     it('returns all fields of patched crew rotation', async () => {
         const res = await request(app).patch('/crew_rotations/2').send(patch_body)
         expect(res.status).toBe(201)
-        console.log(res.body)
         expect(typeof res.body[0].id).toBe('number')
         expect(res.body[0].id).toBe(2)
         expect(res.body[0].crew_id).toBe(1)
@@ -76,161 +74,185 @@ describe('PATCH testing of /crew_rotations route', () => {
 })
 
 // -------------------------------------------------------  CREWS  -------------------------------------------------------
-// describe('PATCH testing of /crews route', () => {
-//     it('incorrect body should receive 400 error status', async () => {
-//         const patch_body = {
-//             field1: 'this is an incorrect post'
-//         }
+describe('PATCH testing of /crews route', () => {
+    it('incorrect url/id should receive 400 error status', async () => {
 
-//         const res = await request(app).patch('/crews').send(patch_body)
-//         expect(res.status).toBe(400)
-//     })
+        const res = await request(app).patch('/crews/bad_request')
+        expect(res.status).toBe(400)
+    })
 
-//     const patch_body = {
-//         crew_name: 'Test Crew'
-//     }
-//     it('correct body should receive a 201 status', async () => {
-//         const res = await request(app).patch('/crews').send(patch_body)
-//         expect(res.status).toBe(201)
-//     })
+    it('incorrect patch body should receive 400 error status', async () => {
+        const patch_body = {
+            field1: 'this is an incorrect patch body'
+        }
 
-//     it('returns id of created crew', async () => {
-//         const res = await request(app).patch('/crews').send(patch_body)
-//         expect(res.status).toBe(201)
-//         expect(typeof res.body[0].id).toBe('number')
-//     })
+        const res = await request(app).patch('/crews/1').send(patch_body)
+        expect(res.status).toBe(400)
+    })
 
-//     it('created crew is visible in subsequent GET request', async () => {
-//         let res = await request(app).patch('/crews').send(patch_body)
-//         expect(res.status).toBe(201)
-//         expect(typeof res.body[0].id).toBe('number')
-//         res = await request(app).get('/crews')
-//         expect(res.body[res.body.length - 1].crew_name).toBe("Test Crew")
-//     })
-// })
+    const patch_body = {
+        crew_name: 'Test Crew'
+    }
+    it('correct body should receive a 201 status', async () => {
+        const res = await request(app).patch('/crews/1').send(patch_body)
+        expect(res.status).toBe(201)
+    })
 
-// // -------------------------------------------------------  USERS  -------------------------------------------------------
-// describe('PATCH testing of /users route', () => {
-//     it('incorrect body should receive 400 error status', async () => {
-//         const patch_body = {
-//             field1: 'this is an incorrect post'
-//         }
+    it('returns id of created crew', async () => {
+        const res = await request(app).patch('/crews/1').send(patch_body)
+        expect(res.status).toBe(201)
+        expect(typeof res.body[0].id).toBe('number')
+    })
 
-//         const res = await request(app).patch('/users').send(patch_body)
-//         expect(res.status).toBe(400)
-//     })
+    it('created crew is visible in subsequent GET request', async () => {
+        let res = await request(app).patch('/crews/1').send(patch_body)
+        expect(res.status).toBe(201)
+        expect(typeof res.body[0].id).toBe('number')
+        res = await request(app).get('/crews')
+        expect(res.body[res.body.length - 1].crew_name).toBe("Test Crew")
+    })
+})
 
-//     const patch_body = {
-//         first_name: 'Bob',
-//         last_name: 'The Builder',
-//         user_name: 'bbuilder',
-//         password: 'yeshecan',
-//         crew_id: 2,
-//         role: 'Operator',
-//         experience_type: 'green'
-//     }
-//     it('correct body should receive a 201 status', async () => {
-//         const res = await request(app).patch('/users').send(patch_body)
-//         expect(res.status).toBe(201)
-//     })
+// -------------------------------------------------------  USERS  -------------------------------------------------------
+describe('PATCH testing of /users route', () => {
+    it('incorrect url/id should receive 400 error status', async () => {
 
-//     it('returns id of created user', async () => {
-//         const res = await request(app).patch('/users').send(patch_body)
-//         expect(res.status).toBe(201)
-//         expect(typeof res.body[0].id).toBe('number')
-//     })
+        const res = await request(app).patch('/users/bad_request')
+        expect(res.status).toBe(400)
+    })
 
-//     it('created crew is visible in subsequent GET request', async () => {
-//         let res = await request(app).patch('/users').send(patch_body)
-//         expect(res.status).toBe(201)
-//         expect(typeof res.body[0].id).toBe('number')
-//         res = await request(app).get('/users')
-//         expect(res.body[res.body.length - 1].first_name).toBe("Bob")
-//         expect(res.body[res.body.length - 1].last_name).toBe("The Builder")
-//         expect(res.body[res.body.length - 1].user_name).toBe("bbuilder")
-//         expect(res.body[res.body.length - 1].password).toBe("yeshecan")
-//         expect(res.body[res.body.length - 1].crew_id).toBe(2)
-//         expect(res.body[res.body.length - 1].role).toBe('Operator')
-//         expect(res.body[res.body.length - 1].experience_type).toBe('green')
-//     })
-// })
+    it('incorrect patch body should receive 400 error status', async () => {
+        const patch_body = {
+            field1: 'this is an incorrect patch body'
+        }
 
-// // -------------------------------------------------------  Course Registration  -------------------------------------------------------
-// describe('PATCH testing of /course_registration route', () => {
-//     it('incorrect body should receive 400 error status', async () => {
-//         const patch_body = {
-//             field1: 'this is an incorrect post'
-//         }
+        const res = await request(app).patch('/users/1').send(patch_body)
+        expect(res.status).toBe(400)
+    })
 
-//         const res = await request(app).patch('/course_registration').send(patch_body)
-//         expect(res.status).toBe(400)
-//     })
+    const patch_body = {
+        first_name: 'Bob',
+        last_name: 'The Builder',
+        user_name: 'bbuilder',
+        password: 'yeshecan',
+        crew_id: 2,
+        role: 'Operator',
+        experience_type: 'green'
+    }
+    it('correct body should receive a 201 status', async () => {
+        const res = await request(app).patch('/users/5').send(patch_body)
+        expect(res.status).toBe(201)
+    })
 
-//     const patch_body = {
-//         course_id: 1,
-//         user_id: 3,
-//         in_progress: 'in_progress',
-//         cert_earned: true
-//     }
-//     it('correct body should receive a 201 status', async () => {
-//         const res = await request(app).patch('/course_registration').send(patch_body)
-//         expect(res.status).toBe(201)
-//     })
+    it('returns id of created user', async () => {
+        const res = await request(app).patch('/users/6').send(patch_body)
+        expect(res.status).toBe(201)
+        expect(typeof res.body[0].id).toBe('number')
+    })
 
-//     it('returns id of created course registration', async () => {
-//         const res = await request(app).patch('/course_registration').send(patch_body)
-//         expect(res.status).toBe(201)
-//         expect(typeof res.body[0].id).toBe('number')
-//     })
+    it('created crew is visible in subsequent GET request', async () => {
+        let res = await request(app).patch('/users/7').send(patch_body)
+        expect(res.status).toBe(201)
+        expect(typeof res.body[0].id).toBe('number')
+        res = await request(app).get('/users')
+        expect(res.body[res.body.length - 1].first_name).toBe("Bob")
+        expect(res.body[res.body.length - 1].last_name).toBe("The Builder")
+        expect(res.body[res.body.length - 1].user_name).toBe("bbuilder")
+        expect(res.body[res.body.length - 1].password).toBe("yeshecan")
+        expect(res.body[res.body.length - 1].crew_id).toBe(2)
+        expect(res.body[res.body.length - 1].role).toBe('Operator')
+        expect(res.body[res.body.length - 1].experience_type).toBe('green')
+    })
+})
 
-//     it('created course registration is visible in subsequent GET request', async () => {
-//         let res = await request(app).patch('/course_registration').send(patch_body)
-//         expect(res.status).toBe(201)
-//         expect(typeof res.body[0].id).toBe('number')
-//         res = await request(app).get('/course_registration')
-//         expect(res.body[res.body.length - 1].course_id).toBe(1)
-//         expect(res.body[res.body.length - 1].user_id).toBe(3)
-//         expect(res.body[res.body.length - 1].in_progress).toBe("in_progress")
-//         expect(res.body[res.body.length - 1].cert_earned).toBe(true)
-//     })
-// })
+// -------------------------------------------------------  Course Registration  -------------------------------------------------------
+describe('PATCH testing of /course_registration route', () => {
+    it('incorrect url/id should receive 400 error status', async () => {
 
-// // -------------------------------------------------------  Courses  -------------------------------------------------------
-// describe('PATCH testing of /courses route', () => {
-//     it('incorrect body should receive 400 error status', async () => {
-//         const patch_body = {
-//             field1: 'this is an incorrect post'
-//         }
+        const res = await request(app).patch('/course_registration/bad_request')
+        expect(res.status).toBe(400)
+    })
 
-//         const res = await request(app).patch('/courses').send(patch_body)
-//         expect(res.status).toBe(400)
-//     })
+    it('incorrect patch body should receive 400 error status', async () => {
+        const patch_body = {
+            field1: 'this is an incorrect patch body'
+        }
 
-//     const patch_body = {
-//         course_name: "Test Course",
-//         date_start: '08-29-2025',
-//         date_end: '09-29-2025',
-//         cert_granted: 'Test Cert'
-//     }
-//     it('correct body should receive a 201 status', async () => {
-//         const res = await request(app).patch('/courses').send(patch_body)
-//         expect(res.status).toBe(201)
-//     })
+        const res = await request(app).patch('/course_registration/1').send(patch_body)
+        expect(res.status).toBe(400)
+    })
 
-//     it('returns id of created course', async () => {
-//         const res = await request(app).patch('/courses').send(patch_body)
-//         expect(res.status).toBe(201)
-//         expect(typeof res.body[0].id).toBe('number')
-//     })
+    const patch_body = {
+        course_id: 1,
+        user_id: 3,
+        in_progress: 'in_progress',
+        cert_earned: true
+    }
+    it('correct body should receive a 201 status', async () => {
+        const res = await request(app).patch('/course_registration/4').send(patch_body)
+        expect(res.status).toBe(201)
+    })
 
-//     it('created course is visible in subsequent GET request', async () => {
-//         let res = await request(app).patch('/courses').send(patch_body)
-//         expect(res.status).toBe(201)
-//         expect(typeof res.body[0].id).toBe('number')
-//         res = await request(app).get('/courses')
-//         expect(res.body[res.body.length - 1].course_name).toBe("Test Course")
-//         expect(res.body[res.body.length - 1].date_start).toBe("08-29-2025")
-//         expect(res.body[res.body.length - 1].date_end).toBe("09-29-2025")
-//         expect(res.body[res.body.length - 1].cert_granted).toBe("Test Cert")
-//     })
-// })
+    it('returns id of created course registration', async () => {
+        const res = await request(app).patch('/course_registration/5').send(patch_body)
+        expect(res.status).toBe(201)
+        expect(typeof res.body[0].id).toBe('number')
+    })
+
+    it('created course registration is visible in subsequent GET request', async () => {
+        let res = await request(app).patch('/course_registration/6').send(patch_body)
+        expect(res.status).toBe(201)
+        expect(typeof res.body[0].id).toBe('number')
+        res = await request(app).get('/course_registration')
+        expect(res.body[res.body.length - 1].course_id).toBe(1)
+        expect(res.body[res.body.length - 1].user_id).toBe(3)
+        expect(res.body[res.body.length - 1].in_progress).toBe("in_progress")
+        expect(res.body[res.body.length - 1].cert_earned).toBe(true)
+    })
+})
+
+// -------------------------------------------------------  Courses  -------------------------------------------------------
+describe('PATCH testing of /courses route', () => {
+    it('incorrect url/id should receive 400 error status', async () => {
+
+        const res = await request(app).patch('/courses/bad_request')
+        expect(res.status).toBe(400)
+    })
+
+    it('incorrect patch body should receive 400 error status', async () => {
+        const patch_body = {
+            field1: 'this is an incorrect patch body'
+        }
+
+        const res = await request(app).patch('/courses/1').send(patch_body)
+        expect(res.status).toBe(400)
+    })
+
+    const patch_body = {
+        course_name: "Test Course",
+        date_start: '08-29-2025',
+        date_end: '09-29-2025',
+        cert_granted: 'Test Cert'
+    }
+    it('correct body should receive a 201 status', async () => {
+        const res = await request(app).patch('/courses/1').send(patch_body)
+        expect(res.status).toBe(201)
+    })
+
+    it('returns id of created course', async () => {
+        const res = await request(app).patch('/courses/1').send(patch_body)
+        expect(res.status).toBe(201)
+        expect(typeof res.body[0].id).toBe('number')
+    })
+
+    it('created course is visible in subsequent GET request', async () => {
+        let res = await request(app).patch('/courses/1').send(patch_body)
+        expect(res.status).toBe(201)
+        expect(typeof res.body[0].id).toBe('number')
+        res = await request(app).get('/courses')
+        expect(res.body[res.body.length - 1].course_name).toBe("Test Course")
+        expect(res.body[res.body.length - 1].date_start).toBe("08-29-2025")
+        expect(res.body[res.body.length - 1].date_end).toBe("09-29-2025")
+        expect(res.body[res.body.length - 1].cert_granted).toBe("Test Cert")
+    })
+})

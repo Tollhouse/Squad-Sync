@@ -27,17 +27,19 @@ router.post("/", async (req, res) => {
 
 router.patch("/:id", async (req, res) => {
   const { crew_name } = req.body
+  const id = parseInt(req.params.id)
   if(crew_name.trim() == "" || typeof crew_name !== "string"){
     return res.status(400).json({ message: 'Submitted information is in the invalid format.' });
   }else{
     try{
       const user_input = await knex("crews")
-      .where('id',id)
-      .update({crew_name})
-      .returning("*")
+        .where('id',id)
+        .update({crew_name})
+        .returning("*")
       res.status(201).json(user_input)
     }catch (error){
-        return res.status(500).json({ error: 'Internal Server Error' });
+      console.log(error)
+      return res.status(500).json({ error: 'Internal Server Error' });
     }
   }
 })
