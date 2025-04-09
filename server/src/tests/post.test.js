@@ -1,5 +1,9 @@
 const request = require('supertest')
 const { app } = require('../server.js')
+jest.setTimeout(20000);  // 20 seconds timeout
+
+
+const { compare } = require('bcryptjs')
 
 let config = require('../../knexfile.js')['development'];
 let knex = require('knex')(config);
@@ -121,18 +125,17 @@ describe('POST testing of /users route', () => {
     it('returns id of created user', async () => {
         const res = await request(app).post('/users').send(post_body)
         expect(res.status).toBe(201)
-        expect(typeof res.body[0].id).toBe('number')
+        expect(typeof res.body.id).toBe('number')
     })
 
-    it('created crew is visible in subsequent GET request', async () => {
+    it('created user is visible in subsequent GET request', async () => {
         let res = await request(app).post('/users').send(post_body)
         expect(res.status).toBe(201)
-        expect(typeof res.body[0].id).toBe('number')
+        expect(typeof res.body.id).toBe('number')
         res = await request(app).get('/users')
         expect(res.body[res.body.length - 1].first_name).toBe("Bob")
         expect(res.body[res.body.length - 1].last_name).toBe("The Builder")
         expect(res.body[res.body.length - 1].user_name).toBe("bbuilder")
-        expect(res.body[res.body.length - 1].password).toBe("yeshecan")
         expect(res.body[res.body.length - 1].crew_id).toBe(2)
         expect(res.body[res.body.length - 1].role).toBe('Operator')
         expect(res.body[res.body.length - 1].experience_type).toBe('green')

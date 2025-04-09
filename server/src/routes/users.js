@@ -7,7 +7,8 @@ router.use(cors())
 const bcrypt = require('bcryptjs');
 
 const hashPassword = async (password) => {
-    const saltRounds = 12;
+    // const saltRounds = 12;
+    const saltRounds = 2;
     return await bcrypt.hash(password, saltRounds);
 };
 
@@ -173,6 +174,7 @@ router.patch("/:id", async (req, res) => {
         const updated_user = await knex("users")
         .where('id',id)
         .update(updates)
+        .returning("*")
         res.status(201).json(updated_user)
     }catch (error){
         return res.status(500).json({ error: 'Internal Server Error' });

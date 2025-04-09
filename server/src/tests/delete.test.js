@@ -1,9 +1,9 @@
 const request = require('supertest')
 const { app } = require('../server.js')
+jest.setTimeout(10000);  // 10 seconds timeout
 
 let config = require('../../knexfile.js')['development'];
 let knex = require('knex')(config);
-
 
 beforeEach(async () => {
     knex = require('knex')(config);

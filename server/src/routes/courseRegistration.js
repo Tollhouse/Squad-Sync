@@ -9,6 +9,17 @@ router.get("/", (req, res) => {
     .catch((err) => res.status(500).json({ error: err.message }));
 });
 
+router.get("/:id", async (req, res) => {
+  const id = parseInt(req.params.id)
+  if(typeof id !== "number" || isNaN(id)){
+      res.status(400).json({ error: 'Invalid or missing request field. ID must match an id of couse registration.' })
+      return
+  } else{
+      const course_reg = await knex("course_registation").select("*").where('id',id)
+      res.status(200).json(course_reg)
+  }
+});
+
 router.post("/", async (req, res) => {
   const { user_id, course_id, in_progress, cert_earned } = req.body
   if(
@@ -44,6 +55,7 @@ router.patch("/:id", async (req, res) => {
       const updated_course = await knex("course_registration")
       .where('id',id)
       .update(updates)
+      .returning("*")
       res.status(201).json(updated_course)
   }catch (error){
       return res.status(500).json({ error: 'Internal Server Error' });
