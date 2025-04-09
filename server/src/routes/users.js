@@ -30,16 +30,18 @@ router.get("/schedule", async (req, res) => {
 
     try{
         let courseDates = await knex("users")
-        .leftJoin('course_registration', 'users.id', 'user_id')
-        .leftJoin('courses', 'courses.id', 'course_id')
-        .select('users.id as id','course_id',  'date_start', 'date_end')
-        .select(knex.raw(`'courses' as source`));
+        .join('course_registration', 'users.id', 'user_id')
+        .join('courses', 'courses.id', 'course_id')
+        .select('users.id as user_id','first_name','last_name','course_registration.id as registration_id' ,'course_id','course_name', 'cert_granted', 'date_start', 'date_end')
+        .select(knex.raw(`'courses' as source`))
+        .orderBy('users.id');
 
         let crewDates = await knex("users")
-        .leftJoin('crews', 'users.crew_id', 'crews.id')
-        .leftJoin('crew_rotations', 'crews.id', 'crew_rotations.crew_id')
-        .select('users.id as id', 'date_start', 'date_end')
-        .select(knex.raw(`'crews' as source`));
+        .join('crews', 'users.crew_id', 'crews.id')
+        .join('crew_rotations', 'crews.id', 'crew_rotations.crew_id')
+        .select('users.id as user_id','first_name', 'last_name','crews.id as crew_id', 'crew_name','crew_rotations.id as rotation_id','shift_type',  'date_start', 'date_end')
+        .select(knex.raw(`'crews' as source`))
+        .orderBy('users.id');
 
         data.push({crewDates})
         data.push({courseDates})
@@ -59,17 +61,19 @@ router.get("/schedule/:id", async (req, res) => {
 
     try{
         let courseDates = await knex("users")
-        .leftJoin('course_registration', 'users.id', 'user_id')
-        .leftJoin('courses', 'courses.id', 'course_id')
-        .select('users.id as id','course_id',  'date_start', 'date_end')
+        .join('course_registration', 'users.id', 'user_id')
+        .join('courses', 'courses.id', 'course_id')
+        .select('users.id as user_id','first_name','last_name','course_registration.id as registration_id' ,'course_id','course_name', 'cert_granted', 'date_start', 'date_end')
         .select(knex.raw(`'courses' as source`))
+        .orderBy('course_id')
         .where('users.id', id);
 
         let crewDates = await knex("users")
-        .leftJoin('crews', 'users.crew_id', 'crews.id')
-        .leftJoin('crew_rotations', 'crews.id', 'crew_rotations.crew_id')
-        .select('users.id as id', 'date_start', 'date_end')
+        .join('crews', 'users.crew_id', 'crews.id')
+        .join('crew_rotations', 'crews.id', 'crew_rotations.crew_id')
+        .select('users.id as user_id','first_name', 'last_name','crews.id as crew_id', 'crew_name','crew_rotations.id as rotation_id','shift_type',  'date_start', 'date_end')
         .select(knex.raw(`'crews' as source`))
+        .orderBy('rotation_id')
         .where('users.id', id);
 
         data.push({crewDates})
@@ -127,9 +131,9 @@ router.post("/", async (req, res) => {
                     return res.status(404).json('Username already exists.')
                 } else {
                     return knex('users')
-                        .insert({first_name, last_name, user_name, password: hashedPassword, crew_id, role, experience_type}, ['id'])
-                        .then((id) => {
-                            return res.status(201).json({id: id[0].id, message: `Welcome ${first_name}, your username is ${user_name}.`})
+                        .insert({first_name, last_name, user_name, password: hashedPassword, crew_id, role, experience_type, privilege: 'user', flight: 'DOO'}, ['id', 'privilege'])
+                        .then((newUser) => {
+                            return res.status(201).json({id: newUser[0].id, privilege: newUser[0].privilege, message: `Welcome ${first_name}, your username is ${user_name}.`})
                         })
                         .catch(err => {
                             console.log(err);
@@ -155,9 +159,9 @@ router.post('/login', (req, res) => {
       } else {
         return bcrypt.compare(password, user[0].password)
         .then((matches) => {
-          return matches == true
-                  ? res.status(200).json({ message: 'Login successful', id: user[0].id })
-                  : res.status(401).json({ message: 'Password is incorrect.'})
+            return matches == true
+                ? res.status(200).json({ message: 'Login successful', id: user[0].id, privilege: user[0].privilege })
+                : res.status(401).json({ message: 'Password is incorrect.'})
         })
       }})
     .catch((err) => {
