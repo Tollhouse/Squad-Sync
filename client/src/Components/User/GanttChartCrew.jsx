@@ -111,7 +111,7 @@ export default function GanttChartCrew() {
           chartVersion='51'
         />
       ) : (
-        <p>No crew data available.</p>
+        <p>No crew data available</p>
       )}
       </div>
     </>

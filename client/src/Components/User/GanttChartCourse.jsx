@@ -20,7 +20,14 @@ export default function GanttChartCourse() {
         const ganttCrewData = crewDates.map((crew) => {
           const startDate = new Date(crew.date_start)
           const endDate = new Date(crew.date_end)
+
+          if (isNaN(startDate) || isNaN(endDate)) {
+            console.warn(`Invalid date for Crew-${crew.crew_id}:`, crew.date_start, crew.date_end);
+            return null; // Skip invalid rows
+          }
+
           const duration = Number((endDate - startDate) / (1000 * 60 * 60 * 24))
+
 
           return [
             `Crew-${crew.crew_id}`,
@@ -79,6 +86,7 @@ export default function GanttChartCourse() {
       <div>
         <h2>Course Chart</h2>
         {courseData.length > 0 ? (
+
           <Chart
             chartType="Gantt"
             width="1200px"
@@ -109,42 +117,13 @@ export default function GanttChartCourse() {
             }}
             chartVersion='51'
           />
+
         ) : (
-          <p>No course data available.</p>
+          <p>No course data available</p>
         )}
-        <Chart
-          chartType="Gantt"
-          width="1200px"
-          height="100px"
-          loader={<div>Loading Chart...</div>}
-          data={[
-            ["Task ID", "Task Name", "Start Date", "End Date", "Duration", "Percent Complete", "Dependencies"],
-            ...courseData,
-          ]}
-          options={{
-            backgroundColor:"#f4f4f4",
-            gantt: {
-              trackHeight: 40,
-              barHeight: 30,
-              palette: [
-                {
-                  color: '#1e88e5',
-                  dark: '#1565c0',
-                  light: '#bbdefb',
-                },
-                {
-                  color: '#43a047',
-                  dark: '#2e7d32',
-                  light: '#c8e6c9',
-                },
-              ],
-            },
-          }}
-          chartVersion='51'
-        />
-      </div>
+  </div>
     </>
-  );
+  )
 
 }
 
