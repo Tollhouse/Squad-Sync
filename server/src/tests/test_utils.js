@@ -3,6 +3,7 @@ function isValidObject(obj, keys, types) {
     if (keys.length !== types.length) return false;
 
     return keys.every((key, index) => {
+      // console.log(obj[key], types[index])
       return (
         Object.hasOwn(obj, key) &&
         typeof obj[key] === types[index]
