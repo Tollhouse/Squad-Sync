@@ -27,6 +27,7 @@ router.get("/", async (req, res) => {
 router.get("/schedule", async (req, res) => {
   let data = [];
 
+<<<<<<< HEAD
   try {
     let courseDates = await knex("users")
       .leftJoin("course_registration", "users.id", "user_id")
@@ -39,6 +40,22 @@ router.get("/schedule", async (req, res) => {
       .leftJoin("crew_rotations", "crews.id", "crew_rotations.crew_id")
       .select("users.id as id", "date_start", "date_end")
       .select(knex.raw(`'crews' as source`));
+=======
+    try{
+        let courseDates = await knex("users")
+        .join('course_registration', 'users.id', 'user_id')
+        .join('courses', 'courses.id', 'course_id')
+        .select('users.id as user_id','first_name','last_name','course_registration.id as registration_id' ,'course_id','course_name', 'cert_granted', 'date_start', 'date_end')
+        .select(knex.raw(`'courses' as source`))
+        .orderBy('users.id');
+
+        let crewDates = await knex("users")
+        .join('crews', 'users.crew_id', 'crews.id')
+        .join('crew_rotations', 'crews.id', 'crew_rotations.crew_id')
+        .select('users.id as user_id','first_name', 'last_name','crews.id as crew_id', 'crew_name','crew_rotations.id as rotation_id','shift_type',  'date_start', 'date_end')
+        .select(knex.raw(`'crews' as source`))
+        .orderBy('users.id');
+>>>>>>> front-end
 
     data.push({ crewDates });
     data.push({ courseDates });
@@ -54,6 +71,7 @@ router.get("/schedule/:id", async (req, res) => {
   const id = parseInt(req.params.id);
   let data = [];
 
+<<<<<<< HEAD
   try {
     let courseDates = await knex("users")
       .leftJoin("course_registration", "users.id", "user_id")
@@ -68,6 +86,24 @@ router.get("/schedule/:id", async (req, res) => {
       .select("users.id as id", "date_start", "date_end")
       .select(knex.raw(`'crews' as source`))
       .where("users.id", id);
+=======
+    try{
+        let courseDates = await knex("users")
+        .join('course_registration', 'users.id', 'user_id')
+        .join('courses', 'courses.id', 'course_id')
+        .select('users.id as user_id','first_name','last_name','course_registration.id as registration_id' ,'course_id','course_name', 'cert_granted', 'date_start', 'date_end')
+        .select(knex.raw(`'courses' as source`))
+        .orderBy('course_id')
+        .where('users.id', id);
+
+        let crewDates = await knex("users")
+        .join('crews', 'users.crew_id', 'crews.id')
+        .join('crew_rotations', 'crews.id', 'crew_rotations.crew_id')
+        .select('users.id as user_id','first_name', 'last_name','crews.id as crew_id', 'crew_name','crew_rotations.id as rotation_id','shift_type',  'date_start', 'date_end')
+        .select(knex.raw(`'crews' as source`))
+        .orderBy('rotation_id')
+        .where('users.id', id);
+>>>>>>> front-end
 
     data.push({ crewDates });
     data.push({ courseDates });
@@ -105,6 +141,7 @@ router.post("/", async (req, res) => {
   } = req.body;
   const hashedPassword = await hashPassword(password);
 
+<<<<<<< HEAD
   if (
     user_name.trim() == "" ||
     typeof user_name !== "string" ||
@@ -163,6 +200,41 @@ router.post("/", async (req, res) => {
         });
     } catch (error) {
       return res.status(500).json({ error: "Internal Server Error" });
+=======
+    if(
+        user_name.trim() == "" || typeof user_name !== "string" ||
+        first_name.trim() == "" || typeof first_name !== "string" ||
+        last_name.trim() == "" || typeof last_name !== "string" ||
+        password.trim() == "" || typeof password !== "string" ||
+        typeof crew_id !== "number" ||
+        role.trim() == "" || typeof role !== "string" ||
+        experience_type.trim() == "" || typeof experience_type !== "string"
+    ){
+        return res.status(400).json({ message: 'Submitted information is in the invalid format.' });
+    }else{
+        try{
+            knex('users')
+                .where('user_name', user_name)
+                .first()
+                .then(foundUser => {
+                if (foundUser) {
+                    return res.status(404).json('Username already exists.')
+                } else {
+                    return knex('users')
+                        .insert({first_name, last_name, user_name, password: hashedPassword, crew_id, role, experience_type, privilege: 'user', flight: 'DOO'}, ['id', 'privilege'])
+                        .then((newUser) => {
+                            return res.status(201).json({id: newUser[0].id, privilege: newUser[0].privilege, message: `Welcome ${first_name}, your username is ${user_name}.`})
+                        })
+                        .catch(err => {
+                            console.log(err);
+                            return res.status(500).json('Error creating user. Error: ' + err)
+                        })
+                }
+                })
+        }catch (error){
+            return res.status(500).json({ error: 'Internal Server Error' });
+        }
+>>>>>>> front-end
     }
   }
 });
@@ -177,6 +249,7 @@ router.post("/login", (req, res) => {
       if (user.length == 0) {
         return res.status(404).json({ message: "User not found." });
       } else {
+<<<<<<< HEAD
         return bcrypt.compare(password, user[0].password).then((matches) => {
           return matches == true
             ? res
@@ -185,6 +258,17 @@ router.post("/login", (req, res) => {
             : res.status(401).json({ message: "Password is incorrect." });
         });
       }
+=======
+        return bcrypt.compare(password, user[0].password)
+        .then((matches) => {
+            return matches == true
+                ? res.status(200).json({ message: 'Login successful', id: user[0].id, privilege: user[0].privilege })
+                : res.status(401).json({ message: 'Password is incorrect.'})
+        })
+      }})
+    .catch((err) => {
+      return res.status(500).json({message: 'Unable to get login information.', error: err})
+>>>>>>> front-end
     })
     .catch((err) => {
       return res
@@ -229,6 +313,7 @@ router.patch("/:id", async (req, res) => {
       (key) => updates[key] === undefined && delete updates[key]
     );
 
+<<<<<<< HEAD
     const updated_user = await knex("users")
       .where("id", id)
       .update(updates)
@@ -237,6 +322,16 @@ router.patch("/:id", async (req, res) => {
   } catch (error) {
     return res.status(500).json({ error: "Internal Server Error" });
   }
+=======
+        const updated_user = await knex("users")
+        .where('id',id)
+        .update(updates)
+        .returning("*")
+        res.status(201).json(updated_user)
+    }catch (error){
+        return res.status(500).json({ error: 'Internal Server Error' });
+    }
+>>>>>>> front-end
 });
 
 router.delete("/:id", async (req, res) => {
