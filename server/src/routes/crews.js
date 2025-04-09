@@ -49,7 +49,6 @@ router.patch("/:id", async (req, res) => {
         .returning("*")
       res.status(201).json(user_input)
     }catch (error){
-      console.log(error)
       return res.status(500).json({ error: 'Internal Server Error' });
     }
   }
