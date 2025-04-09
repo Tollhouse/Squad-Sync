@@ -1,6 +1,7 @@
 // code by lorena - styled with MUI
 
 import React, { useEffect, useState } from "react";
+import { ConfirmSaveModal, ConfirmDeleteModal } from "../Modals/ConfirmModal";
 import {
   Container,
   Box,
@@ -34,6 +35,9 @@ export default function Crews() {
   const [editedRow, setEditedRow] = useState({});
   const [editingUserId, setEditingUserId] = useState(null);
   const [editedUser, setEditedUser] = useState({});
+  const [confirmUserSaveOpen, setConfirmUserSaveOpen] = useState(false);
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
+  const [pendingDeleteId, setPendingDeleteId] = useState(null);
 
   // FOR TESTING ONLY - hardcoding priveleges to see output
   const [userPrivilege, setUserPrivilege] = useState("scheduler");
@@ -117,30 +121,44 @@ export default function Crews() {
     }
   };
 
-  const handleUserSave = async (id) => {
+  const handleUserSave = (id) => {
+    setConfirmUserSaveOpen(true);
+  };
+
+  const confirmUserSave = async () => {
     try {
-      const userRes = await fetch(`http://localhost:8080/users/${id}`, {
+      const userRes = await fetch(`http://localhost:8080/users/${editingUserId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(editedUser),
       });
       if (!userRes.ok) throw new Error("User update failed");
       const updatedUser = await userRes.json();
-      setUsers((prev) => prev.map((u) => (u.id === id ? updatedUser[0] : u)));
+      setUsers((prev) => prev.map((u) => (u.id === editingUserId ? updatedUser[0] : u)));
       setEditingUserId(null);
     } catch (err) {
       console.error(err);
+    } finally {
+      setConfirmUserSaveOpen(false);
     }
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = (id) => {
+    setPendingDeleteId(id);
+    setConfirmDeleteOpen(true);
+  };
+
+  const confirmDelete = async () => {
     try {
-      const res = await fetch(`http://localhost:8080/crew_rotations/${id}`, {
-        method: "DELETE" });
+      const res = await fetch(`http://localhost:8080/crew_rotations/${pendingDeleteId}`, {
+        method: "DELETE",
+      });
       if (!res.ok) throw new Error("Delete failed");
-      setRotations((prev) => prev.filter((r) => r.id !== id));
+      setRotations((prev) => prev.filter((r) => r.id !== pendingDeleteId));
     } catch (err) {
       console.error(err);
+    } finally {
+      setConfirmDeleteOpen(false);
     }
   };
 
@@ -171,7 +189,9 @@ export default function Crews() {
 
   const usersByCrew = users.filter((u) => u.crew_id === selectedCrewId);
 
+
   return (
+    <>
     <Container maxWidth="lg">
       <Box sx={{ mt: 4, textAlign: "center" }}>
         <Typography variant="h4">Crew Rotations</Typography>
@@ -299,5 +319,18 @@ export default function Crews() {
         </>
       )}
     </Container>
-  );
+      <ConfirmSaveModal
+      open={confirmUserSaveOpen}
+      onClose={() => setConfirmUserSaveOpen(false)}
+      onConfirm={confirmUserSave}
+    />
+
+    <ConfirmDeleteModal
+      open={confirmDeleteOpen}
+      onClose={() => setConfirmDeleteOpen(false)}
+      onConfirm={confirmDelete}
+    />
+  </>
+);
 }
+
