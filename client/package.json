@@ -20,8 +20,11 @@
     "@tanstack/react-router": "^1.115.2",
     "@tanstack/react-table": "^8.21.2",
     "@tanstack/react-virtual": "^3.13.6",
+    "chart.js": "^4.4.8",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-chartjs-2": "^5.3.0",
+    "react-dom": "^19.0.0",
+    "recharts": "^2.15.2"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.3.4",
