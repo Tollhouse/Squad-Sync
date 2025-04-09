@@ -108,11 +108,10 @@ export default function Scheduler() {
             <Typography variant="h6">🔜 Soon to be Certified</Typography>
             <ul>
               {registrations
-                .filter(
-                  (r) =>
-                    !r.cert_earned &&
-                    new Date(r.date_end) > new Date()
-                )
+                .filter((r) => {
+                  const course = courses.find((c) => c.id === r.course_id);
+                  return !r.cert_earned && course && new Date(course.date_end) > new Date();
+                })
                 .map((reg) => {
                   const user = users.find((u) => u.id === reg.user_id);
                   const course = courses.find((c) => c.id === reg.course_id);
@@ -121,11 +120,35 @@ export default function Scheduler() {
                     course && (
                       <li key={reg.id}>
                         {user.first_name} {user.last_name} — {course.course_name} by{" "}
-                        {new Date(reg.date_end).toLocaleDateString()}
+                        {new Date(course.date_end).toLocaleDateString()}
                       </li>
                     )
                   );
                 })}
+            </ul>
+          </Paper>
+        </Grid>
+
+        {/* Certified Members & Their Certifications */}
+        <Grid item xs={12}>
+          <Paper elevation={3} sx={{ p: 2 }}>
+            <Typography variant="h6">🛠 Certified Members & Their Certifications</Typography>
+            <ul>
+              {users.map((user) => {
+                const earnedCourses = registrations
+                  .filter((r) => r.user_id === user.id && r.cert_earned)
+                  .map((r) => {
+                    const course = courses.find((c) => c.id === r.course_id);
+                    return course ? course.course_name : null;
+                  })
+                  .filter(Boolean);
+
+                return earnedCourses.length > 0 ? (
+                  <li key={user.id}>
+                    <strong>{user.first_name} {user.last_name}</strong>: {earnedCourses.join(", ")}
+                  </li>
+                ) : null;
+              })}
             </ul>
           </Paper>
         </Grid>
