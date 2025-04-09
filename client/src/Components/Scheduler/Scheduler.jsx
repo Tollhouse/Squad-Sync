@@ -38,7 +38,7 @@ export default function Scheduler() {
 
   if (loading) return <Typography>Loading scheduler data...</Typography>;
 
-  // Step 2: Compute available users (not in a course or crew)
+  // 🧠 Compute available users (not in course or crew)
   const registeredUserIds = new Set(registrations.map((r) => r.user_id));
   const crewedUserIds = new Set(rotations.map((r) => r.user_id));
 
@@ -53,6 +53,7 @@ export default function Scheduler() {
       </Typography>
 
       <Grid container spacing={3}>
+        {/* Available Courses */}
         <Grid item xs={12} md={6}>
           <Paper elevation={3} sx={{ p: 2 }}>
             <Typography variant="h6">Available Courses</Typography>
@@ -64,6 +65,7 @@ export default function Scheduler() {
           </Paper>
         </Grid>
 
+        {/* Available Users */}
         <Grid item xs={12} md={6}>
           <Paper elevation={3} sx={{ p: 2 }}>
             <Typography variant="h6">Available for Course/Crew</Typography>
@@ -73,6 +75,57 @@ export default function Scheduler() {
                   {user.first_name} {user.last_name} — {user.role}
                 </li>
               ))}
+            </ul>
+          </Paper>
+        </Grid>
+
+        {/* Already Certified */}
+        <Grid item xs={12} md={6}>
+          <Paper elevation={3} sx={{ p: 2 }}>
+            <Typography variant="h6">🟢 Already Certified</Typography>
+            <ul>
+              {registrations
+                .filter((r) => r.cert_earned)
+                .map((reg) => {
+                  const user = users.find((u) => u.id === reg.user_id);
+                  const course = courses.find((c) => c.id === reg.course_id);
+                  return (
+                    user &&
+                    course && (
+                      <li key={reg.id}>
+                        {user.first_name} {user.last_name} — {course.course_name}
+                      </li>
+                    )
+                  );
+                })}
+            </ul>
+          </Paper>
+        </Grid>
+
+        {/* Soon-to-be Certified */}
+        <Grid item xs={12} md={6}>
+          <Paper elevation={3} sx={{ p: 2 }}>
+            <Typography variant="h6">🔜 Soon to be Certified</Typography>
+            <ul>
+              {registrations
+                .filter(
+                  (r) =>
+                    !r.cert_earned &&
+                    new Date(r.date_end) > new Date()
+                )
+                .map((reg) => {
+                  const user = users.find((u) => u.id === reg.user_id);
+                  const course = courses.find((c) => c.id === reg.course_id);
+                  return (
+                    user &&
+                    course && (
+                      <li key={reg.id}>
+                        {user.first_name} {user.last_name} — {course.course_name} by{" "}
+                        {new Date(reg.date_end).toLocaleDateString()}
+                      </li>
+                    )
+                  );
+                })}
             </ul>
           </Paper>
         </Grid>
