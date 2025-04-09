@@ -122,9 +122,9 @@ router.post("/", async (req, res) => {
                     return res.status(404).json('Username already exists.')
                 } else {
                     return knex('users')
-                        .insert({first_name, last_name, user_name, password: hashedPassword, crew_id, role, experience_type}, ['id'])
-                        .then((id) => {
-                            return res.status(201).json({id: id[0].id, message: `Welcome ${first_name}, your username is ${user_name}.`})
+                        .insert({first_name, last_name, user_name, password: hashedPassword, crew_id, role, experience_type, privilege: 'user', flight: 'DOO'}, ['id', 'privilege'])
+                        .then((newUser) => {
+                            return res.status(201).json({id: newUser[0].id, privilege: newUser[0].privilege, message: `Welcome ${first_name}, your username is ${user_name}.`})
                         })
                         .catch(err => {
                             console.log(err);
@@ -150,9 +150,9 @@ router.post('/login', (req, res) => {
       } else {
         return bcrypt.compare(password, user[0].password)
         .then((matches) => {
-          return matches == true
-                  ? res.status(200).json({ message: 'Login successful', id: user[0].id })
-                  : res.status(401).json({ message: 'Password is incorrect.'})
+            return matches == true
+                ? res.status(200).json({ message: 'Login successful', id: user[0].id, privilege: user[0].privilege })
+                : res.status(401).json({ message: 'Password is incorrect.'})
         })
       }})
     .catch((err) => {
