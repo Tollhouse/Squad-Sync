@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "dev": "node ./src/server.js",
-    "test": "jest"
+    "start": "npx knex migrate:rollback && npx knex migrate:latest && npx knex seed:run && nodemon ./src/server.js",
+    "test": "jest --watchAll --detectOpenHandles",
+    "test:coverage": "jest --coverage --runInBand --detectOpenHandles"
   },
   "repository": {
     "type": "git",
@@ -18,12 +20,14 @@
   },
   "homepage": "https://github.com/Tollhouse/Squad-Sync#readme",
   "dependencies": {
+    "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^5.1.0",
     "knex": "^3.1.0",
     "nodemon": "^3.1.9",
-    "pg": "^8.14.1"
+    "pg": "^8.14.1",
+    "util-deprecate": "^1.0.2"
   },
   "devDependencies": {
     "@faker-js/faker": "^9.6.0",
