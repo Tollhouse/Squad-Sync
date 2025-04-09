@@ -28,7 +28,7 @@ export default function UserCrew () {
   useEffect(() => {
     const fetchUserCrew = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/users/users/${id}`);
+        const response = await fetch(`http://localhost:8080/users/schedule/${id}`);
         const data = await response.json();
 
         if (!data || (Array.isArray(data) && data.length === 0)) {
@@ -46,6 +46,7 @@ export default function UserCrew () {
 
     fetchUserCrew();
   }, [id]);
+  console.log(userCrew)
 
   //HANDLES THE ROW MODES MODEL CHANGE
   const handleRowModesModelChange = (newRowModesModel) => {
@@ -54,13 +55,13 @@ export default function UserCrew () {
 
   //SETS UP THE COLUMNS FOR THE TABLE
   const columns = [
-    {field: 'id', headerName: 'ID', width: 150, editable: false},
-    {field: 'user_name', headerName: 'User Name', width: 150, editable: false},
-    {field: 'first_name', headerName: 'First Name', width: 150, editable: false},
-    {field: 'last_name', headerName: 'Last Name', width: 150, editable: false},
+    {field: 'id', headerName: 'Crew ID', width: 150, editable: false},
     {field: 'crew_name', headerName: 'Crew Name', width: 150, editable: false},
+    {field: 'date_start', headerName: 'Start Date', width: 150, editable: false},
+    {field: 'date_end', headerName: 'End Date', width: 150, editable: false},
+    {field: 'shift_type', headerName: 'Shift', width: 150, editable: false},
+    {field: 'shift_duration', headerName: 'Shift Length', width: 150, editable: false},
     {field: 'role', headerName: 'Crew Position', width: 150, editable: false},
-    {field: 'experience_type', headerName: 'Experience Level', width: 150, editable: false},
   ]
 
   return (
@@ -70,6 +71,7 @@ export default function UserCrew () {
         sx={{
           mt: 4,
           textAlign: 'center',
+          width:'90%',
           '& .actions': {
             color: 'text.secondary',
           },

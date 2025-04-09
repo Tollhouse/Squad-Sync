@@ -28,7 +28,7 @@ export default function UserCourse () {
   useEffect(() => {
     const fetchUserCourse = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/users/courses/${id}`);
+        const response = await fetch(`http://localhost:8080/users/schedule/${id}`);
         const data = await response.json();
 
         if (!data || (Array.isArray(data) && data.length === 0)) {
@@ -70,6 +70,7 @@ export default function UserCourse () {
         sx={{
           mt: 4,
           textAlign: 'center',
+          width:'90%',
           '& .actions': {
             color: 'text.secondary',
           },

@@ -20,7 +20,6 @@ import {
   GridRowEditStopReasons,
 } from '@mui/x-data-grid';
 
-
 export default function User () {
   const { id } = useParams()
   const [userInformation, setUserInformation] = useState([])
@@ -30,7 +29,7 @@ export default function User () {
   useEffect(() => {
     const fetchUserInformation = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/users/users/${id}`);
+        const response = await fetch(`http://localhost:8080/users/${id}`);
         const data = await response.json();
 
         if (!data || (Array.isArray(data) && data.length === 0)) {
@@ -52,7 +51,7 @@ export default function User () {
   //HANDLES UPDATING USER INFORMATION
   const updateUserInformation = async (newRow) => {
     try{
-      const response = await fetch(`http://localhost:8080/users/users/${newRow.id}`, {
+      const response = await fetch(`http://localhost:8080/users/${newRow.id}`, {
         method: 'PATCH',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(newRow),
@@ -163,6 +162,7 @@ export default function User () {
         sx={{
           mt: 4,
           textAlign: 'center',
+          width:'90%',
           '& .actions': {
             color: 'text.secondary',
           },
@@ -186,7 +186,7 @@ export default function User () {
           hideFooter={true}
           />
           </Box>
-          <UserCourse />
+          {/* <UserCourse /> */}
           <UserCrew />
     </div>
   )
