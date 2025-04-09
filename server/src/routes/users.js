@@ -7,8 +7,8 @@ router.use(cors())
 const bcrypt = require('bcryptjs');
 
 const hashPassword = async (password) => {
-    const saltRounds = 12;
-    // const saltRounds = 3;
+    // const saltRounds = 12;
+    const saltRounds = 2;
     return await bcrypt.hash(password, saltRounds);
 };
 
