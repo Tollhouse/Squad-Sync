@@ -12,17 +12,20 @@ export default function Dashboard() {
       try {
         const res = await fetch(`http://localhost:8080/users/${userId}`);
         const data = await res.json();
-        const currentUser = data;
-        setUser(currentUser);
+        setUser(data);
 
-        if (currentUser.role === "Crew Commander") {
-          navigate("/commander", { state: { user: currentUser } });
-        } else if (currentUser.role === "Scheduler") {
-          navigate("/scheduler", { state: { user: currentUser } });
-        } else if (currentUser.role === "Training Manager") {
-          navigate("/training-manager", { state: { user: currentUser } });
-        } else {
-          navigate("/not-authorized");
+        switch (data.privilege) {
+          case "commander":
+            navigate("/commander", { state: { user: data } });
+            break;
+          case "scheduler":
+            navigate("/scheduler", { state: { user: data } });
+            break;
+          case "training_manager":
+            navigate("/training-manager", { state: { user: data } });
+            break;
+          default:
+            navigate("/not-authorized");
         }
 
         setLoading(false);

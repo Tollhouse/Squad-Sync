@@ -55,26 +55,28 @@ export default function Login() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      const response = await fetch("http://localhost:8080/users");
-      const users = await response.json();
+      const res = await fetch("http://localhost:8080/users/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          user_name: formData.username,
+          password: formData.password,
+        }),
+      });
   
-      const match = users.find(
-        (u) =>
-          u.user_name.toLowerCase() === formData.username.toLowerCase() &&
-          u.password === formData.password
-      );
+      const data = await res.json();
   
-      if (!match) {
-        throw new Error("Invalid credentials");
+      if (!res.ok) {
+        throw new Error(data.message || "Login failed");
       }
   
-      // ✅ Save more useful info for later dashboard logic
-      localStorage.setItem("username", match.user_name);
-      localStorage.setItem("userId", match.id);
-      localStorage.setItem("userRole", match.role);
+      // Save user ID and role for redirection
+      localStorage.setItem("username", formData.username);
+      localStorage.setItem("userId", data.id);
+      localStorage.setItem("userRole", data.privilege); 
   
       alert("Login successful!");
-      navigate("/Dashboard"); // or wherever you route after login
+      navigate("/Dashboard");
     } catch (err) {
       setError("Invalid username or password");
     }
