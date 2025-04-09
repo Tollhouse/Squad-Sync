@@ -5,7 +5,8 @@ import './User.css'
 import { useParams } from 'react-router-dom'
 import UserCourse from './UserCourse.jsx'
 import UserCrew from './UserCrew.jsx'
-import GanttChart from './GanttChart.jsx'
+import GanttChartCourse from './GanttChartCourse.jsx'
+import GanttChartCrew from './GanttChartCrew.jsx'
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import AddIcon from '@mui/icons-material/Add';
@@ -187,9 +188,11 @@ export default function User () {
           hideFooter={true}
           />
           </Box>
+          <GanttChartCourse />
           <UserCourse />
-          <UserCrew /><br/>
-          <GanttChart />
+          <GanttChartCrew />
+          <UserCrew />
+
     </div>
   )
 }
