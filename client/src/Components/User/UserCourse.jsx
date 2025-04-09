@@ -1,34 +1,32 @@
 //Authored by Curtis
 //This is incomplete, need enpoints from the backend for the PATCH
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useState, useEffect } from 'react'
 import './User.css'
 import { useParams } from 'react-router-dom'
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import AddIcon from '@mui/icons-material/Add';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/DeleteOutlined';
-import SaveIcon from '@mui/icons-material/Save';
-import CancelIcon from '@mui/icons-material/Close';
 import {
-  GridRowModes,
-  DataGrid,
-  GridToolbarContainer,
-  GridActionsCellItem,
-  GridRowEditStopReasons,
-} from '@mui/x-data-grid';
+  Container,
+  Typography,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Box
+} from "@mui/material";
 
 
 export default function UserCourse () {
   const { id } = useParams()
   const [userCourse, setUserCourse] = useState([])
-  const [rowModesModel, setRowModesModel] = useState({})
+
 
   //HANDLES GETTING USER INFORMATION
   useEffect(() => {
     const fetchUserCourse = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/users/schedule/${id}`);
+        const response = await fetch(`http://localhost:8080/users/schedule/course/${id}`);
         const data = await response.json();
 
         if (!data || (Array.isArray(data) && data.length === 0)) {
@@ -47,52 +45,39 @@ export default function UserCourse () {
     fetchUserCourse();
   }, [id]);
 
-  //HANDLES THE ROW MODES MODEL CHANGE
-  const handleRowModesModelChange = (newRowModesModel) => {
-    setRowModesModel(newRowModesModel)
-  }
+  console.log("userCourse:", userCourse)
+return (
+<Container maxWidth="md">
+      <Box sx={{ mt: 4, textAlign: "center" }}>
+        <Typography variant="h4" gutterBottom>
+          Your Courses
+        </Typography>
+      </Box>
+      <TableContainer component={Paper} sx={{ mt: 2 }}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Course ID</TableCell>
+              <TableCell>Course Name</TableCell>
+              <TableCell>Start Date</TableCell>
+              <TableCell>End Date</TableCell>
+              <TableCell>Certification Awarded</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {userCourse.map((course) => (
+              <TableRow key={course.registration_idid}>
+                <TableCell>{course.registration_id}</TableCell>
+                <TableCell>{course.course_name}</TableCell>
+                <TableCell>{course.course_start}</TableCell>
+                <TableCell>{course.course_end}</TableCell>
+                <TableCell>{course.cert_type}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Container>
 
-  //SETS UP THE COLUMNS FOR THE TABLE
-  const columns = [
-    {field: 'id', headerName: 'ID', width: 150, editable: false},
-    {field: 'user_name', headerName: 'User Name', width: 150, editable: false},
-    {field: 'first_name', headerName: 'First Name', width: 150, editable: false},
-    {field: 'last_name', headerName: 'Last Name', width: 150, editable: false},
-    {field: 'crew_name', headerName: 'Crew Name', width: 150, editable: false},
-    {field: 'role', headerName: 'Crew Position', width: 150, editable: false},
-    {field: 'experience_type', headerName: 'Experience Level', width: 150, editable: false},
-  ]
-
-  return (
-  <>
-    <div className='user-container'>
-      <Box
-        sx={{
-          mt: 4,
-          textAlign: 'center',
-          width:'90%',
-          '& .actions': {
-            color: 'text.secondary',
-          },
-          '&.textPrimary': {
-            color: 'text.primary',
-          },
-        }}
-        >
-        <DataGrid
-          rows={userCourse}
-          columns={columns}
-          getRowId={(row) => row.id}
-          rowModesModel={rowModesModel}
-          onRowModesModelChange={handleRowModesModelChange}
-          processRowUpdate={(newRow) => updateUserCourse(newRow)}
-          onProcessRowUpdateError={(error) => {
-            console.error('Error during row update:', error)
-          }}
-          hideFooter={true}
-          />
-          </Box>
-    </div>
-    </>
   )
 }

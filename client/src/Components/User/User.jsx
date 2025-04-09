@@ -154,7 +154,7 @@ export default function User () {
       <div className='header'>
         {userInformation.map((user) => (
           <div key={user.id}>
-            <h1>Welcome, {user.first_name} {user.last_name}!</h1>
+            <h1>{user.first_name} {user.last_name}</h1>
           </div>
         ))}
       </div>
@@ -186,7 +186,7 @@ export default function User () {
           hideFooter={true}
           />
           </Box>
-          {/* <UserCourse /> */}
+          <UserCourse />
           <UserCrew />
     </div>
   )
