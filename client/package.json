@@ -20,7 +20,7 @@
     "@tanstack/react-router": "^1.115.2",
     "@tanstack/react-table": "^8.21.2",
     "@tanstack/react-virtual": "^3.13.6",
-    "chart.js": "^4.4.8",\
+    "chart.js": "^4.4.8",
     "latest": "^0.2.0",
     "n": "^10.1.0",
     "node": "^23.11.0",
