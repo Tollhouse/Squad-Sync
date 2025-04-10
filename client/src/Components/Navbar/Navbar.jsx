@@ -65,6 +65,13 @@ function Navbar() {
         roleBasedButtons = (
           <>
           <Button
+            key="dashboard"
+            onClick={() => navigate('/scheduler')} // or '/scheduler-dashboard', depending on the route
+            sx={{ my: 2, color: 'white', display: 'block' }}
+          >
+            Dashboard
+          </Button>
+          <Button
             key="mySchedule"
             onClick={() => navigate(`/user/${userId}`)}
             sx={{ my: 2, color: 'white', display: 'block' }}

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Crews from '../Crews/Crews';
 import { Box, Typography, Grid, Paper, Divider } from "@mui/material";
-import SchoolIcon from '@mui/icons-material/School';
 import GroupIcon from '@mui/icons-material/Group';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import HourglassTopIcon from '@mui/icons-material/HourglassTop';
@@ -52,6 +51,25 @@ export default function Scheduler() {
 
   const soonToBeCertifiedSet = new Set(); // for duplicate filtering
 
+  // Function to calculate how many days until certification
+  const calculateDaysUntilCertification = (certDate) => {
+    const today = new Date();
+    return Math.ceil((new Date(certDate) - today) / (1000 * 3600 * 24));
+  };
+
+  // Sorting certifications by due date
+  const upcomingCertifications = registrations
+    .filter((r) => {
+      const course = courses.find((c) => c.id === r.course_id);
+      return course && !r.cert_earned && new Date(course.date_end) > new Date();
+    })
+    .map((r) => {
+      const user = users.find((u) => u.id === r.user_id);
+      const course = courses.find((c) => c.id === r.course_id);
+      return { user, course, daysLeft: calculateDaysUntilCertification(course.date_end) };
+    })
+    .sort((a, b) => a.daysLeft - b.daysLeft);
+
   return (
     <Box p={4}>
       <Typography variant="h4" gutterBottom sx={{ textAlign: "center", fontWeight: 700 }}>
@@ -59,20 +77,7 @@ export default function Scheduler() {
       </Typography>
 
       <Grid container spacing={3}>
-        {/* Available Courses */}
-        <Grid item xs={12} md={3}>
-          <Paper elevation={3} sx={{ p: 2, minHeight: 350 }}>
-            <Typography variant="h6"><SchoolIcon sx={{ mr: 1 }} />Available Courses</Typography>
-            <Divider sx={{ my: 1 }} />
-            <ul>
-              {courses.map((course) => (
-                <li key={course.id}>{course.course_name}</li>
-              ))}
-            </ul>
-          </Paper>
-        </Grid>
-
-        {/* Available Users */}
+        {/* Available Members for Crews */}
         <Grid item xs={12} md={3}>
           <Paper elevation={3} sx={{ p: 2, minHeight: 350, overflowY: 'auto' }}>
             <Typography variant="h6"><GroupIcon sx={{ mr: 1 }} />Available for Course/Crew</Typography>
@@ -90,7 +95,31 @@ export default function Scheduler() {
           </Paper>
         </Grid>
 
-        {/* Already Certified */}
+        {/* Upcoming Certifications */}
+        <Grid item xs={12} md={3}>
+          <Paper elevation={3} sx={{ p: 2, minHeight: 350, overflowY: 'auto' }}>
+            <Typography variant="h6"><HourglassTopIcon sx={{ mr: 1 }} />Soon to be Certified</Typography>
+            <Divider sx={{ my: 1 }} />
+            <ul>
+              {upcomingCertifications.map(({ user, course, daysLeft }, index) => {
+                // Urgency coloring based on days until certification
+                let urgencyColor = 'inherit';
+                if (daysLeft <= 7) urgencyColor = 'red';
+                else if (daysLeft <= 10) urgencyColor = 'orange';
+
+                return (
+                  <li key={index} style={{ color: urgencyColor }}>
+                    {user.first_name} {user.last_name} — {course.course_name} by{" "}
+                    {new Date(course.date_end).toLocaleDateString()}{" "}
+                    {daysLeft <= 7 && <span style={{ fontWeight: 'bold' }}>⚠️ Urgent!</span>}
+                  </li>
+                );
+              })}
+            </ul>
+          </Paper>
+        </Grid>
+
+        {/* Certified Members */}
         <Grid item xs={12} md={3}>
           <Paper elevation={3} sx={{ p: 2, minHeight: 350, overflowY: 'auto' }}>
             <Typography variant="h6"><CheckCircleIcon sx={{ mr: 1 }} />Already Certified</Typography>
@@ -106,40 +135,6 @@ export default function Scheduler() {
                     course && (
                       <li key={reg.id}>
                         {user.first_name} {user.last_name} — {course.course_name}
-                      </li>
-                    )
-                  );
-                })}
-            </ul>
-          </Paper>
-        </Grid>
-
-        {/* Soon to be Certified */}
-        <Grid item xs={12} md={3}>
-          <Paper elevation={3} sx={{ p: 2, minHeight: 350, overflowY: 'auto' }}>
-            <Typography variant="h6"><HourglassTopIcon sx={{ mr: 1 }} />Soon to be Certified</Typography>
-            <Divider sx={{ my: 1 }} />
-            <ul>
-              {registrations
-                .filter((r) => {
-                  const course = courses.find((c) => c.id === r.course_id);
-                  return (
-                    !r.cert_earned &&
-                    course &&
-                    new Date(course.date_end) > new Date() &&
-                    !soonToBeCertifiedSet.has(`${r.user_id}-${r.course_id}`) &&
-                    soonToBeCertifiedSet.add(`${r.user_id}-${r.course_id}`)
-                  );
-                })
-                .map((reg) => {
-                  const user = users.find((u) => u.id === reg.user_id);
-                  const course = courses.find((c) => c.id === reg.course_id);
-                  return (
-                    user &&
-                    course && (
-                      <li key={reg.id}>
-                        {user.first_name} {user.last_name} — {course.course_name} by{" "}
-                        {new Date(course.date_end).toLocaleDateString()}
                       </li>
                     )
                   );
