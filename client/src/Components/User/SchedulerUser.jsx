@@ -19,6 +19,7 @@ export default function SchedulerUser () {
   const { id } = useParams()
   const [userInformation, setUserInformation] = useState([])
   const [rowModesModel, setRowModesModel] = useState({})
+  const [search, setSearch] = useState('')
 
   //HANDLES GETTING USER INFORMATION
   useEffect(() => {
@@ -223,9 +224,30 @@ export default function SchedulerUser () {
     }
   ]
 
+  const filteredRows = userInformation.filter((row) =>
+    Object.values(row).some((value) =>
+      String(value).toLowerCase().includes(search.toLowerCase())
+    )
+  );
+
   return (
 
     <div className='user-container'>
+      <div className='search-container'>
+        <input
+          type='text'
+          placeholder='Search for member...'
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          style={{
+            marginTop: '20px',
+            padding: '8px',
+            width: '250px',
+            border: '1px solid #ccc',
+            borderRadius: '4px',
+          }}
+          />
+      </div>
       <Box
         sx={{
           mt: 4,
@@ -240,7 +262,7 @@ export default function SchedulerUser () {
         }}
         >
         <DataGrid
-          rows={userInformation}
+          rows={filteredRows}
           columns={columns}
           getRowId={(row) => `${row.id}-${row.flight}-${row.crew_name}`}
           editMode='row'
