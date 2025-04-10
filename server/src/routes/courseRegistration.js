@@ -51,6 +51,9 @@ router.patch("/:id", async (req, res) => {
       const { user_id, course_id, in_progress, cert_earned } = req.body;
       const updates = { user_id, course_id, in_progress, cert_earned };
       Object.keys(updates).forEach(key => updates[key] === undefined && delete updates[key]);
+      if (Object.keys(updates).length == 0) {
+        return res.status(400).json({error: 'Must include at least one valid field to patch'})
+      }
 
       const updated_course = await knex("course_registration")
       .where('id',id)

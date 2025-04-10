@@ -32,13 +32,13 @@ router.get("/:id", async (req, res) => {
 
 router.post("/", async (req, res) => {
   const { crew_id, date_start, date_end, shift_type, shift_duration, experience_type } = req.body
-  if(
-      isNaN(Date.parse(date_start)) || typeof date_start !== "string" ||
-      isNaN(Date.parse(date_end)) || typeof date_end !== "string" ||
-      shift_type.trim() == "" || typeof shift_type !== "string" ||
-      typeof shift_duration !== "number" ||
-      typeof crew_id !== "number" ||
-      experience_type == "" || typeof experience_type !== "string"
+  if (
+    typeof crew_id !== "number" ||
+    typeof shift_duration !== "number" ||
+    typeof date_start !== "string" || isNaN(Date.parse(date_start)) ||
+    typeof date_end !== "string" || isNaN(Date.parse(date_end)) ||
+    typeof shift_type !== "string" || shift_type.trim() === "" ||
+    typeof experience_type !== "string" || experience_type.trim() === ""
   ){
       return res.status(400).json({ message: 'Submitted information is in the invalid format.' });
   }else{
@@ -70,6 +70,9 @@ router.patch("/:id", async (req, res) => {
       const { crew_id, date_start, date_end, shift_type, shift_duration, experience_type } = req.body;
       const updates = { crew_id, date_start, date_end, shift_type, shift_duration, experience_type };
       Object.keys(updates).forEach(key => updates[key] === undefined && delete updates[key]);
+      if (Object.keys(updates).length == 0) {
+        return res.status(400).json({error: 'Must include at least one valid field to patch'})
+      }
 
       const updated_crew = await knex("crew_rotations")
                                       .where('id',id)

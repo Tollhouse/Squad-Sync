@@ -103,7 +103,7 @@ describe('GET /crews/:id' , () => {
     it('should return a 200 status and a message if id was not found in the table', async () => {
       const res = await request(app).get('/crews/100000')
       expect(res.status).toBe(200)
-      expect(res.body.message).toBe('No matching crew found with id 10000.')
+      expect(res.body.message).toBe('No matching crew found with id 100000.')
     })
 
     it('should return an array of one object when correct id is supplied' , async () => {
