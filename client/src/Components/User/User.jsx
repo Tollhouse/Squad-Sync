@@ -3,21 +3,20 @@
 import React, { useState, useEffect, useMemo } from 'react'
 import './User.css'
 import { useParams } from 'react-router-dom'
+import UserCourse from './UserCourse.jsx'
+import UserCrew from './UserCrew.jsx'
+import GanttChartCourse from './GanttChartCourse.jsx'
+import GanttChartCrew from './GanttChartCrew.jsx'
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Close';
 import {
   GridRowModes,
   DataGrid,
-  GridToolbarContainer,
   GridActionsCellItem,
   GridRowEditStopReasons,
 } from '@mui/x-data-grid';
-
 
 export default function User () {
   const { id } = useParams()
@@ -28,7 +27,7 @@ export default function User () {
   useEffect(() => {
     const fetchUserInformation = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/users/users/${id}`);
+        const response = await fetch(`http://localhost:8080/users/${id}`);
         const data = await response.json();
 
         if (!data || (Array.isArray(data) && data.length === 0)) {
@@ -50,7 +49,7 @@ export default function User () {
   //HANDLES UPDATING USER INFORMATION
   const updateUserInformation = async (newRow) => {
     try{
-      const response = await fetch(`http://localhost:8080/users/users/${newRow.id}`, {
+      const response = await fetch(`http://localhost:8080/users/${newRow.id}`, {
         method: 'PATCH',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(newRow),
@@ -70,7 +69,7 @@ export default function User () {
       throw error
     }
   }
-  //HANDLES THE ROW EDIT STOP
+  //HANDLES WHEN USER IS DONE EDITING ROW
   const handleRowEditStop = (params, event) => {
     if (params.reason === GridRowEditStopReasons.rowFocusOut) {
       event.defaultMuiPrevented = true
@@ -105,8 +104,33 @@ export default function User () {
     {field: 'first_name', headerName: 'First Name', width: 150, editable: true},
     {field: 'last_name', headerName: 'Last Name', width: 150, editable: true},
     {field: 'crew_name', headerName: 'Crew Name', width: 150, editable: false},
-    {field: 'role', headerName: 'Crew Position', width: 150, editable: false},
-    {field: 'experience_type', headerName: 'Experience Level', width: 150, editable: false},
+    {field: 'role', headerName: 'Position', width: 150, editable: false},
+    {field: 'experience_type',
+      headerName: 'Experience Level',
+      width: 150,
+      editable: false,
+      renderCell: (params) => {
+        let backgroundColor = 'white';
+        let textColor = 'black';
+        if(params.value === 'red'){
+          backgroundColor = 'red';
+          textColor = 'white';
+        } else if (params.value === 'yellow'){
+          backgroundColor = 'yellow';
+          textColor = 'black';
+        } else if( params.value === 'green'){
+          backgroundColor = 'green';
+          textColor = 'white';
+        }
+        return (
+          <div style={{backgroundColor,
+          color: textColor,
+          padding: '5px',
+          textAlign: 'center',}}>
+            {params.value}
+          </div>
+        )
+      }},
     {
       field: 'actions',
       type: 'actions',
@@ -146,14 +170,14 @@ export default function User () {
       }
     }
   ]
-  
+// console.log("userInformation:", userInformation)
   return (
 
     <div className='user-container'>
       <div className='header'>
         {userInformation.map((user) => (
           <div key={user.id}>
-            <h1>Welcome, {user.first_name} {user.last_name}!</h1>
+            <h1>{user.first_name} {user.last_name}</h1>
           </div>
         ))}
       </div>
@@ -161,6 +185,7 @@ export default function User () {
         sx={{
           mt: 4,
           textAlign: 'center',
+          width:'90%',
           '& .actions': {
             color: 'text.secondary',
           },
@@ -184,6 +209,11 @@ export default function User () {
           hideFooter={true}
           />
           </Box>
+          <GanttChartCourse />
+          <UserCourse />
+          <GanttChartCrew />
+          <UserCrew />
+
     </div>
   )
 }

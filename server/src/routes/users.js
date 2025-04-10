@@ -1,4 +1,4 @@
-const cors = require('cors');
+const cors = require("cors");
 const express = require("express");
 const router = express.Router();
 const knex = require("knex")(require("../../knexfile")["development"]);
@@ -19,7 +19,11 @@ router.get("/", (req, res) => {
       .catch((err) => res.status(500).json({ error: err.message }));
 });
 
-// get route to get the schedule of every user
+router.get('/', async (req, res) => {
+    res.status(200).json({message:"Working route."})
+});
+
+
 router.get("/schedule", async (req, res) => {
     let data = []
 
@@ -46,7 +50,6 @@ router.get("/schedule", async (req, res) => {
     catch (error){
         return res.status(500).json({ error: error });
     }
-
 });
 
 // get route to get the schedule of a specific user
@@ -66,7 +69,7 @@ router.get("/schedule/:id", async (req, res) => {
         let crewDates = await knex("users")
         .join('crews', 'users.crew_id', 'crews.id')
         .join('crew_rotations', 'crews.id', 'crew_rotations.crew_id')
-        .select('users.id as user_id','first_name', 'last_name','crews.id as crew_id', 'crew_name','crew_rotations.id as rotation_id','shift_type',  'date_start', 'date_end')
+        .select('users.id as user_id','first_name', 'last_name','crews.id as crew_id', 'crew_name','crew_rotations.id as rotation_id','shift_type',  'date_start', 'date_end', 'shift_duration', 'role')
         .select(knex.raw(`'crews' as source`))
         .orderBy('rotation_id')
         .where('users.id', id);
@@ -82,18 +85,21 @@ router.get("/schedule/:id", async (req, res) => {
 
 });
 
+
 router.get("/:id", async (req, res) => {
     const id = parseInt(req.params.id)
+    // console.log(id)
     if(typeof id !== "number" || isNaN(id)){
        return res.status(400).json({ error: 'Invalid or missing request field. ID must match an id of user.' })
     }
     try{
       const user = await knex("users")
       .join("crews", "users.crew_id", '=', "crews.id")
-      .select("users.id", "users.user_name", "users.first_name", "users.last_name", "users.crew_id", "users.role", "users.experience_type", "crews.crew_name", "users.flight", "users.privilege")
+      .select("users.id", "users.user_name", "users.first_name", "users.last_name", "users.crew_id", "users.role", "users.experience_type", "users.privilege", "crews.crew_name")
       .where("users.id", id).first()
+
       if(!user) {
-        return res.status(200).json({ error: 'User not found.' })
+        return res.status(404).json({ error: 'User not found.' })
       }
       res.status(200).json(user)
     } catch (error) {
@@ -159,9 +165,13 @@ router.post('/login', (req, res) => {
       } else {
         return bcrypt.compare(password, user[0].password)
         .then((matches) => {
-            return matches == true
-                ? res.status(200).json({ message: 'Login successful', id: user[0].id, privilege: user[0].privilege })
-                : res.status(401).json({ error: 'Password is incorrect.'})
+          return matches == true
+                  ? res.status(200).json({
+                    message: 'Login successful',
+                    user: {id: user[0].id,
+                    user_name: user[0].user_name,
+                    privilege: user[0].privilege}})
+                  : res.status(401).json({ message: 'Password is incorrect.'})
         })
       }})
     .catch((err) => {

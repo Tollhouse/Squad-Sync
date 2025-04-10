@@ -1,5 +1,3 @@
-// code by Lorena - using MUI for styling
-
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -13,13 +11,15 @@ import {
 
 export default function Login() {
   const [formData, setFormData] = useState({
-    username: "",
+    user_name: "",
     password: "",
   });
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
+  // Check using the username value in localStorage.
   const username = localStorage.getItem("username");
+  const userId = localStorage.getItem('userId');
   const [loggedIn, setLoggedIn] = useState(!!username);
 
   if (loggedIn) {
@@ -35,9 +35,13 @@ export default function Login() {
             color="secondary"
             sx={{ mt: 2 }}
             onClick={() => {
+              // Remove all authentication-related details.
+              localStorage.removeItem("session_id");
               localStorage.removeItem("username");
+              localStorage.removeItem("userRole");
+              localStorage.removeItem("userId");
               setLoggedIn(false);
-              navigate("/Logout");
+              navigate("/logout");
             }}
           >
             Logout
@@ -54,27 +58,44 @@ export default function Login() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+
+   if(!formData){
+    return
+   }
+
     try {
-      const response = await fetch("http://localhost:8080/users");
-      const users = await response.json();
-  
-      const match = users.find(
-        (u) =>
-          u.user_name.toLowerCase() === formData.username.toLowerCase() &&
-          u.password === formData.password
-      );
-  
-      if (!match) {
-        throw new Error("Invalid credentials");
-      }
-  
+      const response = await fetch("http://localhost:8080/users/login", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+      if(response.ok){
+      const loginRes = await response.json();
+      // console.log("loginRes:", loginRes);
+
+      // ✅ Save more useful info for later dashboard logic
+      // console.log('loginRes.user_name', loginRes.user.user_name)
+      localStorage.setItem("username", loginRes.user.user_name);
+      localStorage.setItem("userId", loginRes.user.id);
+      localStorage.setItem("userPrivilege", loginRes.user.privilege);
+
+
+      const users = await response.json()
+
       // ✅ Save more useful info for later dashboard logic
       localStorage.setItem("username", match.user_name);
       localStorage.setItem("userId", match.id);
       localStorage.setItem("userRole", match.role);
-  
+
       alert("Login successful!");
-      navigate("/Dashboard"); // or wherever you route after login
+      navigate("/"); // Navigate to the Home page post-login.
+
+    } else {
+      const errorData = await response.json();
+      alert('Login Failed')
+    }
     } catch (err) {
       setError("Invalid username or password");
     }
@@ -95,9 +116,9 @@ export default function Login() {
           <Stack spacing={2}>
             <TextField
               variant="outlined"
-              name="username"
+              name="user_name"
               label="Username"
-              value={formData.username}
+              value={formData.user_name}
               onChange={handleChange}
               fullWidth
             />
@@ -119,7 +140,7 @@ export default function Login() {
             <Button
               type="button"
               variant="outlined"
-              onClick={() => navigate("/Signup")}
+              onClick={() => navigate("/signup")}
             >
               Sign Up
             </Button>
