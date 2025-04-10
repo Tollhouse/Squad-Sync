@@ -19,11 +19,6 @@ router.get("/", (req, res) => {
       .catch((err) => res.status(500).json({ error: err.message }));
 });
 
-router.get('/', async (req, res) => {
-    res.status(200).json({message:"Working route."})
-});
-
-
 // get route to get the schedule of every user
 router.get("/schedule", async (req, res) => {
     let data = []
@@ -95,10 +90,10 @@ router.get("/:id", async (req, res) => {
     try{
       const user = await knex("users")
       .join("crews", "users.crew_id", '=', "crews.id")
-      .select("users.id", "users.user_name", "users.first_name", "users.last_name", "users.crew_id", "users.role", "users.experience_type", "crews.crew_name")
+      .select("users.id", "users.user_name", "users.first_name", "users.last_name", "users.crew_id", "users.role", "users.experience_type", "crews.crew_name", "users.flight", "users.privilege")
       .where("users.id", id).first()
       if(!user) {
-        return res.status(404).json({ error: 'User not found.' })
+        return res.status(200).json({ error: 'User not found.' })
       }
       res.status(200).json(user)
     } catch (error) {
@@ -109,20 +104,20 @@ router.get("/:id", async (req, res) => {
 
 router.post("/", async (req, res) => {
     const { user_name, first_name, last_name, password, crew_id, role, experience_type } = req.body;
-    const hashedPassword = await hashPassword(password);
 
-    if(
-        user_name.trim() == "" || typeof user_name !== "string" ||
-        first_name.trim() == "" || typeof first_name !== "string" ||
-        last_name.trim() == "" || typeof last_name !== "string" ||
-        password.trim() == "" || typeof password !== "string" ||
+    if (
+        typeof user_name !== "string" || user_name.trim() === "" ||
+        typeof first_name !== "string" || first_name.trim() === "" ||
+        typeof last_name !== "string" || last_name.trim() === "" ||
+        typeof password !== "string" || password.trim() === "" ||
         typeof crew_id !== "number" ||
-        role.trim() == "" || typeof role !== "string" ||
-        experience_type.trim() == "" || typeof experience_type !== "string"
-    ){
+        typeof role !== "string" || role.trim() === "" ||
+        typeof experience_type !== "string" || experience_type.trim() === ""
+      ) {
         return res.status(400).json({ message: 'Submitted information is in the invalid format.' });
     }else{
         try{
+            const hashedPassword = await hashPassword(password);
             knex('users')
                 .where('user_name', user_name)
                 .first()
@@ -149,19 +144,24 @@ router.post("/", async (req, res) => {
 
 router.post('/login', (req, res) => {
     const {user_name, password} = req.body;
+    if (typeof user_name != 'string' || user_name.trim() == '' ||
+        typeof password != 'string' || password.trim() == '')
+    {
+        return res.status(400).json({error: 'Please provide a non-empty username and password.'})
+    }
 
     knex('users')
     .select('*')
     .where('user_name', user_name)
     .then(user => {
       if (user.length == 0) {
-        return res.status(404).json({ message: 'User not found.'})
+        return res.status(404).json({ error: 'User not found.'})
       } else {
         return bcrypt.compare(password, user[0].password)
         .then((matches) => {
             return matches == true
                 ? res.status(200).json({ message: 'Login successful', id: user[0].id, privilege: user[0].privilege })
-                : res.status(401).json({ message: 'Password is incorrect.'})
+                : res.status(401).json({ error: 'Password is incorrect.'})
         })
       }})
     .catch((err) => {
@@ -176,9 +176,16 @@ router.patch("/:id", async (req, res) => {
         return
     }
     try{
-        const { user_name, first_name, last_name, password, squadron_id, crew_id, role, experience_type } = req.body;
-        const updates = {user_name, first_name, last_name, password, squadron_id, crew_id, role, experience_type};
+        const { user_name, first_name, last_name, password, squadron_id, crew_id, role, experience_type, privilege, flight } = req.body;
+        const updates = {user_name, first_name, last_name, password, squadron_id, crew_id, role, experience_type, privilege, flight};
+        if (password) {
+            const hashedPassword = await hashPassword(password);
+            updates.password = hashedPassword
+        }
         Object.keys(updates).forEach(key => updates[key] === undefined && delete updates[key]);
+        if (Object.keys(updates).length == 0) {
+            return res.status(400).json({error: 'Must include at least one valid field to patch'})
+        }
 
         const updated_user = await knex("users")
         .where('id',id)
