@@ -7,7 +7,6 @@ import { Link, Routes, Route } from 'react-router-dom'
 import './App.css'
 import Home from "./Components/Home/Home.jsx"
 import Login from './Components/Login/Login.jsx'
-import Logout from './Components/Logout/Logout.jsx'
 import Signup from './Components/Signup/Signup.jsx'
 import Footer from './Components/Footer/Footer.jsx'
 import Navbar from './Components/Navbar/Navbar.jsx'
@@ -58,7 +57,6 @@ export default function App() {
     <Routes>
       <Route path='/' element={<Home />}/>
       <Route path='/login' element={<Login />}/>
-      <Route path="/logout" element={<Logout />} />
       <Route path='/signup' element={<Signup />}/>
       <Route path='/user/:id' element={<User />}/>
       <Route path='/commander' element={<Commander />}/>

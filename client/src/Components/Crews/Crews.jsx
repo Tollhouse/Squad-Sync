@@ -18,6 +18,7 @@ import {
   MenuItem,
   IconButton,
   Chip,
+  Button,
   useTheme,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
@@ -40,7 +41,27 @@ export default function Crews() {
   const [pendingDeleteId, setPendingDeleteId] = useState(null);
   const [confirmRotationSaveOpen, setConfirmRotationSaveOpen] = useState(false);
   const [pendingRotationId, setPendingRotationId] = useState(null);
+  const [isAddingRotation, setIsAddingRotation] = useState(false);
+  const [confirmNewRotationOpen, setConfirmNewRotationOpen] = useState(false);
+  const [newRotation, setNewRotation] = useState({
+    crew_name: "",
+    date_start: "",
+    date_end: "",
+    shift_type: "",
+    shift_duration: "",
+    experience_type: "",
+  });
+  const [confirmNewUserOpen, setConfirmNewUserOpen] = useState(false);
+  const [isAddingUser, setIsAddingUser] = useState(false);
+  const [newUser, setNewUser] = useState({
+    crew_id: selectedCrewId,
+    first_name: "",
+    last_name: "",
+    role: "",
+    experience_type: "",
+  });
 
+  // FOR TESTING ONLY - hardocded user privileges
   const [userPrivilege, setUserPrivilege] = useState("scheduler");
   const canEdit = userPrivilege === "scheduler";
   const canSeeExperience = ["commander", "scheduler"].includes(userPrivilege);
@@ -63,6 +84,98 @@ export default function Crews() {
     };
     fetchData();
   }, []);
+
+  // Auto-fill crew_id in form when a crew is selected
+  useEffect(() => {
+    if (isAddingUser && selectedCrewId) {
+      setNewUser((prev) => ({
+        ...prev,
+        crew_id: selectedCrewId,
+      }));
+    }
+  }, [selectedCrewId, isAddingUser]);
+
+  const handleNewRotationChange = (field, value) => {
+    setNewRotation((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleNewUserChange = (field, value) => {
+    setNewUser((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleNewRotationSubmit = async () => {
+    try {
+      let crew = crews.find(
+        (c) => c.crew_name.toLowerCase() === newRotation.crew_name.toLowerCase()
+      );
+
+      if (!crew) {
+        const crewRes = await fetch("http://localhost:8080/crews", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ crew_name: newRotation.crew_name }),
+        });
+        if (!crewRes.ok) throw new Error("Failed to create new crew");
+        const [createdCrew] = await crewRes.json();
+        crew = createdCrew;
+        setCrews((prev) => [...prev, createdCrew]);
+      }
+
+      const rotationRes = await fetch("http://localhost:8080/crew_rotations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          crew_id: crew.id,
+          date_start: newRotation.date_start,
+          date_end: newRotation.date_end,
+          shift_type: newRotation.shift_type,
+          shift_duration: newRotation.shift_duration,
+          experience_type: newRotation.experience_type,
+        }),
+      });
+
+      if (!rotationRes.ok) throw new Error("Failed to create rotation");
+
+      const [createdRotation] = await rotationRes.json();
+      setRotations((prev) => [...prev, createdRotation]);
+      setIsAddingRotation(false);
+      setNewRotation({
+        crew_name: "",
+        date_start: "",
+        date_end: "",
+        shift_type: "",
+        shift_duration: "",
+        experience_type: "",
+      });
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleNewUserSubmit = async () => {
+    try {
+      const res = await fetch("http://localhost:8080/users", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newUser),
+      });
+
+      if (!res.ok) throw new Error("User creation failed");
+
+      const [created] = await res.json();
+      setUsers((prev) => [...prev, created]);
+      setIsAddingUser(false);
+      setNewUser({
+        crew_id: selectedCrewId || "",
+        first_name: "",
+        last_name: "",
+        role: "",
+        experience_type: "",
+      });
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const handleEdit = (rotation) => {
     setEditingRowId(rotation.id);
@@ -104,6 +217,7 @@ export default function Crews() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(editedRow),
       });
+
       const crewRes = await fetch(`http://localhost:8080/crews/${editedRow.crew_id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -140,9 +254,13 @@ export default function Crews() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(editedUser),
       });
+
       if (!userRes.ok) throw new Error("User update failed");
+
       const updatedUser = await userRes.json();
-      setUsers((prev) => prev.map((u) => (u.id === editingUserId ? updatedUser[0] : u)));
+      setUsers((prev) =>
+        prev.map((u) => (u.id === editingUserId ? updatedUser[0] : u))
+      );
       setEditingUserId(null);
     } catch (err) {
       console.error(err);
@@ -161,7 +279,9 @@ export default function Crews() {
       const res = await fetch(`http://localhost:8080/crew_rotations/${pendingDeleteId}`, {
         method: "DELETE",
       });
+
       if (!res.ok) throw new Error("Delete failed");
+
       setRotations((prev) => prev.filter((r) => r.id !== pendingDeleteId));
     } catch (err) {
       console.error(err);
@@ -201,134 +321,445 @@ export default function Crews() {
 
   return (
     <>
-    <Container maxWidth="lg">
-      <Box sx={{ mt: 4, textAlign: "center" }}>
-        <Typography variant="h4">Crew Rotations</Typography>
-      </Box>
+      {/* Crew Rotation Table */}
+      <Container maxWidth="lg">
+        <Box sx={{ mt: 4, textAlign: "center" }}>
+          <Typography variant="h4">Crew Rotations</Typography>
+          {canEdit && (
+            <Button
+              sx={{ mt: 2 }}
+              variant="contained"
+              color="primary"
+              onClick={() => setIsAddingRotation(true)}
+            >
+              + Add New Rotation
+            </Button>
+          )}
+        </Box>
 
-      <TableContainer component={Paper} sx={{ mt: 2 }}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>ID</TableCell>
-              <TableCell>Crew Name</TableCell>
-              <TableCell>Start Date</TableCell>
-              <TableCell>End Date</TableCell>
-              <TableCell>Shift Type</TableCell>
-              <TableCell>Duration</TableCell>
-              {canSeeExperience && <TableCell>Experience</TableCell>}
-              {canEdit && <TableCell>Actions</TableCell>}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {crewWithRotations.map((row) => (
-              <TableRow
-                key={row.id}
-                hover
-                onClick={() => setSelectedCrewId((prev) => (prev === row.id ? null : row.id))}
-                sx={{ cursor: "pointer" }}
-              >
-                <TableCell>{row.id}</TableCell>
-                <TableCell>{editingRowId === row.id ? <TextField value={editedRow.crew_name || ""} onChange={(e) => handleChange("crew_name", e.target.value)} size="small" /> : row.crew_name}</TableCell>
-                {editingRowId === row.id ? (
-                  <>
-                    <TableCell><TextField value={editedRow.date_start || ""} onChange={(e) => handleChange("date_start", e.target.value)} size="small" /></TableCell>
-                    <TableCell><TextField value={editedRow.date_end || ""} onChange={(e) => handleChange("date_end", e.target.value)} size="small" /></TableCell>
-                    <TableCell><Select value={editedRow.shift_type || ""} onChange={(e) => handleChange("shift_type", e.target.value)} size="small"><MenuItem value="day">Day</MenuItem><MenuItem value="swing">Swing</MenuItem><MenuItem value="night">Night</MenuItem><MenuItem value="rest">Rest</MenuItem></Select></TableCell>
-                    <TableCell><TextField value={editedRow.shift_duration || ""} type="number" onChange={(e) => handleChange("shift_duration", parseInt(e.target.value))} size="small" /></TableCell>
-                    {canSeeExperience && <TableCell><Select value={editedRow.experience_type || ""} onChange={(e) => handleChange("experience_type", e.target.value)} size="small"><MenuItem value="green">Green</MenuItem><MenuItem value="yellow">Yellow</MenuItem><MenuItem value="red">Red</MenuItem></Select></TableCell>}
-                    <TableCell><IconButton onClick={() => handleSave(row.id)}><SaveIcon /></IconButton><IconButton onClick={handleCancel}><CancelIcon /></IconButton></TableCell>
-                  </>
-                ) : (
-                  <>
-                    <TableCell>{row.date_start || "N/A"}</TableCell>
-                    <TableCell>{row.date_end || "N/A"}</TableCell>
-                    <TableCell>{row.shift_type || "N/A"}</TableCell>
-                    <TableCell>{row.shift_duration || "N/A"}</TableCell>
-                    {canSeeExperience && <TableCell>{row.experience_type ? <ExperienceChip level={row.experience_type} /> : "N/A"}</TableCell>}
-                    {canEdit && <TableCell><IconButton onClick={() => handleEdit(row)}><EditIcon /></IconButton><IconButton onClick={() => handleDelete(row.id)}><DeleteIcon /></IconButton></TableCell>}
-                  </>
-                )}
+        <TableContainer component={Paper} sx={{ mt: 2 }}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>ID</TableCell>
+                <TableCell>Crew Name</TableCell>
+                <TableCell>Start Date</TableCell>
+                <TableCell>End Date</TableCell>
+                <TableCell>Shift Type</TableCell>
+                <TableCell>Duration</TableCell>
+                {canSeeExperience && <TableCell>Experience</TableCell>}
+                {canEdit && <TableCell>Actions</TableCell>}
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-
-      {selectedCrewId && (
-        <>
-          <Box sx={{ mt: 6, textAlign: "center" }}>
-            <Typography variant="h4">{selectedCrew?.crew_name} Crew</Typography>
-          </Box>
-          <TableContainer component={Paper} sx={{ mt: 2 }}>
-            <Table>
-              <TableHead>
+            </TableHead>
+            <TableBody>
+              {/* Add a new crew rotation */}
+              {isAddingRotation && (
                 <TableRow>
-                  <TableCell>Crew</TableCell>
-                  <TableCell>First Name</TableCell>
-                  <TableCell>Last Name</TableCell>
-                  <TableCell>Role</TableCell>
-                  {canSeeExperience && <TableCell>Experience</TableCell>}
-                  {canEdit && <TableCell>Actions</TableCell>}
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {usersByCrew.map((user) => (
-                  <TableRow key={user.id}>
+                  <TableCell>New</TableCell>
+                  <TableCell>
+                    <TextField
+                      size="small"
+                      value={newRotation.crew_name || ""}
+                      onChange={(e) =>
+                        handleNewRotationChange("crew_name", e.target.value)
+                      }
+                      placeholder="Crew Name"
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <TextField
+                      size="small"
+                      value={newRotation.date_start}
+                      onChange={(e) =>
+                        handleNewRotationChange("date_start", e.target.value)
+                      }
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <TextField
+                      size="small"
+                      value={newRotation.date_end}
+                      onChange={(e) =>
+                        handleNewRotationChange("date_end", e.target.value)
+                      }
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Select
+                      size="small"
+                      value={newRotation.shift_type}
+                      onChange={(e) =>
+                        handleNewRotationChange("shift_type", e.target.value)
+                      }
+                    >
+                      <MenuItem value="day">Day</MenuItem>
+                      <MenuItem value="swing">Swing</MenuItem>
+                      <MenuItem value="night">Night</MenuItem>
+                      <MenuItem value="rest">Rest</MenuItem>
+                    </Select>
+                  </TableCell>
+                  <TableCell>
+                    <TextField
+                      size="small"
+                      type="number"
+                      value={newRotation.shift_duration}
+                      onChange={(e) =>
+                        handleNewRotationChange(
+                          "shift_duration",
+                          parseInt(e.target.value)
+                        )
+                      }
+                    />
+                  </TableCell>
+                  {canSeeExperience && (
                     <TableCell>
-                      {editingUserId === user.id ? (
-                        <Select value={editedUser.crew_id} onChange={(e) => handleUserChange("crew_id", e.target.value)} size="small">
-                          {crews.map((c) => (
-                            <MenuItem key={c.id} value={c.id}>{c.crew_name}</MenuItem>
+                      <Select
+                        size="small"
+                        value={newRotation.experience_type}
+                        onChange={(e) =>
+                          handleNewRotationChange(
+                            "experience_type",
+                            e.target.value
+                          )
+                        }
+                      >
+                        <MenuItem value="green">Green</MenuItem>
+                        <MenuItem value="yellow">Yellow</MenuItem>
+                        <MenuItem value="red">Red</MenuItem>
+                      </Select>
+                    </TableCell>
+                  )}
+                  <TableCell>
+                    <IconButton onClick={() => setConfirmNewRotationOpen(true)}>
+                      <SaveIcon />
+                    </IconButton>
+                    <IconButton onClick={() => setIsAddingRotation(false)}>
+                      <CancelIcon />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              )}
+              {crewWithRotations.map((row) => (
+                <TableRow
+                  key={row.id}
+                  hover
+                  onClick={() =>
+                    setSelectedCrewId((prev) =>
+                      prev === row.id ? null : row.id
+                    )
+                  }
+                  sx={{ cursor: "pointer" }}
+                >
+                  <TableCell>{row.id}</TableCell>
+                  <TableCell>
+                    {editingRowId === row.id ? (
+                      <TextField
+                        value={editedRow.crew_name || ""}
+                        onChange={(e) =>
+                          handleChange("crew_name", e.target.value)
+                        }
+                        size="small"
+                      />
+                    ) : (
+                      row.crew_name
+                    )}
+                  </TableCell>
+                  {editingRowId === row.id ? (
+                    <>
+                      <TableCell>
+                        <TextField
+                          value={editedRow.date_start || ""}
+                          onChange={(e) =>
+                            handleChange("date_start", e.target.value)
+                          }
+                          size="small"
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <TextField
+                          value={editedRow.date_end || ""}
+                          onChange={(e) =>
+                            handleChange("date_end", e.target.value)
+                          }
+                          size="small"
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Select
+                          value={editedRow.shift_type || ""}
+                          onChange={(e) =>
+                            handleChange("shift_type", e.target.value)
+                          }
+                          size="small"
+                        >
+                          <MenuItem value="day">Day</MenuItem>
+                          <MenuItem value="swing">Swing</MenuItem>
+                          <MenuItem value="night">Night</MenuItem>
+                          <MenuItem value="rest">Rest</MenuItem>
+                        </Select>
+                      </TableCell>
+                      <TableCell>
+                        <TextField
+                          value={editedRow.shift_duration || ""}
+                          type="number"
+                          onChange={(e) =>
+                            handleChange(
+                              "shift_duration",
+                              parseInt(e.target.value)
+                            )
+                          }
+                          size="small"
+                        />
+                      </TableCell>
+                      {canSeeExperience && (
+                        <TableCell>
+                          <Select
+                            value={editedRow.experience_type || ""}
+                            onChange={(e) =>
+                              handleChange("experience_type", e.target.value)
+                            }
+                            size="small"
+                          >
+                            <MenuItem value="green">Green</MenuItem>
+                            <MenuItem value="yellow">Yellow</MenuItem>
+                            <MenuItem value="red">Red</MenuItem>
+                          </Select>
+                        </TableCell>
+                      )}
+                      <TableCell>
+                        <IconButton onClick={() => handleSave(row.id)}>
+                          <SaveIcon />
+                        </IconButton>
+                        <IconButton onClick={handleCancel}>
+                          <CancelIcon />
+                        </IconButton>
+                      </TableCell>
+                    </>
+                  ) : (
+                    <>
+                      <TableCell>{row.date_start || "N/A"}</TableCell>
+                      <TableCell>{row.date_end || "N/A"}</TableCell>
+                      <TableCell>{row.shift_type || "N/A"}</TableCell>
+                      <TableCell>{row.shift_duration || "N/A"}</TableCell>
+                      {canSeeExperience && (
+                        <TableCell>
+                          {row.experience_type ? (
+                            <ExperienceChip level={row.experience_type} />
+                          ) : (
+                            "N/A"
+                          )}
+                        </TableCell>
+                      )}
+                      {canEdit && (
+                        <TableCell>
+                          <IconButton onClick={() => handleEdit(row)}>
+                            <EditIcon />
+                          </IconButton>
+                          <IconButton onClick={() => handleDelete(row.id)}>
+                            <DeleteIcon />
+                          </IconButton>
+                        </TableCell>
+                      )}
+                    </>
+                  )}
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+
+        {/* Crew Details Table */}
+        {selectedCrewId && (
+          <>
+            <Box sx={{ mt: 6, textAlign: "center" }}>
+              <Typography variant="h4">
+                {selectedCrew?.crew_name} Crew
+              </Typography>
+              {canEdit && (
+                <Button
+                  sx={{ mt: 2 }}
+                  variant="contained"
+                  color="primary"
+                  onClick={() => setIsAddingUser(true)}
+                >
+                  + Add Crew Member
+                </Button>
+              )}
+            </Box>
+            <TableContainer component={Paper} sx={{ mt: 2 }}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Crew</TableCell>
+                    <TableCell>First Name</TableCell>
+                    <TableCell>Last Name</TableCell>
+                    <TableCell>Role</TableCell>
+                    {canSeeExperience && <TableCell>Experience</TableCell>}
+                    {canEdit && <TableCell>Actions</TableCell>}
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {/* Add new crew member */}
+                  {isAddingUser && (
+                    <TableRow>
+                      <TableCell>
+                        <Select
+                          value={newUser.crew_id}
+                          onChange={(e) => handleNewUserChange("crew_id", e.target.value)}
+                          size="small"
+                        >
+                          {crews.map((crew) => (
+                            <MenuItem key={crew.id} value={crew.id}>
+                              {crew.crew_name}
+                            </MenuItem>
                           ))}
                         </Select>
-                      ) : (
-                        crews.find(c => c.id === user.crew_id)?.crew_name || "N/A"
-                      )}
-                    </TableCell>
-                    <TableCell>{user.first_name}</TableCell>
-                    <TableCell>{user.last_name}</TableCell>
-                    <TableCell>
-                      {editingUserId === user.id ? (
-                        <Select value={editedUser.role} onChange={(e) => handleUserChange("role", e.target.value)} size="small">
+                      </TableCell>
+                      <TableCell>
+                        <TextField
+                          size="small"
+                          value={newUser.first_name}
+                          onChange={(e) => handleNewUserChange("first_name", e.target.value)}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <TextField
+                          size="small"
+                          value={newUser.last_name}
+                          onChange={(e) => handleNewUserChange("last_name", e.target.value)}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Select
+                          size="small"
+                          value={newUser.role}
+                          onChange={(e) => handleNewUserChange("role", e.target.value)}
+                        >
                           <MenuItem value="Crew Commander">Crew Commander</MenuItem>
                           <MenuItem value="Crew Chief">Crew Chief</MenuItem>
                           <MenuItem value="Operator">Operator</MenuItem>
                         </Select>
-                      ) : (
-                        user.role
+                      </TableCell>
+                      {canSeeExperience && (
+                        <TableCell>
+                          <Select
+                            size="small"
+                            value={newUser.experience_type}
+                            onChange={(e) => handleNewUserChange("experience_type", e.target.value)}
+                          >
+                            <MenuItem value="green">Green</MenuItem>
+                            <MenuItem value="yellow">Yellow</MenuItem>
+                            <MenuItem value="red">Red</MenuItem>
+                          </Select>
+                        </TableCell>
                       )}
-                    </TableCell>
-                    {canSeeExperience && <TableCell>
-                      {editingUserId === user.id ? (
-                        <Select value={editedUser.experience_type} onChange={(e) => handleUserChange("experience_type", e.target.value)} size="small">
-                          <MenuItem value="green">Green</MenuItem>
-                          <MenuItem value="yellow">Yellow</MenuItem>
-                          <MenuItem value="red">Red</MenuItem>
-                        </Select>
-                      ) : (
-                        <ExperienceChip level={user.experience_type} />
+                      <TableCell>
+                        <IconButton onClick={() => setConfirmNewUserOpen(true)}>
+                          <SaveIcon />
+                        </IconButton>
+                        <IconButton onClick={() => setIsAddingUser(false)}>
+                          <CancelIcon />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  )}
+
+                  {usersByCrew.map((user) => (
+                    <TableRow key={user.id}>
+                      <TableCell>
+                        {editingUserId === user.id ? (
+                          <Select
+                            value={editedUser.crew_id}
+                            onChange={(e) =>
+                              handleUserChange("crew_id", e.target.value)
+                            }
+                            size="small"
+                          >
+                            {crews.map((c) => (
+                              <MenuItem key={c.id} value={c.id}>
+                                {c.crew_name}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        ) : (
+                          crews.find((c) => c.id === user.crew_id)?.crew_name ||
+                          "N/A"
+                        )}
+                      </TableCell>
+                      <TableCell>{user.first_name}</TableCell>
+                      <TableCell>{user.last_name}</TableCell>
+                      <TableCell>
+                        {editingUserId === user.id ? (
+                          <Select
+                            value={editedUser.role}
+                            onChange={(e) =>
+                              handleUserChange("role", e.target.value)
+                            }
+                            size="small"
+                          >
+                            <MenuItem value="Crew Commander">
+                              Crew Commander
+                            </MenuItem>
+                            <MenuItem value="Crew Chief">Crew Chief</MenuItem>
+                            <MenuItem value="Operator">Operator</MenuItem>
+                          </Select>
+                        ) : (
+                          user.role
+                        )}
+                      </TableCell>
+                      {canSeeExperience && (
+                        <TableCell>
+                          {editingUserId === user.id ? (
+                            <Select
+                              value={editedUser.experience_type}
+                              onChange={(e) =>
+                                handleUserChange(
+                                  "experience_type",
+                                  e.target.value
+                                )
+                              }
+                              size="small"
+                            >
+                              <MenuItem value="green">Green</MenuItem>
+                              <MenuItem value="yellow">Yellow</MenuItem>
+                              <MenuItem value="red">Red</MenuItem>
+                            </Select>
+                          ) : (
+                            <ExperienceChip level={user.experience_type} />
+                          )}
+                        </TableCell>
                       )}
-                    </TableCell>}
-                    {canEdit && <TableCell>
-                      {editingUserId === user.id ? (
-                        <>
-                          <IconButton onClick={() => handleUserSave(user.id)}><SaveIcon /></IconButton>
-                          <IconButton onClick={handleUserCancel}><CancelIcon /></IconButton>
-                        </>
-                      ) : (
-                        <IconButton onClick={() => handleUserEdit(user)}><EditIcon /></IconButton>
+                      {canEdit && (
+                        <TableCell>
+                          {editingUserId === user.id ? (
+                            <>
+                              <IconButton
+                                onClick={() => handleUserSave(user.id)}
+                              >
+                                <SaveIcon />
+                              </IconButton>
+                              <IconButton onClick={handleUserCancel}>
+                                <CancelIcon />
+                              </IconButton>
+                            </>
+                          ) : (
+                            <IconButton onClick={() => handleUserEdit(user)}>
+                              <EditIcon />
+                            </IconButton>
+                          )}
+                        </TableCell>
                       )}
-                    </TableCell>}
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </>
-      )}
-    </Container>
-    <ConfirmSaveModal
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </>
+        )}
+      </Container>
+
+      {/* Confirm Modals */}
+      <ConfirmSaveModal
         open={confirmRotationSaveOpen}
         onClose={() => setConfirmRotationSaveOpen(false)}
         onConfirm={confirmRotationSave}
@@ -342,8 +773,23 @@ export default function Crews() {
         open={confirmDeleteOpen}
         onClose={() => setConfirmDeleteOpen(false)}
         onConfirm={confirmDelete}
-    />
-  </>
-);
+      />
+      <ConfirmSaveModal
+        open={confirmNewRotationOpen}
+        onClose={() => setConfirmNewRotationOpen(false)}
+        onConfirm={() => {
+          setConfirmNewRotationOpen(false);
+          handleNewRotationSubmit();
+        }}
+      />
+      <ConfirmSaveModal
+        open={confirmNewUserOpen}
+        onClose={() => setConfirmNewUserOpen(false)}
+        onConfirm={() => {
+          setConfirmNewUserOpen(false);
+          handleNewUserSubmit();
+        }}
+      />
+    </>
+  );
 }
-

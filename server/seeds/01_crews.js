@@ -7,6 +7,7 @@ exports.seed = async function(knex) {
   await knex.schema.raw('TRUNCATE crews CASCADE');
   await knex('crews').del()
   await knex('crews').insert([
+    {crew_name: 'Not Assigned'},
     {crew_name: 'Alpha'},
     {crew_name: 'Bravo'},
     {crew_name: 'Charlie'},
