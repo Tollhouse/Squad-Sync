@@ -147,6 +147,50 @@ describe('POST testing of /users route', () => {
     })
 })
 
+describe('POST testing of /users/login route', () => {
+    it('incorrect body should receive 400 error status', async () => {
+        const post_body = {
+            field1: 'this is an incorrect post'
+        }
+
+        const res = await request(app).post('/users/login').send(post_body)
+        expect(res.status).toBe(400)
+        expect(res.body.error).toBe('Please provide a non-empty username and password.')
+    })
+
+    it('login with non-existent user should return 404 status with message', async () => {
+        const post_body = {
+            user_name: 'AAAAAAAA',
+            password: 'totallynormalpassword'
+        }
+        const res = await request(app).post('/users/login').send(post_body)
+        expect(res.status).toBe(404)
+        expect(res.body.error).toBe('User not found.')
+    })
+
+    it('login with existing user but wrong password should return 401 status with message', async () => {
+        const post_body = {
+            user_name: 'Curtis',
+            password: 'totallynormalpassword'
+        }
+        const res = await request(app).post('/users/login').send(post_body)
+        expect(res.status).toBe(401)
+        expect(res.body.error).toBe('Password is incorrect.')
+    })
+
+    it('login with existing user and correct password should return 200 status with message', async () => {
+        const post_body = {
+            user_name: 'Curtis',
+            password: 'Curtis'
+        }
+        const res = await request(app).post('/users/login').send(post_body)
+        expect(res.status).toBe(200)
+        expect(res.body.message).toBe('Login successful')
+        expect(res.body.id).toBe(2)
+        expect(res.body.privilege).toBe('commander')
+    })
+})
+
 // -------------------------------------------------------  Course Registration  -------------------------------------------------------
 describe('POST testing of /course_registration route', () => {
     it('incorrect body should receive 400 error status', async () => {

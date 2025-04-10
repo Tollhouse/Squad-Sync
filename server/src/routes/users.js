@@ -144,19 +144,24 @@ router.post("/", async (req, res) => {
 
 router.post('/login', (req, res) => {
     const {user_name, password} = req.body;
+    if (typeof user_name != 'string' || user_name.trim() == '' ||
+        typeof password != 'string' || password.trim() == '')
+    {
+        return res.status(400).json({error: 'Please provide a non-empty username and password.'})
+    }
 
     knex('users')
     .select('*')
     .where('user_name', user_name)
     .then(user => {
       if (user.length == 0) {
-        return res.status(404).json({ message: 'User not found.'})
+        return res.status(404).json({ error: 'User not found.'})
       } else {
         return bcrypt.compare(password, user[0].password)
         .then((matches) => {
             return matches == true
                 ? res.status(200).json({ message: 'Login successful', id: user[0].id, privilege: user[0].privilege })
-                : res.status(401).json({ message: 'Password is incorrect.'})
+                : res.status(401).json({ error: 'Password is incorrect.'})
         })
       }})
     .catch((err) => {

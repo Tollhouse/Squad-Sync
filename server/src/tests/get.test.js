@@ -2,7 +2,19 @@ const request = require('supertest')
 const { app } = require('../server.js')
 const { isValidObject, checkEnums } = require('./test_utils.js')
 
-// TODO check foreign keys?
+let config = require('../../knexfile.js')['development'];
+let knex = require('knex')(config);
+
+beforeAll(async () => {
+  knex = require('knex')(config);
+  await knex.migrate.rollback();
+  await knex.migrate.latest();
+  await knex.seed.run();
+});
+
+afterAll(async () => {
+  await knex.destroy();
+});
 
 // -------------------------------------------------------  CREW ROTATIONS  -------------------------------------------------------
 describe('GET /crew_rotations', () => {
@@ -259,6 +271,38 @@ describe('GET /users/schedule', () => {
       expect(Array.isArray(response.body)).toBe(true)
       expect(response.body.length).toBe(2)
   });
+})
+
+describe('GET /users/schedule/:id', () => {
+  it('should return a 200 status ', async () => {
+    const response = await request(app).get('/users/schedule/1');
+    expect(response.status).toBe(200);
+  });
+
+  it('should return an array ', async () => {
+    const response = await request(app).get('/users/schedule/1');
+    expect(response.status).toBe(200);
+    expect(Array.isArray(response.body)).toBe(true)
+  });
+
+  it('an individual element of the array should be contain both course_dates and crew_dates, (2 entries in the array)', async () => {
+      const response = await request(app).get('/users/schedule/1');
+      expect(response.status).toBe(200);
+      expect(Array.isArray(response.body)).toBe(true)
+      expect(response.body.length).toBe(2)
+  });
+
+  it('all entires should pertain to user id 1', async () => {
+      const response = await request(app).get('/users/schedule/1');
+      expect(response.status).toBe(200);
+      expect(Array.isArray(response.body)).toBe(true)
+      for (let obj of response.body[0].crewDates) {
+        expect(obj.user_id).toBe(1)
+      }
+      for (let obj of response.body[1].courseDates) {
+        expect(obj.user_id).toBe(1)
+      }
+  })
 })
 
 // -------------------------------------------------------   Course Registrations   -------------------------------------------------------
