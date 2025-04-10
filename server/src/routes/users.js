@@ -95,7 +95,7 @@ router.get("/:id", async (req, res) => {
     try{
       const user = await knex("users")
       .join("crews", "users.crew_id", '=', "crews.id")
-      .select("users.id", "users.user_name", "users.first_name", "users.last_name", "users.crew_id", "users.role", "users.experience_type", "crews.crew_name")
+      .select("users.id", "users.user_name", "users.first_name", "users.last_name", "users.crew_id", "users.role", "users.experience_type", "users.privilege", "crews.crew_name")
       .where("users.id", id).first()
 
       if(!user) {
