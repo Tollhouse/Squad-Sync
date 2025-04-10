@@ -105,7 +105,32 @@ export default function User () {
     {field: 'last_name', headerName: 'Last Name', width: 150, editable: true},
     {field: 'crew_name', headerName: 'Crew Name', width: 150, editable: false},
     {field: 'role', headerName: 'Crew Position', width: 150, editable: false},
-    {field: 'experience_type', headerName: 'Experience Level', width: 150, editable: false},
+    {field: 'experience_type',
+      headerName: 'Experience Level',
+      width: 150,
+      editable: false,
+      renderCell: (params) => {
+        let backgroundColor = 'white';
+        let textColor = 'black';
+        if(params.value === 'red'){
+          backgroundColor = 'red';
+          textColor = 'white';
+        } else if (params.value === 'yellow'){
+          backgroundColor = 'yellow';
+          textColor = 'black';
+        } else if( params.value === 'green'){
+          backgroundColor = 'green';
+          textColor = 'white';
+        }
+        return (
+          <div style={{backgroundColor,
+          color: textColor,
+          padding: '5px',
+          textAlign: 'center',}}>
+            {params.value}
+          </div>
+        )
+      }},
     {
       field: 'actions',
       type: 'actions',
@@ -160,7 +185,7 @@ export default function User () {
         sx={{
           mt: 4,
           textAlign: 'center',
-          width:'84%',
+          width:'61%',
           '& .actions': {
             color: 'text.secondary',
           },

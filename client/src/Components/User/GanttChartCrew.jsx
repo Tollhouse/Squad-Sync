@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react"
 import { useParams } from "react-router-dom"
 import { Chart } from "react-google-charts"
+import './GanttChart.css'
 
 export default function GanttChartCrew() {
   const [crewData, setCrewData] = useState([]);
@@ -78,6 +79,7 @@ export default function GanttChartCrew() {
     <>
       <div>
         <h2>Crew Chart</h2>
+        <div className='gantt-chart-container'>
         {crewData.length > 0 ? (
         <Chart
           chartType="Gantt"
@@ -106,13 +108,14 @@ export default function GanttChartCrew() {
                 light: '#c8e6c9',
               },
             ],
-  },
-}}
+        },
+      }}
           chartVersion='51'
         />
       ) : (
         <p>No crew data available</p>
       )}
+      </div>
       </div>
     </>
   );

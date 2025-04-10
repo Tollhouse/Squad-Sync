@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react"
 import { useParams } from "react-router-dom"
 import { Chart } from "react-google-charts"
+import './GanttChart.css'
 
 export default function GanttChartCourse() {
   const [crewData, setCrewData] = useState([]);
@@ -85,8 +86,8 @@ export default function GanttChartCourse() {
     <>
       <div>
         <h2>Course Chart</h2>
+        <div className='gantt-chart-container'>
         {courseData.length > 0 ? (
-
           <Chart
             chartType="Gantt"
             width="1200px"
@@ -121,6 +122,7 @@ export default function GanttChartCourse() {
         ) : (
           <p>No course data available</p>
         )}
+        </div>
   </div>
     </>
   )
