@@ -76,7 +76,7 @@ export default function Login() {
       // Save authentication details in localStorage.
       localStorage.setItem("username", match.user_name);
       localStorage.setItem("userId", match.id);
-      localStorage.setItem("userRole", match.role);
+      localStorage.setItem("userRole", match.privilege);
       localStorage.setItem("session_id", "true"); // Marker to indicate an active session.
 
       alert("Login successful!");

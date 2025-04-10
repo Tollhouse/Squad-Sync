@@ -51,7 +51,7 @@ function Navbar() {
     } else {
       let roleBasedButtons = null;
 
-      if (userRole === 'Crew Commander') {
+      if (userRole === 'commander') {
         roleBasedButtons = (
           <Button
             key="dashboard"
@@ -61,9 +61,16 @@ function Navbar() {
             Dashboard
           </Button>
         );
-      } else if (userRole === 'Crew Chief') { //change crew chief back to scheduler
+      } else if (userRole === 'scheduler') { //change crew chief back to scheduler
         roleBasedButtons = (
           <>
+          <Button
+            key="dashboard"
+            onClick={() => navigate('/scheduler')}
+            sx={{ my: 2, color: 'white', display: 'block' }}
+          >
+            Dashboard
+          </Button>
             <Button
               key="courses"
               onClick={() => navigate('/courses')}
@@ -87,7 +94,7 @@ function Navbar() {
             </Button>
           </>
         );
-      } else if (userRole === 'Operator') {
+      } else if (userRole === 'user') {
         roleBasedButtons = (
           <Button
             key="mySchedule"
