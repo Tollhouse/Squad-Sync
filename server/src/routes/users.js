@@ -110,19 +110,20 @@ router.get("/:id", async (req, res) => {
 
 router.post("/", async (req, res) => {
     const { user_name, first_name, last_name, password, crew_id, role, experience_type } = req.body;
-    const hashedPassword = await hashPassword(password);
 
-    if(
-        user_name.trim() == "" || typeof user_name !== "string" ||
-        first_name.trim() == "" || typeof first_name !== "string" ||
-        last_name.trim() == "" || typeof last_name !== "string" ||
-        password.trim() == "" || typeof password !== "string" ||
-        role.trim() == "" || typeof role !== "string" ||
-        experience_type.trim() == "" || typeof experience_type !== "string"
-    ){
+    if (
+        typeof user_name !== "string" || user_name.trim() === "" ||
+        typeof first_name !== "string" || first_name.trim() === "" ||
+        typeof last_name !== "string" || last_name.trim() === "" ||
+        typeof password !== "string" || password.trim() === "" ||
+        typeof crew_id !== "number" ||
+        typeof role !== "string" || role.trim() === "" ||
+        typeof experience_type !== "string" || experience_type.trim() === ""
+      ) {
         return res.status(400).json({ message: 'Submitted information is in the invalid format.' });
     }else{
         try{
+            const hashedPassword = await hashPassword(password);
             knex('users')
                 .where('user_name', user_name)
                 .first()
@@ -149,13 +150,18 @@ router.post("/", async (req, res) => {
 
 router.post('/login', (req, res) => {
     const {user_name, password} = req.body;
+    if (typeof user_name != 'string' || user_name.trim() == '' ||
+        typeof password != 'string' || password.trim() == '')
+    {
+        return res.status(400).json({error: 'Please provide a non-empty username and password.'})
+    }
 
     knex('users')
     .select('*')
     .where('user_name', user_name)
     .then(user => {
       if (user.length == 0) {
-        return res.status(404).json({ message: 'User not found.'})
+        return res.status(404).json({ error: 'User not found.'})
       } else {
         return bcrypt.compare(password, user[0].password)
         .then((matches) => {
@@ -181,9 +187,15 @@ router.patch("/:id", async (req, res) => {
     }
     try{
         const { user_name, first_name, last_name, password, squadron_id, crew_id, role, experience_type, privilege, flight } = req.body;
-        let hashedPassword = hashPassword(password);
-        const updates = {user_name, first_name, last_name, hashedPassword, squadron_id, crew_id, role, experience_type, privilege, flight};
+        const updates = {user_name, first_name, last_name, password, squadron_id, crew_id, role, experience_type, privilege, flight};
+        if (password) {
+            const hashedPassword = await hashPassword(password);
+            updates.password = hashedPassword
+        }
         Object.keys(updates).forEach(key => updates[key] === undefined && delete updates[key]);
+        if (Object.keys(updates).length == 0) {
+            return res.status(400).json({error: 'Must include at least one valid field to patch'})
+        }
 
         const updated_user = await knex("users")
         .where('id',id)

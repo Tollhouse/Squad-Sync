@@ -139,7 +139,9 @@ describe('PATCH testing of /users route', () => {
         password: 'yeshecan',
         crew_id: 2,
         role: 'Operator',
-        experience_type: 'green'
+        experience_type: 'green',
+        privilege: 'commander',
+        flight: 'DOU'
     }
     it('correct body should receive a 201 status', async () => {
         const res = await request(app).patch('/users/5').send(patch_body)
@@ -160,10 +162,11 @@ describe('PATCH testing of /users route', () => {
         expect(res.body[res.body.length - 1].first_name).toBe("Bob")
         expect(res.body[res.body.length - 1].last_name).toBe("The Builder")
         expect(res.body[res.body.length - 1].user_name).toBe("bbuilder")
-        expect(res.body[res.body.length - 1].password).toBe("yeshecan")
         expect(res.body[res.body.length - 1].crew_id).toBe(2)
         expect(res.body[res.body.length - 1].role).toBe('Operator')
         expect(res.body[res.body.length - 1].experience_type).toBe('green')
+        expect(res.body[res.body.length - 1].privilege).toBe('commander')
+        expect(res.body[res.body.length - 1].flight).toBe('DOU')
     })
 })
 
