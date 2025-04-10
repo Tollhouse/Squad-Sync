@@ -24,21 +24,35 @@ export default function SchedulerUser () {
   useEffect(() => {
     const fetchUserInformation = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/users/`);
-        const data = await response.json();
+        const userResponse = await fetch('http://localhost:8080/users');
+        const userData = await userResponse.json();
 
-        if (!data || (Array.isArray(data) && data.length === 0)) {
+        const crewResponse = await fetch('http://localhost:8080/crews');
+        const crewData = await crewResponse.json();
+
+        const crewMapping = crewData.reduce((acc, crew) => {
+          acc[crew.id] = crew.crew_name;
+          return acc;
+        }, {})
+
+        const mergedData = userData.map((user) => ({
+          ...user,
+          crew_name: crewMapping[user.crew_id] || 'Unknown Crew',
+        }))
+
+        if (!mergedData || (Array.isArray(mergedData) && mergedData.length === 0)) {
           setUserInformation([]);
           console.warn('No user data was found');
-        } else if (!Array.isArray(data)){
-          setUserInformation([data]);
+        } else if (!Array.isArray(mergedData)){
+          setUserInformation([mergedData]);
         } else {
-          setUserInformation(data)
+          setUserInformation(mergedData)
         }
       } catch (err) {
         console.error('Error fetching user information:', err);
       }
     };
+    console.log("userInformation:", userInformation)
 
     fetchUserInformation();
   }, [id]);
@@ -69,9 +83,23 @@ export default function SchedulerUser () {
 
   //HANDLES DELETING THE USER
   const deleteUserInformation = async (id) => {
-    
+    try {
+      const response = await fetch(`http://localhost:8080/users/${id}`, {
+        method: 'DELETE',
+        headers: {'Content-Type': 'application/json'},
+      })
+      if (!response.ok) {
+        throw new Error('Failed to delete user information')
+      }
+      const deletedRow = await response.json()
+      setUserInformation((prevRows) =>
+        prevRows.filter((row) => row.id !== deletedRow.id)
+      )
+      window.location.reload()
+    } catch (error) {
+      console.error('Error deleting user information:', error)
+    }
   }
-
 
   //HANDLES WHEN USER IS DONE EDITING ROW
   const handleRowEditStop = (params, event) => {
@@ -97,10 +125,14 @@ export default function SchedulerUser () {
   }
 
   //HANDLES DELETING THE USER
-  const handleDeleteClick = (id) => () => {
-    setRowModesModel({...rowModesModel, [id]: {mode : GridRowModes.Edit}})
-    window.location.reload()
-  }
+  const handleDeleteClick = (id) => async () => {
+    try {
+      alert('Are you sure you want to delete this user?')
+      await deleteUserInformation(id); // Call the delete function
+    } catch (error) {
+      console.error('Error deleting user:', error);
+    }
+  };
 
   //HANDLES THE ROW MODES MODEL CHANGE
   const handleRowModesModelChange = (newRowModesModel) => {
@@ -109,16 +141,18 @@ export default function SchedulerUser () {
 
   //SETS UP THE COLUMNS FOR THE TABLE
   const columns = [
-    {field: 'id', headerName: 'ID', width: 150, editable: false},
-    {field: 'user_name', headerName: 'User Name', width: 150, editable: true},
-    {field: 'first_name', headerName: 'First Name', width: 150, editable: true},
-    {field: 'last_name', headerName: 'Last Name', width: 150, editable: true},
-    {field: 'crew_name', headerName: 'Crew Name', width: 150, editable: false},
-    {field: 'role', headerName: 'Position', width: 150, editable: false},
+    {field: 'id', headerName: 'ID', width: 10, editable: false},
+    {field: 'user_name', headerName: 'User Name', width: 125, editable: true},
+    {field: 'first_name', headerName: 'First Name', width: 125, editable: true},
+    {field: 'last_name', headerName: 'Last Name', width: 125, editable: true},
+    {field: 'flight', headerName: 'Assigned Flight', width: 125, editable: true},
+    {field: 'crew_name', headerName: 'Crew Name', width: 125, editable: true},
+    {field: 'role', headerName: 'Position', width: 125, editable: true},
+    {field: 'privilege', headerName: 'Privilege', width: 125, editable: true},
     {field: 'experience_type',
       headerName: 'Experience Level',
       width: 150,
-      editable: false,
+      editable: true,
       renderCell: (params) => {
         let backgroundColor = 'white';
         let textColor = 'black';
@@ -188,7 +222,7 @@ export default function SchedulerUser () {
       }
     }
   ]
-// console.log("userInformation:", userInformation)
+
   return (
 
     <div className='user-container'>
@@ -208,7 +242,7 @@ export default function SchedulerUser () {
         <DataGrid
           rows={userInformation}
           columns={columns}
-          getRowId={(row) => row.id}
+          getRowId={(row) => `${row.id}-${row.flight}-${row.crew_name}`}
           editMode='row'
           rowModesModel={rowModesModel}
           onRowModesModelChange={handleRowModesModelChange}
