@@ -104,7 +104,7 @@ export default function User () {
     {field: 'first_name', headerName: 'First Name', width: 150, editable: true},
     {field: 'last_name', headerName: 'Last Name', width: 150, editable: true},
     {field: 'crew_name', headerName: 'Crew Name', width: 150, editable: false},
-    {field: 'role', headerName: 'Crew Position', width: 150, editable: false},
+    {field: 'role', headerName: 'Position', width: 150, editable: false},
     {field: 'experience_type',
       headerName: 'Experience Level',
       width: 150,
@@ -170,7 +170,7 @@ export default function User () {
       }
     }
   ]
-
+// console.log("userInformation:", userInformation)
   return (
 
     <div className='user-container'>
@@ -185,7 +185,7 @@ export default function User () {
         sx={{
           mt: 4,
           textAlign: 'center',
-          width:'61%',
+          width:'90%',
           '& .actions': {
             color: 'text.secondary',
           },

@@ -11,7 +11,7 @@ import {
 
 export default function Login() {
   const [formData, setFormData] = useState({
-    username: "",
+    user_name: "",
     password: "",
   });
   const [error, setError] = useState("");
@@ -58,6 +58,11 @@ export default function Login() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+
+   if(!formData){
+    return
+   }
+
     try {
       const response = await fetch("http://localhost:8080/users/login", {
         method: 'POST',
@@ -66,25 +71,23 @@ export default function Login() {
         },
         body: JSON.stringify(formData),
       });
-      const users = await response.json();
-
-      // const match = users.find(
-      //   (u) =>
-      //     u.user_name.toLowerCase() === formData.username.toLowerCase() &&
-      //     u.password === formData.password
-      // );
-
-      // if (!match) {
-      //   throw new Error("Invalid credentials");
-      // }
+      if(response.ok){
+      const loginRes = await response.json();
+      // console.log("loginRes:", loginRes);
 
       // ✅ Save more useful info for later dashboard logic
-      localStorage.setItem("username", match.user_name);
-      localStorage.setItem("userId", match.id);
-      localStorage.setItem("userRole", match.role);
+      // console.log('loginRes.user_name', loginRes.user.user_name)
+      localStorage.setItem("username", loginRes.user.user_name);
+      localStorage.setItem("userId", loginRes.user.id);
+      localStorage.setItem("userPrivilege", loginRes.user.privilege);
 
       alert("Login successful!");
       navigate("/"); // Navigate to the Home page post-login.
+
+    } else {
+      const errorData = await response.json();
+      alert('Login Failed')
+    }
     } catch (err) {
       setError("Invalid username or password");
     }
@@ -105,9 +108,9 @@ export default function Login() {
           <Stack spacing={2}>
             <TextField
               variant="outlined"
-              name="username"
+              name="user_name"
               label="Username"
-              value={formData.username}
+              value={formData.user_name}
               onChange={handleChange}
               fullWidth
             />
