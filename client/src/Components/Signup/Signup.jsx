@@ -16,10 +16,14 @@ import {
 
 export default function Signup() {
   const [formData, setFormData] = useState({
-    username: '',
+    user_name: '',
     password: '',
     first_name: '',
-    last_name: '' });
+    last_name: '',
+    crew_id: "6",
+    role: "Operator",
+    experience_level: "red"
+  });
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
@@ -31,7 +35,7 @@ export default function Signup() {
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    fetch('http://localhost:8081/signup', {
+    fetch('http://localhost:8080/users', {
       method: 'POST',
       mode: 'cors',
       headers: {
@@ -40,10 +44,15 @@ export default function Signup() {
       body: JSON.stringify(formData),
     })
       .then(response => response.json())
-      .then(() =>
+      .then((response) => {
+
         alert('you are all signed up'),
-        navigate('/login'))
+        navigate('/login')
+        console.log("response:", response);
+      })
+
       .catch(err => setError('Signup failed'));
+      console.log("data:", formData);
   };
 
   return (
@@ -78,8 +87,8 @@ export default function Signup() {
           <TextField
             label="Username"
             variant="outlined"
-            name="username"
-            value={formData.username}
+            name="user_name"
+            value={formData.user_name}
             onChange={handleChange}
             fullWidth
           />

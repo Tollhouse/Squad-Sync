@@ -1,5 +1,5 @@
 // Code written by Harman
-// incomplete code, need to match the back end; 
+// incomplete code, need to match the back end;
 // update the fetch request to match the back end API
 
 import { useNavigate } from 'react-router-dom';
@@ -9,7 +9,7 @@ export default function Logout() {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    fetch('http://localhost:8081/logout', {
+    fetch('http://localhost:8080/logout', {
       method: 'POST',
       mode: 'cors',
       credentials: 'same-origin',

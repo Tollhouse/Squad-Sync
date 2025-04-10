@@ -1,4 +1,4 @@
-const cors = require('cors');
+const cors = require("cors");
 const express = require("express");
 const router = express.Router();
 const knex = require("knex")(require("../../knexfile")["development"]);
@@ -24,7 +24,6 @@ router.get('/', async (req, res) => {
 });
 
 
-// get route to get the schedule of every user
 router.get("/schedule", async (req, res) => {
     let data = []
 
@@ -51,7 +50,6 @@ router.get("/schedule", async (req, res) => {
     catch (error){
         return res.status(500).json({ error: error });
     }
-
 });
 
 // get route to get the schedule of a specific user
@@ -71,7 +69,7 @@ router.get("/schedule/:id", async (req, res) => {
         let crewDates = await knex("users")
         .join('crews', 'users.crew_id', 'crews.id')
         .join('crew_rotations', 'crews.id', 'crew_rotations.crew_id')
-        .select('users.id as user_id','first_name', 'last_name','crews.id as crew_id', 'crew_name','crew_rotations.id as rotation_id','shift_type',  'date_start', 'date_end')
+        .select('users.id as user_id','first_name', 'last_name','crews.id as crew_id', 'crew_name','crew_rotations.id as rotation_id','shift_type',  'date_start', 'date_end', 'shift_duration', 'role')
         .select(knex.raw(`'crews' as source`))
         .orderBy('rotation_id')
         .where('users.id', id);
@@ -86,6 +84,7 @@ router.get("/schedule/:id", async (req, res) => {
     }
 
 });
+
 
 router.get("/:id", async (req, res) => {
     const id = parseInt(req.params.id)

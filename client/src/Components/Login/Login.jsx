@@ -1,5 +1,3 @@
-// code by Lorena - using MUI for styling
-
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -19,7 +17,9 @@ export default function Login() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
+  // Check using the username value in localStorage.
   const username = localStorage.getItem("username");
+  const userId = localStorage.getItem('userId');
   const [loggedIn, setLoggedIn] = useState(!!username);
 
   if (loggedIn) {
@@ -35,9 +35,13 @@ export default function Login() {
             color="secondary"
             sx={{ mt: 2 }}
             onClick={() => {
+              // Remove all authentication-related details.
+              localStorage.removeItem("session_id");
               localStorage.removeItem("username");
+              localStorage.removeItem("userRole");
+              localStorage.removeItem("userId");
               setLoggedIn(false);
-              navigate("/Logout");
+              navigate("/logout");
             }}
           >
             Logout
@@ -55,28 +59,28 @@ export default function Login() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      const res = await fetch("http://localhost:8080/users/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          user_name: formData.username,
-          password: formData.password,
-        }),
-      });
-  
-      const data = await res.json();
-  
-      if (!res.ok) {
-        throw new Error(data.message || "Login failed");
+      const response = await fetch("http://localhost:8080/users");
+      const users = await response.json();
+
+      // Verify credentials (case-insensitive username match)
+      const match = users.find(
+        (u) =>
+          u.user_name.toLowerCase() === formData.username.toLowerCase() &&
+          u.password === formData.password
+      );
+
+      if (!match) {
+        throw new Error("Invalid credentials");
       }
-  
-      // Save user ID and role for redirection
-      localStorage.setItem("username", formData.username);
-      localStorage.setItem("userId", data.id);
-      localStorage.setItem("userRole", data.privilege); 
-  
+
+      // Save authentication details in localStorage.
+      localStorage.setItem("username", match.user_name);
+      localStorage.setItem("userId", match.id);
+      localStorage.setItem("userRole", match.role);
+      localStorage.setItem("session_id", "true"); // Marker to indicate an active session.
+
       alert("Login successful!");
-      navigate("/Dashboard");
+      navigate("/"); // Navigate to the Home page post-login.
     } catch (err) {
       setError("Invalid username or password");
     }
@@ -121,7 +125,7 @@ export default function Login() {
             <Button
               type="button"
               variant="outlined"
-              onClick={() => navigate("/Signup")}
+              onClick={() => navigate("/signup")}
             >
               Sign Up
             </Button>
