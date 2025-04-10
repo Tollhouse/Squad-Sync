@@ -34,7 +34,7 @@ export default function Signup() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-
+   
     fetch('http://localhost:8080/users', {
       method: 'POST',
       mode: 'cors',
@@ -48,11 +48,11 @@ export default function Signup() {
 
         alert('you are all signed up'),
         navigate('/login')
-        // console.log("response:", response);
+
       })
 
       .catch(err => setError('Signup failed'));
-      // console.log("data:", formData);
+
   };
 
   return (
