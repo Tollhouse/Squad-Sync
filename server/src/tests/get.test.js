@@ -90,6 +90,39 @@ describe('GET /crews', () => {
     });
 });
 
+describe('GET /crews/:id' , () => {
+    it('should return a 400 error when bad id is supplied' , async () => {
+      const res = await request(app).get('/crews/bad_request')
+      expect(res.status).toBe(400)
+    })
+
+    it('should return a 200 status when correct id is supplied' , async () => {
+      const res = await request(app).get('/crews/1')
+      expect(res.status).toBe(200)
+    })
+
+    it('should return a 200 status and a message if id was not found in the table', async () => {
+      const res = await request(app).get('/crews/100000')
+      expect(res.status).toBe(200)
+      expect(res.body.message).toBe('No matching crew found with id 10000.')
+    })
+
+    it('should return an array of one object when correct id is supplied' , async () => {
+      const res = await request(app).get('/crews/1')
+      expect(res.status).toBe(200)
+      expect(Array.isArray(res.body)).toBe(true)
+      expect(typeof res.body[0]).toBe('object')
+      expect(res.body.length < 2).toBe(true) // can be zero if there were no matching rows
+    })
+
+    it('returned object should be equal to crew with id: 1', async () => {
+      const res = await request(app).get('/crews/1')
+      expect(res.status).toBe(200)
+      expect(res.body[0].id).toBe(1)
+      expect(res.body[0].crew_name).toBe("Alpha")
+    })
+})
+
   // -------------------------------------------------------   USERS   -------------------------------------------------------
 describe('GET /users', () => {
     it('should return a 200 status ', async () => {
@@ -104,7 +137,7 @@ describe('GET /users', () => {
     });
 
     it('an individual element of the array should be a "user" element', async () => {
-        const col_names = ['id', 'user_name', 'first_name', 'last_name', 'password', 'crew_id', 'role', 'experience_type']
+        const col_names = ['id', 'user_name', 'first_name', 'last_name', 'password', 'crew_id', 'role', 'experience_type', 'privilege', 'flight']
         const response = await request(app).get('/users');
         expect(response.status).toBe(200);
         expect(Array.isArray(response.body)).toBe(true)
@@ -112,8 +145,8 @@ describe('GET /users', () => {
     });
 
     it('all returned element properties should match the type definition in the ERD', async () => {
-        const col_names = ['id', 'user_name', 'first_name', 'last_name', 'password', 'crew_id', 'role', 'experience_type']
-        const col_types = ['number', 'string', 'string', 'string', 'string', 'number', 'string', 'string']
+        const col_names = ['id', 'user_name', 'first_name', 'last_name', 'password', 'crew_id', 'role', 'experience_type', 'privilege', 'flight']
+        const col_types = ['number', 'string', 'string', 'string', 'string', 'number', 'string', 'string', 'string', 'string']
         const response = await request(app).get('/users');
         expect(response.status).toBe(200);
         expect(Array.isArray(response.body)).toBe(true)
@@ -136,6 +169,41 @@ describe('GET /users', () => {
           });
     });
 });
+
+describe('GET /users/:id', () => {
+  it('should return a 400 status with bad request', async () => {
+    const response = await request(app).get('/users/bad_request');
+    expect(response.status).toBe(400);
+  });
+
+  it('should return a 200 status with message of no user found for non existent id', async () => {
+    const response = await request(app).get('/users/10000');
+    expect(response.status).toBe(200);
+    expect(response.body.error).toBe('User not found.')
+  });
+
+  it('should return a 200 status when called with correct id', async () => {
+    const response = await request(app).get('/users/1');
+    expect(response.status).toBe(200);
+  });
+
+  it('should return one object', async () => {
+    const response = await request(app).get('/users/1');
+    expect(response.status).toBe(200);
+    console.log(response.body)
+    expect(typeof response.body).toBe('object')
+  });
+
+  it('returned element should match user with id 1', async () => {
+      const response = await request(app).get('/users/1');
+      expect(response.status).toBe(200);
+      expect(response.body.last_name).toBe('Sally')
+      expect(response.body.user_name).toBe('Sally')
+      expect(response.body.role).toBe('Scheduler')
+      expect(response.body.privilege).toBe('scheduler')
+      expect(response.body.flight).toBe('DOU')
+  });
+})
 
 // -------------------------------------------------------   Course Registrations   -------------------------------------------------------
 describe('GET /course_registration', () => {

@@ -11,7 +11,7 @@ import {
 
 export default function Login() {
   const [formData, setFormData] = useState({
-    username: "",
+    user_name: "",
     password: "",
   });
   const [error, setError] = useState("");
@@ -58,29 +58,55 @@ export default function Login() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+
+   if(!formData){
+    return
+   }
+
     try {
-      const response = await fetch("http://localhost:8080/users");
+      const response = await fetch("http://localhost:8080/users/login", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+<<<<<<< HEAD
+      if(response.ok){
+      const loginRes = await response.json();
+      // console.log("loginRes:", loginRes);
+
+      // ✅ Save more useful info for later dashboard logic
+      // console.log('loginRes.user_name', loginRes.user.user_name)
+      localStorage.setItem("username", loginRes.user.user_name);
+      localStorage.setItem("userId", loginRes.user.id);
+      localStorage.setItem("userPrivilege", loginRes.user.privilege);
+=======
       const users = await response.json();
 
-      // Verify credentials (case-insensitive username match)
-      const match = users.find(
-        (u) =>
-          u.user_name.toLowerCase() === formData.username.toLowerCase() &&
-          u.password === formData.password
-      );
+      // const match = users.find(
+      //   (u) =>
+      //     u.user_name.toLowerCase() === formData.username.toLowerCase() &&
+      //     u.password === formData.password
+      // );
 
-      if (!match) {
-        throw new Error("Invalid credentials");
-      }
+      // if (!match) {
+      //   throw new Error("Invalid credentials");
+      // }
 
-      // Save authentication details in localStorage.
+      // ✅ Save more useful info for later dashboard logic
       localStorage.setItem("username", match.user_name);
       localStorage.setItem("userId", match.id);
       localStorage.setItem("userRole", match.role);
-      localStorage.setItem("session_id", "true"); // Marker to indicate an active session.
+>>>>>>> 43fb8da877a7544ccc22756e4ef25c4649c1b358
 
       alert("Login successful!");
       navigate("/"); // Navigate to the Home page post-login.
+
+    } else {
+      const errorData = await response.json();
+      alert('Login Failed')
+    }
     } catch (err) {
       setError("Invalid username or password");
     }
@@ -101,9 +127,9 @@ export default function Login() {
           <Stack spacing={2}>
             <TextField
               variant="outlined"
-              name="username"
+              name="user_name"
               label="Username"
-              value={formData.username}
+              value={formData.user_name}
               onChange={handleChange}
               fullWidth
             />
