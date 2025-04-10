@@ -19,11 +19,6 @@ router.get("/", (req, res) => {
       .catch((err) => res.status(500).json({ error: err.message }));
 });
 
-router.get('/', async (req, res) => {
-    res.status(200).json({message:"Working route."})
-});
-
-
 router.get("/schedule", async (req, res) => {
     let data = []
 
@@ -94,10 +89,10 @@ router.get("/:id", async (req, res) => {
     try{
       const user = await knex("users")
       .join("crews", "users.crew_id", '=', "crews.id")
-      .select("users.id", "users.user_name", "users.first_name", "users.last_name", "users.crew_id", "users.role", "users.experience_type", "crews.crew_name")
+      .select("users.id", "users.user_name", "users.first_name", "users.last_name", "users.crew_id", "users.role", "users.experience_type", "crews.crew_name", "users.flight", "users.privilege")
       .where("users.id", id).first()
       if(!user) {
-        return res.status(404).json({ error: 'User not found.' })
+        return res.status(200).json({ error: 'User not found.' })
       }
       res.status(200).json(user)
     } catch (error) {
@@ -175,8 +170,9 @@ router.patch("/:id", async (req, res) => {
         return
     }
     try{
-        const { user_name, first_name, last_name, password, squadron_id, crew_id, role, experience_type } = req.body;
-        const updates = {user_name, first_name, last_name, password, squadron_id, crew_id, role, experience_type};
+        const { user_name, first_name, last_name, password, squadron_id, crew_id, role, experience_type, privilege, flight } = req.body;
+        let hashedPassword = hashPassword(password);
+        const updates = {user_name, first_name, last_name, hashedPassword, squadron_id, crew_id, role, experience_type, privilege, flight};
         Object.keys(updates).forEach(key => updates[key] === undefined && delete updates[key]);
 
         const updated_user = await knex("users")
