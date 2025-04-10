@@ -81,14 +81,6 @@ export default function Login() {
       localStorage.setItem("userId", loginRes.user.id);
       localStorage.setItem("userPrivilege", loginRes.user.privilege);
 
-
-      const users = await response.json()
-
-      // ✅ Save more useful info for later dashboard logic
-      localStorage.setItem("username", match.user_name);
-      localStorage.setItem("userId", match.id);
-      localStorage.setItem("userRole", match.role);
-
       alert("Login successful!");
       navigate("/"); // Navigate to the Home page post-login.
 
