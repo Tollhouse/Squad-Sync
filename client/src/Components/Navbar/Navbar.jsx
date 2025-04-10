@@ -14,15 +14,15 @@ function Navbar() {
   // Check authentication by seeing if a username exists in localStorage.
   const isAuthenticated = localStorage.getItem('username');
   const username = localStorage.getItem('username');
-  const userRole = localStorage.getItem('userRole');
+  const userPrivilege = localStorage.getItem('userPrivilege');
   const userId = localStorage.getItem('userId');
 
   const handleLogout = () => {
     // Remove all authentication details.
     localStorage.removeItem('session_id');
     localStorage.removeItem('username');
-    localStorage.removeItem('userRole');
     localStorage.removeItem('userId');
+    localStorage.removeItem('userPrivilege');
     navigate('/login');
   };
 
@@ -51,7 +51,7 @@ function Navbar() {
     } else {
       let roleBasedButtons = null;
 
-      if (userRole === 'Crew Commander') {
+      if (userPrivilege === 'commander') {
         roleBasedButtons = (
           <Button
             key="dashboard"
@@ -61,9 +61,16 @@ function Navbar() {
             Dashboard
           </Button>
         );
-      } else if (userRole === 'Crew Chief') { //change crew chief back to scheduler
+      } else if (userPrivilege === 'scheduler') { //change crew chief back to scheduler
         roleBasedButtons = (
           <>
+          <Button
+            key="mySchedule"
+            onClick={() => navigate(`/user/${userId}`)}
+            sx={{ my: 2, color: 'white', display: 'block' }}
+          >
+            My Schedule
+          </Button>
             <Button
               key="courses"
               onClick={() => navigate('/courses')}
@@ -80,21 +87,21 @@ function Navbar() {
             </Button>
             <Button
               key="users"
-              onClick={() => navigate('/users')}
+              onClick={() => navigate('/users/users')}
               sx={{ my: 2, color: 'white', display: 'block' }}
             >
-              User
+              Update Users
             </Button>
           </>
         );
-      } else if (userRole === 'Operator') {
+      } else if (userPrivilege === 'user') {
         roleBasedButtons = (
           <Button
             key="mySchedule"
             onClick={() => navigate(`/user/${userId}`)}
             sx={{ my: 2, color: 'white', display: 'block' }}
           >
-            MySchedule
+            My Schedule
           </Button>
         );
       }
