@@ -4,7 +4,11 @@ const knex = require("knex")(require("../../knexfile")["development"]);
 
 router.get("/", (req, res) => {
   knex("courses")
-    .select("*")
+    .select(
+      '*',
+      knex.raw(`TO_CHAR(date_start, 'YYYY-MM-DD') AS date_start`),
+      knex.raw(`TO_CHAR(date_end, 'YYYY-MM-DD') AS date_end`)
+    )
     .then((course) => res.status(200).json(course))
     .catch((err) => res.status(500).json({ error: err.message }));
 });
@@ -15,7 +19,13 @@ router.get("/:id", async (req, res) => {
       res.status(400).json({ error: 'Invalid or missing request field. ID must match an id of course.' })
       return
   } else{
-      const course = await knex("courses").select("*").where('id',id)
+      const course = await knex("courses")
+                                .select(
+                                  '*',
+                                  knex.raw(`TO_CHAR(date_start, 'YYYY-MM-DD') AS date_start`),
+                                  knex.raw(`TO_CHAR(date_end, 'YYYY-MM-DD') AS date_end`)
+                                ).
+                                where('id',id)
       res.status(200).json(course)
   }
 });
@@ -32,9 +42,16 @@ router.post("/", async (req, res) => {
   }else{
       try{
           const course_input = await knex("courses")
-          .insert({ course_name, date_start, date_end, cert_granted })
-          .returning("*")
-          res.status(201).json(course_input)
+              .insert({ course_name, date_start, date_end, cert_granted })
+              .returning("id")
+          const query = await knex('courses')
+                                    .select(
+                                      '*',
+                                      knex.raw(`TO_CHAR(date_start, 'YYYY-MM-DD') AS date_start`),
+                                      knex.raw(`TO_CHAR(date_end, 'YYYY-MM-DD') AS date_end`)
+                                    )
+                                    .where('id', course_input[0].id)
+          res.status(201).json(query)
       }catch (error){
           return res.status(500).json({ error: 'Internal Server Error' });
       }
@@ -53,10 +70,17 @@ router.patch("/:id", async (req, res) => {
       Object.keys(updates).forEach(key => updates[key] === undefined && delete updates[key]);
 
       const updated_course = await knex("courses")
-      .where('id',id)
-      .update(updates)
-      .returning("*")
-      res.status(201).json(updated_course)
+                                      .where('id',id)
+                                      .update(updates)
+                                      .returning("id")
+      const query = await knex('courses')
+                                    .select(
+                                      '*',
+                                      knex.raw(`TO_CHAR(date_start, 'YYYY-MM-DD') AS date_start`),
+                                      knex.raw(`TO_CHAR(date_end, 'YYYY-MM-DD') AS date_end`)
+                                    )
+                                    .where('id', updated_course[0].id)
+      res.status(201).json(query)
   }catch (error){
       return res.status(500).json({ error: 'Internal Server Error' });
   }

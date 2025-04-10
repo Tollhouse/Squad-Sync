@@ -4,7 +4,11 @@ const knex = require("knex")(require("../../knexfile")["development"]);
 
 router.get("/", (req, res) => {
   knex("crew_rotations")
-    .select("*")
+    .select(
+      '*',
+      knex.raw(`TO_CHAR(date_start, 'YYYY-MM-DD') AS date_start`),
+      knex.raw(`TO_CHAR(date_end, 'YYYY-MM-DD') AS date_end`)
+    )
     .then((crewRotation) => res.status(200).json(crewRotation))
     .catch((err) => res.status(500).json({ error: err.message }));
 });
@@ -15,7 +19,13 @@ router.get("/:id", async (req, res) => {
       res.status(400).json({ error: 'Invalid or missing request field. ID must match an id of crew rotation.' })
       return
   } else{
-      const rotation = await knex("crew_rotations").select("*").where('id',id)
+      const rotation = await knex("crew_rotations")
+                                        .select(
+                                          '*',
+                                          knex.raw(`TO_CHAR(date_start, 'YYYY-MM-DD') AS date_start`),
+                                          knex.raw(`TO_CHAR(date_end, 'YYYY-MM-DD') AS date_end`)
+                                        )
+                                        .where('id',id)
       res.status(200).json(rotation)
   }
 });
@@ -34,9 +44,16 @@ router.post("/", async (req, res) => {
   }else{
       try{
           const user_input = await knex("crew_rotations")
-          .insert({crew_id, date_start, date_end, shift_type, shift_duration, experience_type})
-          .returning("*")
-          res.status(201).json(user_input)
+              .insert({crew_id, date_start, date_end, shift_type, shift_duration, experience_type})
+              .returning("id")
+          const query = await knex('crew_rotations')
+                                    .select(
+                                      '*',
+                                      knex.raw(`TO_CHAR(date_start, 'YYYY-MM-DD') AS date_start`),
+                                      knex.raw(`TO_CHAR(date_end, 'YYYY-MM-DD') AS date_end`)
+                                    )
+                                    .where('id', user_input[0].id)
+          res.status(201).json(query)
       }catch (error){
           return res.status(500).json({ error: 'Internal Server Error' });
       }
@@ -55,9 +72,17 @@ router.patch("/:id", async (req, res) => {
       Object.keys(updates).forEach(key => updates[key] === undefined && delete updates[key]);
 
       const updated_crew = await knex("crew_rotations")
-      .where('id',id)
-      .update(updates)
-      .returning("*")
+                                      .where('id',id)
+                                      .update(updates)
+                                      .returning("id")
+      const query = await knex('crew_rotations')
+                                      .select(
+                                        '*',
+                                        knex.raw(`TO_CHAR(date_start, 'YYYY-MM-DD') AS date_start`),
+                                        knex.raw(`TO_CHAR(date_end, 'YYYY-MM-DD') AS date_end`)
+                                      )
+                                      .where('id', updated_crew[0].id)
+          res.status(201).json(query)
       res.status(201).json(updated_crew)
   }catch (error){
       return res.status(500).json({ error: 'Internal Server Error' });

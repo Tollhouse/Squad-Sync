@@ -172,8 +172,11 @@ router.patch("/:id", async (req, res) => {
     }
     try{
         const { user_name, first_name, last_name, password, squadron_id, crew_id, role, experience_type, privilege, flight } = req.body;
-        let hashedPassword = hashPassword(password);
-        const updates = {user_name, first_name, last_name, hashedPassword, squadron_id, crew_id, role, experience_type, privilege, flight};
+        const updates = {user_name, first_name, last_name, password, squadron_id, crew_id, role, experience_type, privilege, flight};
+        if (password) {
+            const hashedPassword = await hashPassword(password);
+            updates.password = hashedPassword
+        }
         Object.keys(updates).forEach(key => updates[key] === undefined && delete updates[key]);
 
         const updated_user = await knex("users")

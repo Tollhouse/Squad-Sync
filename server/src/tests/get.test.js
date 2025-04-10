@@ -32,7 +32,6 @@ describe('GET /crew_rotations', () => {
         expect(response.status).toBe(200);
         expect(Array.isArray(response.body)).toBe(true)
         // this is checking to see if all the objects in the returned body have the right keys and that the value of each key is the right type
-        // console.log(response.body[0])
         response.body.forEach(crew_rotation => {
             const valid = isValidObject(crew_rotation, col_names, col_types);
             expect(valid).toBe(true);
@@ -190,7 +189,6 @@ describe('GET /users/:id', () => {
   it('should return one object', async () => {
     const response = await request(app).get('/users/1');
     expect(response.status).toBe(200);
-    console.log(response.body)
     expect(typeof response.body).toBe('object')
   });
 
