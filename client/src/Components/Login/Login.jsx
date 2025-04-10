@@ -80,27 +80,14 @@ export default function Login() {
       localStorage.setItem("username", loginRes.user.user_name);
       localStorage.setItem("userId", loginRes.user.id);
       localStorage.setItem("userPrivilege", loginRes.user.privilege);
-<<<<<<< HEAD
-=======
 
-      const users = await response.json();
 
-      // const match = users.find(
-      //   (u) =>
-      //     u.user_name.toLowerCase() === formData.username.toLowerCase() &&
-      //     u.password === formData.password
-      // );
-
-      // if (!match) {
-      //   throw new Error("Invalid credentials");
-      // }
+      const users = await response.json()
 
       // ✅ Save more useful info for later dashboard logic
       localStorage.setItem("username", match.user_name);
       localStorage.setItem("userId", match.id);
       localStorage.setItem("userRole", match.role);
-
->>>>>>> curtis-FE
 
       alert("Login successful!");
       navigate("/"); // Navigate to the Home page post-login.
