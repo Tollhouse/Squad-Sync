@@ -158,9 +158,19 @@ router.post('/login', (req, res) => {
       } else {
         return bcrypt.compare(password, user[0].password)
         .then((matches) => {
+<<<<<<< HEAD
             return matches == true
                 ? res.status(200).json({ message: 'Login successful', id: user[0].id, privilege: user[0].privilege })
                 : res.status(401).json({ message: 'Password is incorrect.'})
+=======
+          return matches == true
+                  ? res.status(200).json({
+                    message: 'Login successful',
+                    user: {id: user[0].id,
+                    username: user[0].user_name,
+                    userRole: user[0].user_role}})
+                  : res.status(401).json({ message: 'Password is incorrect.'})
+>>>>>>> 9880817 (working on login)
         })
       }})
     .catch((err) => {

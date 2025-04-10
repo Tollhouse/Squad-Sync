@@ -5,18 +5,15 @@ import './User.css'
 import { useParams } from 'react-router-dom'
 import UserCourse from './UserCourse.jsx'
 import UserCrew from './UserCrew.jsx'
-import GanttChart from './GanttChart.jsx'
+import GanttChartCourse from './GanttChartCourse.jsx'
+import GanttChartCrew from './GanttChartCrew.jsx'
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Close';
 import {
   GridRowModes,
   DataGrid,
-  GridToolbarContainer,
   GridActionsCellItem,
   GridRowEditStopReasons,
 } from '@mui/x-data-grid';
@@ -108,7 +105,32 @@ export default function User () {
     {field: 'last_name', headerName: 'Last Name', width: 150, editable: true},
     {field: 'crew_name', headerName: 'Crew Name', width: 150, editable: false},
     {field: 'role', headerName: 'Crew Position', width: 150, editable: false},
-    {field: 'experience_type', headerName: 'Experience Level', width: 150, editable: false},
+    {field: 'experience_type',
+      headerName: 'Experience Level',
+      width: 150,
+      editable: false,
+      renderCell: (params) => {
+        let backgroundColor = 'white';
+        let textColor = 'black';
+        if(params.value === 'red'){
+          backgroundColor = 'red';
+          textColor = 'white';
+        } else if (params.value === 'yellow'){
+          backgroundColor = 'yellow';
+          textColor = 'black';
+        } else if( params.value === 'green'){
+          backgroundColor = 'green';
+          textColor = 'white';
+        }
+        return (
+          <div style={{backgroundColor,
+          color: textColor,
+          padding: '5px',
+          textAlign: 'center',}}>
+            {params.value}
+          </div>
+        )
+      }},
     {
       field: 'actions',
       type: 'actions',
@@ -163,7 +185,7 @@ export default function User () {
         sx={{
           mt: 4,
           textAlign: 'center',
-          width:'84%',
+          width:'61%',
           '& .actions': {
             color: 'text.secondary',
           },
@@ -187,9 +209,11 @@ export default function User () {
           hideFooter={true}
           />
           </Box>
+          <GanttChartCourse />
           <UserCourse />
-          <UserCrew /><br/>
-          <GanttChart />
+          <GanttChartCrew />
+          <UserCrew />
+
     </div>
   )
 }

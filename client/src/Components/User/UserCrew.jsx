@@ -65,8 +65,8 @@ return (
           </TableHead>
           <TableBody>
             {userCrew.length > 0? (
-              userCrew.map((crew) => (
-              <TableRow key={crew.id}>
+              userCrew.map((crew, index) => (
+              <TableRow key={crew.id || index}>
                 <TableCell>{crew.crew_id}</TableCell>
                 <TableCell>{crew.crew_name}</TableCell>
                 <TableCell>{crew.role}</TableCell>
