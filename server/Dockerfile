@@ -1,10 +1,9 @@
 FROM node:latest
 
-RUN mkdir /server
 
 WORKDIR /server
 
-COPY . /server/
+COPY . .
 # COPY .env_docker /server/.env
 
 RUN npm install
