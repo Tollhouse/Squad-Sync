@@ -47,8 +47,8 @@ export default function Commander() {
         const [usersRes, coursesRes, regRes, crewRes] = await Promise.all([
           fetch("http://localhost:8080/users"),
           fetch("http://localhost:8080/courses"),
-          fetch("http://localhost:8080/courseRegistration"),
-          fetch("http://localhost:8080/crewRotations"),
+          fetch("http://localhost:8080/course_registration"),
+          fetch("http://localhost:8080/crew_rotations"),
         ]);
 
         const [usersData, coursesData, regData, crewData] = await Promise.all([
@@ -96,7 +96,7 @@ export default function Commander() {
     maintainAspectRatio: false,
     plugins: {
       legend: {
-        display: false
+        display: false,
       },
     },
     scales: {
@@ -199,22 +199,30 @@ export default function Commander() {
               )}
 
               {tabIndex === 2 && (
-                <Stack spacing={1}>
-                  {registrations.map((reg) => {
-                    const user = users.find((u) => u.id === reg.user_id);
-                    const course = courses.find((c) => c.id === reg.course_id);
-                    return user && course ? (
-                      <Box key={reg.id}>
-                        <Typography variant="body2">
-                          {user.first_name} {user.last_name} is {reg.in_progress} for{" "}
-                          {course.course_name} —{" "}
-                          {reg.cert_earned ? "✅ Certified" : "🕒 Not Yet Certified"}
-                        </Typography>
-                        <Divider sx={{ my: 1 }} />
-                      </Box>
-                    ) : null;
-                  })}
-                </Stack>
+                <Box
+                  sx={{
+                    maxHeight: 300,
+                    overflowY: "auto",
+                    pr: 1,
+                  }}
+                >
+                  <Stack spacing={1}>
+                    {registrations.map((reg) => {
+                      const user = users.find((u) => u.id === reg.user_id);
+                      const course = courses.find((c) => c.id === reg.course_id);
+                      return user && course ? (
+                        <Box key={reg.id}>
+                          <Typography variant="body2">
+                            {user.first_name} {user.last_name} is {reg.in_progress} for{" "}
+                            {course.course_name} —{" "}
+                            {reg.cert_earned ? "✅ Certified" : "🕒 Not Yet Certified"}
+                          </Typography>
+                          <Divider sx={{ my: 1 }} />
+                        </Box>
+                      ) : null;
+                    })}
+                  </Stack>
+                </Box>
               )}
 
               {tabIndex === 3 && (

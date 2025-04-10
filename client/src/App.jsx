@@ -7,16 +7,17 @@ import { Link, Routes, Route } from 'react-router-dom'
 import './App.css'
 import Home from "./Components/Home/Home.jsx"
 import Login from './Components/Login/Login.jsx'
-import Logout from './Components/Logout/Logout.jsx'
 import Signup from './Components/Signup/Signup.jsx'
 import Footer from './Components/Footer/Footer.jsx'
 import Navbar from './Components/Navbar/Navbar.jsx'
 import User from './Components/User/User.jsx'
-import Commander from "../src/Components/Commander/Commander.jsx";
+import Commander from "./Components/Commander/Commander.jsx";
+import Scheduler from './Components/Scheduler/Scheduler';
 import Courses from "./Components/Courses/Courses.jsx";
 import CourseReg from './Components/Courses/CourseRegistrations.jsx';
 import Dashboard from './Components/Dashboard/Dashboard.jsx';
 import TrainingManager from './Components/TrainingManager/TrainingManager.jsx';
+import SchedulerUser from './Components/User/SchedulerUser.jsx';
 import NotFound from './Components/NotFound/NotFound.jsx'
 import Crews from './Components/Crews/Crews.jsx';
 import {Paper, Switch} from '@mui/material'
@@ -57,7 +58,6 @@ export default function App() {
     <Routes>
       <Route path='/' element={<Home />}/>
       <Route path='/login' element={<Login />}/>
-      <Route path="/logout" element={<Logout />} />
       <Route path='/signup' element={<Signup />}/>
       <Route path='/user/:id' element={<User />}/>
       <Route path='/commander' element={<Commander />}/>
@@ -65,7 +65,9 @@ export default function App() {
       <Route path='/crews' element={<Crews />}/>
       <Route path='/course_registrations' element={<CourseReg />}/>
       <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/scheduler" element={<Scheduler />} />
       <Route path="/training-manager" element={<TrainingManager />} />
+      <Route path="/user/scheduler" element={<SchedulerUser />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
 

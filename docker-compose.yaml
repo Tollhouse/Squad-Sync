@@ -1,16 +1,17 @@
 version: '3.8'
 
 services:
-  # client:
-  #   build: ./client
-  #   image: client_img
-  #   container_name: client_cont
-  #   # ports:
-  #     # - 8081:8081 change based on front end
-  #   # volumes:
-  #   #   - ./client/src:/client/src
-  #   depends_on:
-  #     - server
+  client:
+    build: ./client
+    image: client_img
+    container_name: client_cont
+    ports:
+      - 3000:3000
+    volumes:
+      - ./client:/client  # Mount local client directory to container
+      - /client/node_modules  # Ensure node_modules aren't overwritten
+    depends_on:
+      - server
 
   server:
     build: ./server
@@ -19,7 +20,8 @@ services:
     ports:
       - 8080:8080
     volumes:
-      - ./server/src:/server/src
+      - ./server:/server
+      - /server/node_modules  # Ensure node_modules aren't overwritten
     env_file:
       - ./server/.env
     depends_on:

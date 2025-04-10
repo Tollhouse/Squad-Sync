@@ -52,8 +52,8 @@ describe('PATCH testing of /crew_rotations route', () => {
         expect(typeof res.body[0].id).toBe('number')
         expect(res.body[0].id).toBe(2)
         expect(res.body[0].crew_id).toBe(1)
-        expect(res.body[0].date_start).toBe("11-29-2018")
-        expect(res.body[0].date_end).toBe("11-29-2019")
+        expect(res.body[0].date_start).toBe("2018-11-29")
+        expect(res.body[0].date_end).toBe("2019-11-29")
         expect(res.body[0].shift_type).toBe("rest")
         expect(res.body[0].shift_duration).toBe(12)
         expect(res.body[0].experience_type).toBe("red")
@@ -65,8 +65,8 @@ describe('PATCH testing of /crew_rotations route', () => {
         expect(typeof res.body[0].id).toBe('number')
         res = await request(app).get('/crew_rotations')
         expect(res.body[res.body.length - 1].crew_id).toBe(1)
-        expect(res.body[res.body.length - 1].date_start).toBe("11-29-2018")
-        expect(res.body[res.body.length - 1].date_end).toBe("11-29-2019")
+        expect(res.body[res.body.length - 1].date_start).toBe("2018-11-29")
+        expect(res.body[res.body.length - 1].date_end).toBe("2019-11-29")
         expect(res.body[res.body.length - 1].shift_type).toBe("rest")
         expect(res.body[res.body.length - 1].shift_duration).toBe(12)
         expect(res.body[res.body.length - 1].experience_type).toBe("red")
@@ -88,6 +88,7 @@ describe('PATCH testing of /crews route', () => {
 
         const res = await request(app).patch('/crews/1').send(patch_body)
         expect(res.status).toBe(400)
+        expect(res.body.message).toBe('Submitted information is in the invalid format.')
     })
 
     const patch_body = {
@@ -114,6 +115,7 @@ describe('PATCH testing of /crews route', () => {
 })
 
 // -------------------------------------------------------  USERS  -------------------------------------------------------
+// TODO needs to test patches to user based on privilege/login
 describe('PATCH testing of /users route', () => {
     it('incorrect url/id should receive 400 error status', async () => {
 
@@ -137,7 +139,9 @@ describe('PATCH testing of /users route', () => {
         password: 'yeshecan',
         crew_id: 2,
         role: 'Operator',
-        experience_type: 'green'
+        experience_type: 'green',
+        privilege: 'commander',
+        flight: 'DOU'
     }
     it('correct body should receive a 201 status', async () => {
         const res = await request(app).patch('/users/5').send(patch_body)
@@ -158,10 +162,11 @@ describe('PATCH testing of /users route', () => {
         expect(res.body[res.body.length - 1].first_name).toBe("Bob")
         expect(res.body[res.body.length - 1].last_name).toBe("The Builder")
         expect(res.body[res.body.length - 1].user_name).toBe("bbuilder")
-        expect(res.body[res.body.length - 1].password).toBe("yeshecan")
         expect(res.body[res.body.length - 1].crew_id).toBe(2)
         expect(res.body[res.body.length - 1].role).toBe('Operator')
         expect(res.body[res.body.length - 1].experience_type).toBe('green')
+        expect(res.body[res.body.length - 1].privilege).toBe('commander')
+        expect(res.body[res.body.length - 1].flight).toBe('DOU')
     })
 })
 
@@ -251,8 +256,8 @@ describe('PATCH testing of /courses route', () => {
         expect(typeof res.body[0].id).toBe('number')
         res = await request(app).get('/courses')
         expect(res.body[res.body.length - 1].course_name).toBe("Test Course")
-        expect(res.body[res.body.length - 1].date_start).toBe("08-29-2025")
-        expect(res.body[res.body.length - 1].date_end).toBe("09-29-2025")
+        expect(res.body[res.body.length - 1].date_start).toBe("2025-08-29")
+        expect(res.body[res.body.length - 1].date_end).toBe("2025-09-29")
         expect(res.body[res.body.length - 1].cert_granted).toBe("Test Cert")
     })
 })

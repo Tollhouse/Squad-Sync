@@ -55,8 +55,8 @@ describe('POST testing of /crew_rotations route', () => {
         expect(typeof res.body[0].id).toBe('number')
         res = await request(app).get('/crew_rotations')
         expect(res.body[res.body.length - 1].crew_id).toBe(1)
-        expect(res.body[res.body.length - 1].date_start).toBe("11-29-2018")
-        expect(res.body[res.body.length - 1].date_end).toBe("11-29-2019")
+        expect(res.body[res.body.length - 1].date_start).toBe("2018-11-29")
+        expect(res.body[res.body.length - 1].date_end).toBe("2019-11-29")
         expect(res.body[res.body.length - 1].shift_type).toBe("swing")
         expect(res.body[res.body.length - 1].shift_duration).toBe(8)
         expect(res.body[res.body.length - 1].experience_type).toBe("yellow")
@@ -72,6 +72,7 @@ describe('POST testing of /crews route', () => {
 
         const res = await request(app).post('/crews').send(post_body)
         expect(res.status).toBe(400)
+        expect(res.body.message).toBe('Submitted information is in the invalid format.')
     })
 
     const post_body = {
@@ -115,7 +116,9 @@ describe('POST testing of /users route', () => {
         password: 'yeshecan',
         crew_id: 2,
         role: 'Operator',
-        experience_type: 'green'
+        experience_type: 'green',
+        privilege: 'scheduler',
+        flight: "DOT"
     }
     it('correct body should receive a 201 status', async () => {
         const res = await request(app).post('/users').send(post_body)
@@ -139,6 +142,52 @@ describe('POST testing of /users route', () => {
         expect(res.body[res.body.length - 1].crew_id).toBe(2)
         expect(res.body[res.body.length - 1].role).toBe('Operator')
         expect(res.body[res.body.length - 1].experience_type).toBe('green')
+        expect(res.body[res.body.length - 1].privilege).toBe('user')
+        expect(res.body[res.body.length - 1].flight).toBe('DOO')
+    })
+})
+
+describe('POST testing of /users/login route', () => {
+    it('incorrect body should receive 400 error status', async () => {
+        const post_body = {
+            field1: 'this is an incorrect post'
+        }
+
+        const res = await request(app).post('/users/login').send(post_body)
+        expect(res.status).toBe(400)
+        expect(res.body.error).toBe('Please provide a non-empty username and password.')
+    })
+
+    it('login with non-existent user should return 404 status with message', async () => {
+        const post_body = {
+            user_name: 'AAAAAAAA',
+            password: 'totallynormalpassword'
+        }
+        const res = await request(app).post('/users/login').send(post_body)
+        expect(res.status).toBe(404)
+        expect(res.body.error).toBe('User not found.')
+    })
+
+    it('login with existing user but wrong password should return 401 status with message', async () => {
+        const post_body = {
+            user_name: 'Curtis',
+            password: 'totallynormalpassword'
+        }
+        const res = await request(app).post('/users/login').send(post_body)
+        expect(res.status).toBe(401)
+        expect(res.body.error).toBe('Password is incorrect.')
+    })
+
+    it('login with existing user and correct password should return 200 status with message', async () => {
+        const post_body = {
+            user_name: 'Curtis',
+            password: 'Curtis'
+        }
+        const res = await request(app).post('/users/login').send(post_body)
+        expect(res.status).toBe(200)
+        expect(res.body.message).toBe('Login successful')
+        expect(res.body.id).toBe(2)
+        expect(res.body.privilege).toBe('commander')
     })
 })
 
@@ -216,8 +265,8 @@ describe('POST testing of /courses route', () => {
         expect(typeof res.body[0].id).toBe('number')
         res = await request(app).get('/courses')
         expect(res.body[res.body.length - 1].course_name).toBe("Test Course")
-        expect(res.body[res.body.length - 1].date_start).toBe("08-29-2025")
-        expect(res.body[res.body.length - 1].date_end).toBe("09-29-2025")
+        expect(res.body[res.body.length - 1].date_start).toBe("2025-08-29")
+        expect(res.body[res.body.length - 1].date_end).toBe("2025-09-29")
         expect(res.body[res.body.length - 1].cert_granted).toBe("Test Cert")
     })
 })

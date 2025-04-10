@@ -20,9 +20,9 @@ export default function Signup() {
     password: '',
     first_name: '',
     last_name: '',
-    crew_id: "6",
+    crew_id: 1,
     role: "Operator",
-    experience_level: "red"
+    experience_type: "red"
   });
   const [error, setError] = useState('');
   const navigate = useNavigate();
@@ -48,11 +48,11 @@ export default function Signup() {
 
         alert('you are all signed up'),
         navigate('/login')
-        console.log("response:", response);
+        // console.log("response:", response);
       })
 
       .catch(err => setError('Signup failed'));
-      console.log("data:", formData);
+      // console.log("data:", formData);
   };
 
   return (
