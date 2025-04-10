@@ -91,7 +91,7 @@ export default function GanttChartCourse() {
           <Chart
             chartType="Gantt"
             width="1200px"
-            height="100px"
+            height="159px"
             loader={<div>Loading Chart...</div>}
             data={[
               ["Task ID", "Task Name", "Start Date", "End Date", "Duration", "Percent Complete", "Dependencies"],

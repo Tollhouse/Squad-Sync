@@ -87,7 +87,7 @@ function Navbar() {
             </Button>
             <Button
               key="users"
-              onClick={() => navigate('/users/users')}
+              onClick={() => navigate('/user/scheduler')}
               sx={{ my: 2, color: 'white', display: 'block' }}
             >
               Update Users
