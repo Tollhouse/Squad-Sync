@@ -71,7 +71,6 @@ export default function Login() {
         },
         body: JSON.stringify(formData),
       });
-<<<<<<< HEAD
       if(response.ok){
       const loginRes = await response.json();
       // console.log("loginRes:", loginRes);
@@ -81,7 +80,7 @@ export default function Login() {
       localStorage.setItem("username", loginRes.user.user_name);
       localStorage.setItem("userId", loginRes.user.id);
       localStorage.setItem("userPrivilege", loginRes.user.privilege);
-=======
+
       const users = await response.json();
 
       // const match = users.find(
@@ -98,7 +97,7 @@ export default function Login() {
       localStorage.setItem("username", match.user_name);
       localStorage.setItem("userId", match.id);
       localStorage.setItem("userRole", match.role);
->>>>>>> 43fb8da877a7544ccc22756e4ef25c4649c1b358
+
 
       alert("Login successful!");
       navigate("/"); // Navigate to the Home page post-login.
