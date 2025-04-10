@@ -26,6 +26,9 @@ router.get("/:id", async (req, res) => {
                                           knex.raw(`TO_CHAR(date_end, 'YYYY-MM-DD') AS date_end`)
                                         )
                                         .where('id',id)
+      if (rotation.length == 0) {
+        return res.status(200).json({message: `No matching crew rotation found for id: ${id}.`})
+      }
       res.status(200).json(rotation)
   }
 });

@@ -15,7 +15,10 @@ router.get("/:id", async (req, res) => {
       res.status(400).json({ error: 'Invalid or missing request field. ID must match an id of couse registration.' })
       return
   } else{
-      const course_reg = await knex("course_registation").select("*").where('id',id)
+      const course_reg = await knex("course_registration").select("*").where('id',id)
+      if (course_reg.length == 0) {
+        return res.status(200).json({message: `No matching course registration found for id: ${id}.`})
+      }
       res.status(200).json(course_reg)
   }
 });

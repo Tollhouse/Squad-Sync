@@ -26,6 +26,9 @@ router.get("/:id", async (req, res) => {
                                   knex.raw(`TO_CHAR(date_end, 'YYYY-MM-DD') AS date_end`)
                                 ).
                                 where('id',id)
+      if (course.length == 0) {
+        return res.status(200).json({message: `No matching course found for id: ${id}.`})
+      }
       res.status(200).json(course)
   }
 });
@@ -102,6 +105,10 @@ router.delete("/:id", async (req, res) => {
 
 router.get("/roster/:id", async (req, res) => {
   const id = parseInt(req.params.id);
+  if(typeof id !== "number" || isNaN(id)){
+    res.status(400).json({ error: 'Invalid or missing request field. ID must match an id of a course.' })
+    return
+  }
   try{
       let courseRoster = await knex("users")
       .join('course_registration', 'users.id', 'user_id')
@@ -110,7 +117,9 @@ router.get("/roster/:id", async (req, res) => {
       .select(knex.raw(`'courses' as source`))
       .where('course_id', id)
       .orderBy('users.id');
-
+      if (courseRoster.length == 0) {
+        return res.status(200).json({message: `Either course roster is empty for course id: ${id}, or course id: ${id} does not exist`})
+      }
       return res.status(200).json(courseRoster)
   }
   catch (error){
