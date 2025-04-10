@@ -185,7 +185,7 @@ export default function User () {
         sx={{
           mt: 4,
           textAlign: 'center',
-          width:'90%',
+          width:'63%',
           '& .actions': {
             color: 'text.secondary',
           },

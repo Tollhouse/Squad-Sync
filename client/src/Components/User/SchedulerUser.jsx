@@ -148,8 +148,8 @@ export default function SchedulerUser () {
     {field: 'last_name', headerName: 'Last Name', width: 125, editable: true},
     {field: 'flight', headerName: 'Assigned Flight', width: 125, editable: true},
     {field: 'crew_name', headerName: 'Crew Name', width: 125, editable: true},
-    {field: 'role', headerName: 'Position', width: 125, editable: true},
-    {field: 'privilege', headerName: 'Privilege', width: 125, editable: true},
+    {field: 'role', headerName: 'Position', width: 140, editable: true},
+    {field: 'privilege', headerName: 'Privilege', width: 130, editable: true},
     {field: 'experience_type',
       headerName: 'Experience Level',
       width: 150,
@@ -252,7 +252,7 @@ export default function SchedulerUser () {
         sx={{
           mt: 4,
           textAlign: 'center',
-          width:'90%',
+          width:'65%',
           '& .actions': {
             color: 'text.secondary',
           },
