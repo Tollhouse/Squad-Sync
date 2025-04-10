@@ -51,6 +51,15 @@ export default function Crews() {
     shift_duration: "",
     experience_type: "",
   });
+  const [confirmNewUserOpen, setConfirmNewUserOpen] = useState(false);
+  const [isAddingUser, setIsAddingUser] = useState(false);
+  const [newUser, setNewUser] = useState({
+    crew_id: selectedCrewId,
+    first_name: "",
+    last_name: "",
+    role: "",
+    experience_type: "",
+  });
 
   // FOR TESTING ONLY - hardocded user privileges
   const [userPrivilege, setUserPrivilege] = useState("scheduler");
@@ -76,17 +85,30 @@ export default function Crews() {
     fetchData();
   }, []);
 
+  // Auto-fill crew_id in form when a crew is selected
+  useEffect(() => {
+    if (isAddingUser && selectedCrewId) {
+      setNewUser((prev) => ({
+        ...prev,
+        crew_id: selectedCrewId,
+      }));
+    }
+  }, [selectedCrewId, isAddingUser]);
+
   const handleNewRotationChange = (field, value) => {
     setNewRotation((prev) => ({ ...prev, [field]: value }));
   };
 
+  const handleNewUserChange = (field, value) => {
+    setNewUser((prev) => ({ ...prev, [field]: value }));
+  };
+
   const handleNewRotationSubmit = async () => {
     try {
-      // 1. Check if crew exists
       let crew = crews.find(
         (c) => c.crew_name.toLowerCase() === newRotation.crew_name.toLowerCase()
       );
-      // 2. If crew doesn't exist, create it
+
       if (!crew) {
         const crewRes = await fetch("http://localhost:8080/crews", {
           method: "POST",
@@ -96,10 +118,9 @@ export default function Crews() {
         if (!crewRes.ok) throw new Error("Failed to create new crew");
         const [createdCrew] = await crewRes.json();
         crew = createdCrew;
-        // Update crew state with new crew
         setCrews((prev) => [...prev, createdCrew]);
       }
-      // 3. Use crew.id to post new rotation
+
       const rotationRes = await fetch("http://localhost:8080/crew_rotations", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -117,7 +138,6 @@ export default function Crews() {
 
       const [createdRotation] = await rotationRes.json();
       setRotations((prev) => [...prev, createdRotation]);
-      // Clear form + close row
       setIsAddingRotation(false);
       setNewRotation({
         crew_name: "",
@@ -125,6 +145,31 @@ export default function Crews() {
         date_end: "",
         shift_type: "",
         shift_duration: "",
+        experience_type: "",
+      });
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleNewUserSubmit = async () => {
+    try {
+      const res = await fetch("http://localhost:8080/users", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newUser),
+      });
+
+      if (!res.ok) throw new Error("User creation failed");
+
+      const [created] = await res.json();
+      setUsers((prev) => [...prev, created]);
+      setIsAddingUser(false);
+      setNewUser({
+        crew_id: selectedCrewId || "",
+        first_name: "",
+        last_name: "",
+        role: "",
         experience_type: "",
       });
     } catch (err) {
@@ -167,32 +212,27 @@ export default function Crews() {
 
   const confirmRotationSave = async () => {
     try {
-      const rotationRes = await fetch(
-        `http://localhost:8080/crew_rotations/${pendingRotationId}`,
-        {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(editedRow),
-        }
-      );
-      const crewRes = await fetch(
-        `http://localhost:8080/crews/${editedRow.crew_id}`,
-        {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ crew_name: editedRow.crew_name }),
-        }
-      );
+      const rotationRes = await fetch(`http://localhost:8080/crew_rotations/${pendingRotationId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(editedRow),
+      });
+
+      const crewRes = await fetch(`http://localhost:8080/crews/${editedRow.crew_id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ crew_name: editedRow.crew_name }),
+      });
+
       if (!rotationRes.ok || !crewRes.ok) throw new Error("Failed to save");
+
       const updatedRotation = await rotationRes.json();
       setRotations((prev) =>
         prev.map((r) => (r.id === pendingRotationId ? updatedRotation[0] : r))
       );
       setCrews((prev) =>
         prev.map((c) =>
-          c.id === editedRow.crew_id
-            ? { ...c, crew_name: editedRow.crew_name }
-            : c
+          c.id === editedRow.crew_id ? { ...c, crew_name: editedRow.crew_name } : c
         )
       );
       setEditingRowId(null);
@@ -209,15 +249,14 @@ export default function Crews() {
 
   const confirmUserSave = async () => {
     try {
-      const userRes = await fetch(
-        `http://localhost:8080/users/${editingUserId}`,
-        {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(editedUser),
-        }
-      );
+      const userRes = await fetch(`http://localhost:8080/users/${editingUserId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(editedUser),
+      });
+
       if (!userRes.ok) throw new Error("User update failed");
+
       const updatedUser = await userRes.json();
       setUsers((prev) =>
         prev.map((u) => (u.id === editingUserId ? updatedUser[0] : u))
@@ -237,13 +276,12 @@ export default function Crews() {
 
   const confirmDelete = async () => {
     try {
-      const res = await fetch(
-        `http://localhost:8080/crew_rotations/${pendingDeleteId}`,
-        {
-          method: "DELETE",
-        }
-      );
+      const res = await fetch(`http://localhost:8080/crew_rotations/${pendingDeleteId}`, {
+        method: "DELETE",
+      });
+
       if (!res.ok) throw new Error("Delete failed");
+
       setRotations((prev) => prev.filter((r) => r.id !== pendingDeleteId));
     } catch (err) {
       console.error(err);
@@ -537,6 +575,16 @@ export default function Crews() {
               <Typography variant="h4">
                 {selectedCrew?.crew_name} Crew
               </Typography>
+              {canEdit && (
+                <Button
+                  sx={{ mt: 2 }}
+                  variant="contained"
+                  color="primary"
+                  onClick={() => setIsAddingUser(true)}
+                >
+                  + Add Crew Member
+                </Button>
+              )}
             </Box>
             <TableContainer component={Paper} sx={{ mt: 2 }}>
               <Table>
@@ -551,6 +599,71 @@ export default function Crews() {
                   </TableRow>
                 </TableHead>
                 <TableBody>
+                  {/* Add new crew member */}
+                  {isAddingUser && (
+                    <TableRow>
+                      <TableCell>
+                        <Select
+                          value={newUser.crew_id}
+                          onChange={(e) => handleNewUserChange("crew_id", e.target.value)}
+                          size="small"
+                        >
+                          {crews.map((crew) => (
+                            <MenuItem key={crew.id} value={crew.id}>
+                              {crew.crew_name}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </TableCell>
+                      <TableCell>
+                        <TextField
+                          size="small"
+                          value={newUser.first_name}
+                          onChange={(e) => handleNewUserChange("first_name", e.target.value)}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <TextField
+                          size="small"
+                          value={newUser.last_name}
+                          onChange={(e) => handleNewUserChange("last_name", e.target.value)}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Select
+                          size="small"
+                          value={newUser.role}
+                          onChange={(e) => handleNewUserChange("role", e.target.value)}
+                        >
+                          <MenuItem value="Crew Commander">Crew Commander</MenuItem>
+                          <MenuItem value="Crew Chief">Crew Chief</MenuItem>
+                          <MenuItem value="Operator">Operator</MenuItem>
+                        </Select>
+                      </TableCell>
+                      {canSeeExperience && (
+                        <TableCell>
+                          <Select
+                            size="small"
+                            value={newUser.experience_type}
+                            onChange={(e) => handleNewUserChange("experience_type", e.target.value)}
+                          >
+                            <MenuItem value="green">Green</MenuItem>
+                            <MenuItem value="yellow">Yellow</MenuItem>
+                            <MenuItem value="red">Red</MenuItem>
+                          </Select>
+                        </TableCell>
+                      )}
+                      <TableCell>
+                        <IconButton onClick={() => setConfirmNewUserOpen(true)}>
+                          <SaveIcon />
+                        </IconButton>
+                        <IconButton onClick={() => setIsAddingUser(false)}>
+                          <CancelIcon />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  )}
+
                   {usersByCrew.map((user) => (
                     <TableRow key={user.id}>
                       <TableCell>
@@ -667,6 +780,14 @@ export default function Crews() {
         onConfirm={() => {
           setConfirmNewRotationOpen(false);
           handleNewRotationSubmit();
+        }}
+      />
+      <ConfirmSaveModal
+        open={confirmNewUserOpen}
+        onClose={() => setConfirmNewUserOpen(false)}
+        onConfirm={() => {
+          setConfirmNewUserOpen(false);
+          handleNewUserSubmit();
         }}
       />
     </>
