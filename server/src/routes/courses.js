@@ -73,4 +73,23 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
+router.get("/roster/:id", async (req, res) => {
+  const id = parseInt(req.params.id);
+  try{
+      let courseRoster = await knex("users")
+      .join('course_registration', 'users.id', 'user_id')
+      .join('courses', 'courses.id', 'course_id')
+      .select('users.id as user_id','first_name','last_name','course_registration.id as registration_id' ,'course_id','course_name', 'cert_granted', 'date_start', 'date_end')
+      .select(knex.raw(`'courses' as source`))
+      .where('course_id', id)
+      .orderBy('users.id');
+
+      return res.status(200).json(courseRoster)
+  }
+  catch (error){
+      return res.status(500).json({ error: error });
+  }
+
+});
+
 module.exports = router;
