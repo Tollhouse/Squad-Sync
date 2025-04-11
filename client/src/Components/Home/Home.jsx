@@ -57,11 +57,12 @@ export default function Home() {
                       <li key={index}>{course.course_name} - Start date: {course.date_start}</li>
                     ))}
                   </ul>
+                  <p>Contact your Training Manager for more information.</p>
                 </>
               ) : (
                 <p>No new courses available at this time, check back soon!</p>
               )}
-              <p>Contact your Training Manager for more information.</p>
+
             </div>
 
             <div className="topSection">
