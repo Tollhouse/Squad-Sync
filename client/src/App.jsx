@@ -70,8 +70,6 @@ export default function App() {
       <Route path="/user/scheduler" element={<SchedulerUser />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
-
-    <Footer />
     </Paper>
 
     </ThemeProvider>
