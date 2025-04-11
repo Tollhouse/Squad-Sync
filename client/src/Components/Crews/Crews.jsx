@@ -63,7 +63,8 @@ export default function Crews() {
   });
 
   // FOR TESTING ONLY - hardocded user privileges
-  const [userPrivilege, setUserPrivilege] = useState("scheduler");
+  // const [userPrivilege, setUserPrivilege] = useState("scheduler");
+  const userPrivilege = localStorage.getItem('userPrivilege');
   const canEdit = userPrivilege === "scheduler";
   const canSeeExperience = ["commander", "scheduler"].includes(userPrivilege);
 
