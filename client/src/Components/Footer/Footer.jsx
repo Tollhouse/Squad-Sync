@@ -13,15 +13,12 @@ function Footer() {
     <Box
       component="footer"
       sx={(theme) => ({
-        position: "fixed",
-        bottom: 0,
-        left: 0,
         width: "100%",
         bgcolor: "transparent",
         color: theme.palette.text.primary,
         py: 2,
         textAlign: "center",
-        zIndex: 1000,
+        mt: "auto",
       })}
     >
       <Container>

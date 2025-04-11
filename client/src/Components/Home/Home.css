@@ -1,0 +1,80 @@
+.pageContainer {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.NavContainer {
+  flex: 1;
+}
+
+.homeContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: 2rem;
+}
+
+.topSection {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.mission,
+.vision {
+  flex: 1;
+  min-width: 300px;
+  background-color: #f0f4f8;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  color: black;
+}
+
+.news {
+  background-color: #f0f4f8;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  color: black;
+  align-self: stretch;
+}
+
+.news p {
+  font-style: italic;
+}
+
+.news ul {
+  list-style-type: none;
+}
+
+.roles {
+  background-color: #f0f4f8;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  color: black;
+  align-self: stretch;
+}
+
+
+.roleGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-top: 1.5rem;
+}
+
+.role {
+  background-color: #ffffff;
+  padding: 1rem;
+  border-radius: 10px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+footer {
+  margin-top: auto;
+  color: white !important;
+  background-color: transparent !important;
+}
