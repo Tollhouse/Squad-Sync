@@ -47,8 +47,8 @@ export default function App() {
 
   return (
     <>
-     <ThemeProvider theme={appTheme}>
-    <Paper elevation={0} sx={{ height: "100vh" }} square>
+    <ThemeProvider theme={appTheme}>
+    <Paper elevation={0} sx={{ height: "3000px" }} square>
     <Switch
           checked={mode}
           onChange={handleChange}
@@ -70,8 +70,6 @@ export default function App() {
       <Route path="/user/scheduler" element={<SchedulerUser />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
-
-    <Footer />
     </Paper>
 
     </ThemeProvider>
