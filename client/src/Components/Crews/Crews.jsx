@@ -53,6 +53,7 @@ export default function Crews() {
   });
   const [confirmNewUserOpen, setConfirmNewUserOpen] = useState(false);
   const [isAddingUser, setIsAddingUser] = useState(false);
+  const [pendingUserDeleteId, setPendingUserDeleteId] = useState(null);
   const [newUser, setNewUser] = useState({
     crew_id: selectedCrewId,
     first_name: "",
@@ -287,6 +288,28 @@ export default function Crews() {
       console.error(err);
     } finally {
       setConfirmDeleteOpen(false);
+    }
+  };
+
+  const handleUserDelete = (id) => {
+    setPendingUserDeleteId(id);
+    setConfirmDeleteOpen(true);
+  };
+
+  const confirmUserDelete = async () => {
+    try {
+      const res = await fetch(`http://localhost:8080/users/${pendingUserDeleteId}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) throw new Error("Delete failed");
+
+      setUsers((prev) => prev.filter((u) => u.id !== pendingUserDeleteId));
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setConfirmDeleteOpen(false);
+      setPendingUserDeleteId(null);
     }
   };
 
@@ -733,9 +756,7 @@ export default function Crews() {
                         <TableCell>
                           {editingUserId === user.id ? (
                             <>
-                              <IconButton
-                                onClick={() => handleUserSave(user.id)}
-                              >
+                              <IconButton onClick={() => handleUserSave(user.id)}>
                                 <SaveIcon />
                               </IconButton>
                               <IconButton onClick={handleUserCancel}>
@@ -743,9 +764,14 @@ export default function Crews() {
                               </IconButton>
                             </>
                           ) : (
-                            <IconButton onClick={() => handleUserEdit(user)}>
-                              <EditIcon />
-                            </IconButton>
+                            <>
+                              <IconButton onClick={() => handleUserEdit(user)}>
+                                <EditIcon />
+                              </IconButton>
+                              <IconButton onClick={() => handleUserDelete(user.id)}>
+                                <DeleteIcon />
+                              </IconButton>
+                            </>
                           )}
                         </TableCell>
                       )}
@@ -772,7 +798,13 @@ export default function Crews() {
       <ConfirmDeleteModal
         open={confirmDeleteOpen}
         onClose={() => setConfirmDeleteOpen(false)}
-        onConfirm={confirmDelete}
+        onConfirm={() => {
+          if (pendingDeleteId !== null) {
+            confirmDelete();
+          } else if (pendingUserDeleteId !== null) {
+            confirmUserDelete();
+          }
+        }}
       />
       <ConfirmSaveModal
         open={confirmNewRotationOpen}

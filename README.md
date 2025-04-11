@@ -191,6 +191,6 @@ Everything should be ready now to start the API server by running:
 - [Michael Thomas](https://www.github.com/m-h-thomas)
 - [Erik Voss](https://www.github.com/Chaos66-dev)
 - [Landon Spencer](https://github.com/Landon-Spencer)
-
+- [Jackie Luu](https://github.com/dytzi)
 
 
