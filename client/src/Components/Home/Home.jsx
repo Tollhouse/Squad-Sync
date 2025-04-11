@@ -1,8 +1,7 @@
-// Incomplete code, need to determin how to store username
+// Incomplete code, need to determine how to store username
 // Code written by Harman
 // MUI styling by Lorena
 
-import React from "react";
 import "./Home.css";
 // import { Container, Box, Typography, Button, Stack } from "@mui/material";
 
