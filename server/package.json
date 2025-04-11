@@ -22,11 +22,13 @@
   "dependencies": {
     "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
+    "dayjs": "^1.11.13",
     "dotenv": "^16.4.7",
     "express": "^5.1.0",
     "knex": "^3.1.0",
     "nodemon": "^3.1.9",
     "pg": "^8.14.1",
+    "rrule": "^2.8.1",
     "util-deprecate": "^1.0.2"
   },
   "devDependencies": {
