@@ -1,5 +1,4 @@
 //Authored by Curtis
-//This is incomplete, need enpoints from the backend for the PATCH
 import React, { useState, useEffect } from 'react'
 import './User.css'
 import { useParams } from 'react-router-dom'
@@ -28,7 +27,7 @@ export default function UserCourse () {
       try {
         const response = await fetch(`http://localhost:8080/users/schedule/${id}`);
         const data = await response.json();
-        
+
         if (!data || (Array.isArray(data) && data.length === 0)) {
           setUserCourse([]);
           console.warn('No user data was found');

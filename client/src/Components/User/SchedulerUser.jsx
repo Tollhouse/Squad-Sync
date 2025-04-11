@@ -1,5 +1,4 @@
 //Authored by Curtis
-//This is incomplete, need enpoints from the backend for the PATCH
 import React, { useState, useEffect, useMemo } from 'react'
 import './User.css'
 import { useParams } from 'react-router-dom'
@@ -19,6 +18,7 @@ export default function SchedulerUser () {
   const { id } = useParams()
   const [userInformation, setUserInformation] = useState([])
   const [rowModesModel, setRowModesModel] = useState({})
+  const [search, setSearch] = useState('')
 
   //HANDLES GETTING USER INFORMATION
   useEffect(() => {
@@ -60,14 +60,27 @@ export default function SchedulerUser () {
   //HANDLES UPDATING USER INFORMATION
   const updateUserInformation = async (newRow) => {
     try{
+      const originalRow = userInformation.find((row) => row.id === newRow.id)
+
+      if(originalRow.crew_name !== newRow.crew_name){
+        const crewResponse = await fetch('http://localhost:8080/crews')
+        const crewData = await crewResponse.json()
+        const newCrew = crewData.find((crew) => crew.crew_name === newRow.crew_name)
+      if(!newCrew){
+        throw new Error(`Crew name "${newRow.crew_name}" not found`)
+      }
+      newRow.crew_id = newCrew.id
+      }
       const response = await fetch(`http://localhost:8080/users/${newRow.id}`, {
         method: 'PATCH',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(newRow),
       });
+
       if (!response.ok) {
         throw new Error('Failed to update user information');
       }
+
       const updatedRows = await response.json()
       const updatedRow = updatedRows[0]
       setUserInformation((prevRows) =>
@@ -147,8 +160,8 @@ export default function SchedulerUser () {
     {field: 'last_name', headerName: 'Last Name', width: 125, editable: true},
     {field: 'flight', headerName: 'Assigned Flight', width: 125, editable: true},
     {field: 'crew_name', headerName: 'Crew Name', width: 125, editable: true},
-    {field: 'role', headerName: 'Position', width: 125, editable: true},
-    {field: 'privilege', headerName: 'Privilege', width: 125, editable: true},
+    {field: 'role', headerName: 'Position', width: 140, editable: true},
+    {field: 'privilege', headerName: 'Privilege', width: 130, editable: true},
     {field: 'experience_type',
       headerName: 'Experience Level',
       width: 150,
@@ -223,14 +236,35 @@ export default function SchedulerUser () {
     }
   ]
 
+  const filteredRows = userInformation.filter((row) =>
+    Object.values(row).some((value) =>
+      String(value).toLowerCase().includes(search.toLowerCase())
+    )
+  );
+
   return (
 
     <div className='user-container'>
+      <div className='search-container'>
+        <input
+          type='text'
+          placeholder='Search for member...'
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          style={{
+            marginTop: '20px',
+            padding: '8px',
+            width: '250px',
+            border: '1px solid #ccc',
+            borderRadius: '4px',
+          }}
+          />
+      </div>
       <Box
         sx={{
           mt: 4,
           textAlign: 'center',
-          width:'90%',
+          width:'65%',
           '& .actions': {
             color: 'text.secondary',
           },
@@ -240,7 +274,7 @@ export default function SchedulerUser () {
         }}
         >
         <DataGrid
-          rows={userInformation}
+          rows={filteredRows}
           columns={columns}
           getRowId={(row) => `${row.id}-${row.flight}-${row.crew_name}`}
           editMode='row'
