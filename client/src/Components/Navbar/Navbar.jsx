@@ -87,7 +87,7 @@ function Navbar() {
             </Button>
             <Button
               key="crewSchedule"
-              onClick={() => navigate('/crew-schedule')}
+              onClick={() => navigate('/crews')}
               sx={{ my: 2, color: 'white', display: 'block' }}
             >
               Crew Schedule

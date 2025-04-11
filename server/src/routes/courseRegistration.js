@@ -10,14 +10,14 @@ router.get("/", (req, res) => {
 });
 
 router.get("/:id", async (req, res) => {
-  const id = parseInt(req.params.id)
-  if(typeof id !== "number" || isNaN(id)){
+  const user_id = parseInt(req.params.id)
+  if(typeof user_id !== "number" || isNaN(user_id)){
       res.status(400).json({ error: 'Invalid or missing request field. ID must match an id of couse registration.' })
       return
   } else{
-      const course_reg = await knex("course_registration").select("*").where('id',id)
+      const course_reg = await knex("course_registration").select("*").where('user_id', user_id)
       if (course_reg.length == 0) {
-        return res.status(200).json({message: `No matching course registration found for id: ${id}.`})
+        return res.status(200).json({message: `No matching course registration found for id: ${user_id}.`})
       }
       res.status(200).json(course_reg)
   }

@@ -4,6 +4,7 @@ import './User.css'
 import { useParams } from 'react-router-dom'
 import UserCourse from './UserCourse.jsx'
 import UserCrew from './UserCrew.jsx'
+import Calendar from './Calendar'
 import GanttChartCourse from './GanttChartCourse.jsx'
 import GanttChartCrew from './GanttChartCrew.jsx'
 import Box from '@mui/material/Box';
@@ -16,6 +17,7 @@ import {
   GridActionsCellItem,
   GridRowEditStopReasons,
 } from '@mui/x-data-grid';
+import { Chip } from "@mui/material"
 
 export default function User () {
   const { id } = useParams()
@@ -96,6 +98,26 @@ export default function User () {
     setRowModesModel(newRowModesModel)
   }
 
+  //HANDLES THE EXPERIENCE LEVEL ICON
+  const ExperienceChip = ({ level }) => {
+    const colorMap = {
+      green: { label: "Green", color: "#4caf50" },
+      yellow: { label: "Yellow", color: "#ffeb3b", textColor: "#000" },
+      red: { label: "Red", color: "#f44336" },
+    };
+    return (
+      <Chip
+        label={colorMap[level]?.label || level}
+        size="small"
+        sx={{
+          backgroundColor: colorMap[level]?.color,
+          color: colorMap[level]?.textColor || "#fff",
+          fontWeight: 600,
+        }}
+      />
+    );
+  };
+
   //SETS UP THE COLUMNS FOR THE TABLE
   const columns = [
     {field: 'id', headerName: 'ID', width: 150, editable: false},
@@ -104,32 +126,13 @@ export default function User () {
     {field: 'last_name', headerName: 'Last Name', width: 150, editable: true},
     {field: 'crew_name', headerName: 'Crew Name', width: 150, editable: false},
     {field: 'role', headerName: 'Position', width: 150, editable: false},
-    {field: 'experience_type',
+    {
+      field: 'experience_type',
       headerName: 'Experience Level',
       width: 150,
-      editable: false,
-      renderCell: (params) => {
-        let backgroundColor = 'white';
-        let textColor = 'black';
-        if(params.value === 'red'){
-          backgroundColor = 'red';
-          textColor = 'white';
-        } else if (params.value === 'yellow'){
-          backgroundColor = 'yellow';
-          textColor = 'black';
-        } else if( params.value === 'green'){
-          backgroundColor = 'green';
-          textColor = 'white';
-        }
-        return (
-          <div style={{backgroundColor,
-          color: textColor,
-          padding: '5px',
-          textAlign: 'center',}}>
-            {params.value}
-          </div>
-        )
-      }},
+      editable: true,
+      renderCell: (params) => <ExperienceChip level={params.value} />,
+    },
     {
       field: 'actions',
       type: 'actions',
@@ -208,11 +211,11 @@ export default function User () {
           hideFooter={true}
           />
           </Box>
-          <GanttChartCourse />
+          {/* <GanttChartCourse /> */}
           <UserCourse />
-          <GanttChartCrew />
+          {/* <GanttChartCrew /> */}
           <UserCrew />
-
+          <Calendar />
     </div>
   )
 }

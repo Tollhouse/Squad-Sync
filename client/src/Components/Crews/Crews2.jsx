@@ -26,11 +26,14 @@ import SaveIcon from "@mui/icons-material/Save";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CancelIcon from "@mui/icons-material/Cancel";
 
-export default function Crews() {
+export default function Crews2() {
   const theme = useTheme();
+  const [totalUserData, setTotalUserData] = useState([]);
   const [crews, setCrews] = useState([]);
   const [rotations, setRotations] = useState([]);
   const [users, setUsers] = useState([]);
+  const [courses, setCourses] = useState([]);
+  const [courseReg, setCourseReg] = useState([]);
   const [selectedCrewId, setSelectedCrewId] = useState(null);
   const [editingRowId, setEditingRowId] = useState(null);
   const [editedRow, setEditedRow] = useState({});
@@ -60,6 +63,15 @@ export default function Crews() {
     role: "",
     experience_type: "",
   });
+  const [editingPosition, setEditingPosition] = useState(null);
+  const [editedPosition, setEditedPosition] = useState({});
+  const [requiredPositions, setRequiredPositions] = useState([
+    { position: "Crew Commander", assigned_user_id: null },
+    { position: "Crew Chief", assigned_user_id: null },
+    { position: "Operator", assigned_user_id: null },
+    { position: "Operator", assigned_user_id: null },
+    { position: "Operator", assigned_user_id: null },
+  ]);
 
   // FOR TESTING ONLY - hardocded user privileges
   const [userPrivilege, setUserPrivilege] = useState("scheduler");
@@ -68,20 +80,35 @@ export default function Crews() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const [crewRes, rotationRes, userRes] = await Promise.all([
+      const [crewRes, rotationRes, userRes, courseRegRes, courseRes] = await Promise.all([
         fetch("http://localhost:8080/crews"),
         fetch("http://localhost:8080/crew_rotations"),
         fetch("http://localhost:8080/users"),
+        fetch("http://localhost:8080/course_registration"),
+        fetch("http://localhost:8080/courses")
       ]);
-      const [crewsData, rotationsData, usersData] = await Promise.all([
+      const [crewsData, rotationsData, usersData, courseRegData, courseData] = await Promise.all([
         crewRes.json(),
         rotationRes.json(),
         userRes.json(),
+        courseRegRes.json(),
+        courseRes.json(),
       ]);
       setCrews(crewsData);
       setRotations(rotationsData);
       setUsers(usersData);
+      setCourseReg(courseRegData);
+      setCourses(courseData);
+      setTotalUserData(
+        {
+          crewsData,
+          rotationsData,
+          usersData,
+          courseRegData,
+          courseData,
+        });
     };
+
     fetchData();
   }, []);
 
@@ -290,6 +317,51 @@ export default function Crews() {
     }
   };
 
+  const handleEditPosition = (position) => {
+    setEditingPosition(position);
+    const currentPosition = requiredPositions.find(
+      (pos) => pos.position === position
+    );
+    setEditedPosition(currentPosition || {});
+  };
+
+  const handlePositionChange = (field, value) => {
+    setEditedPosition((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleSavePosition = async () => {
+    try {
+      // Update the required positions state
+      setRequiredPositions((prev) =>
+        prev.map((pos) =>
+          pos.position === editingPosition ? { ...pos, ...editedPosition } : pos
+        )
+      );
+
+      // Save changes to the database
+      const response = await fetch(
+        `http://localhost:8080/crews/${selectedCrewId}`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(requiredPositions),
+        }
+      );
+
+      if (!response.ok) throw new Error("Failed to save changes");
+
+      setEditingPosition(null);
+      setEditedPosition({});
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleCancelPosition = () => {
+    setEditingPosition(null);
+    setEditedPosition({});
+  };
+
   const ExperienceChip = ({ level }) => {
     const colorMap = {
       green: { label: "Green", color: "#4caf50" },
@@ -318,6 +390,44 @@ export default function Crews() {
     .sort((a, b) => a.id - b.id);
 
   const usersByCrew = users.filter((u) => u.crew_id === selectedCrewId);
+
+  const crewStartDate = selectedCrew?.date_start;
+  const crewEndDate = selectedCrew?.date_end;
+
+  //HANDLES FILTERING USERS FOR REQUIRED POSITIONS
+  console.log("totalUserData:", totalUserData);
+  const filterUsersForPosition = (position) => {
+    const {crewsData, rotationsData, usersData, courseRegData, courseData} = totalUserData;
+
+    return usersData.filter((user) => {
+      const hasCertification = courseRegData.some(
+        (course) => course.user_id === user.id && course.cert_earned === true
+      );
+
+      const isAvailableForCourses = !courseData.some((course) => {
+        return (
+          course.user_id === user.id &&
+          ((new Date(course.date_start) <= new Date(crewEndDate) &&
+            new Date(course.date_end) >= new Date(crewStartDate)) ||
+            course.crew_id === selectedCrewId)
+        );
+      });
+
+      const isAvailableForCrews = !rotationsData.some((rotation) => {
+        return (
+          rotation.crew_id !== selectedCrewId &&
+          rotation.user_id === user.id &&
+          ((new Date(rotation.date_start) <= new Date(crewEndDate) &&
+            new Date(rotation.date_end) >= new Date(crewStartDate)) ||
+            rotation.crew_id === selectedCrewId)
+        );
+      });
+
+
+
+      return hasCertification && isAvailableForCourses && isAvailableForCrews;
+    });
+  };
 
   return (
     <>
@@ -411,6 +521,7 @@ export default function Crews() {
                       }
                     />
                   </TableCell>
+
                   {canSeeExperience && (
                     <TableCell>
                       <Select
@@ -568,193 +679,90 @@ export default function Crews() {
           </Table>
         </TableContainer>
 
-        {/* Crew Details Table */}
+        {/* Required Positions Table */}
         {selectedCrewId && (
-          <>
-            <Box sx={{ mt: 6, textAlign: "center" }}>
-              <Typography variant="h4">
-                {selectedCrew?.crew_name} Crew
-              </Typography>
-              {canEdit && (
-                <Button
-                  sx={{ mt: 2 }}
-                  variant="contained"
-                  color="primary"
-                  onClick={() => setIsAddingUser(true)}
-                >
-                  + Add Crew Member
-                </Button>
-              )}
-            </Box>
+          <Box sx={{ mt: 6, textAlign: "center" }}>
+            <Typography variant="h4">{selectedCrew?.crew_name} Crew</Typography>
             <TableContainer component={Paper} sx={{ mt: 2 }}>
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell>Crew</TableCell>
-                    <TableCell>First Name</TableCell>
-                    <TableCell>Last Name</TableCell>
-                    <TableCell>Role</TableCell>
-                    {canSeeExperience && <TableCell>Experience</TableCell>}
-                    {canEdit && <TableCell>Actions</TableCell>}
+                    <TableCell>Required Position</TableCell>
+                    <TableCell>Name</TableCell>
+                    <TableCell>Experience</TableCell>
+                    <TableCell>Actions</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {/* Add new crew member */}
-                  {isAddingUser && (
-                    <TableRow>
+                  {requiredPositions.map((pos, index) => (
+                    <TableRow key={index}>
+                      <TableCell>{pos.position}</TableCell>
                       <TableCell>
-                        <Select
-                          value={newUser.crew_id}
-                          onChange={(e) => handleNewUserChange("crew_id", e.target.value)}
-                          size="small"
-                        >
-                          {crews.map((crew) => (
-                            <MenuItem key={crew.id} value={crew.id}>
-                              {crew.crew_name}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </TableCell>
-                      <TableCell>
-                        <TextField
-                          size="small"
-                          value={newUser.first_name}
-                          onChange={(e) => handleNewUserChange("first_name", e.target.value)}
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <TextField
-                          size="small"
-                          value={newUser.last_name}
-                          onChange={(e) => handleNewUserChange("last_name", e.target.value)}
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <Select
-                          size="small"
-                          value={newUser.role}
-                          onChange={(e) => handleNewUserChange("role", e.target.value)}
-                        >
-                          <MenuItem value="Crew Commander">Crew Commander</MenuItem>
-                          <MenuItem value="Crew Chief">Crew Chief</MenuItem>
-                          <MenuItem value="Operator">Operator</MenuItem>
-                        </Select>
-                      </TableCell>
-                      {canSeeExperience && (
-                        <TableCell>
+                        {editingPosition === pos.position ? (
                           <Select
-                            size="small"
-                            value={newUser.experience_type}
-                            onChange={(e) => handleNewUserChange("experience_type", e.target.value)}
-                          >
-                            <MenuItem value="green">Green</MenuItem>
-                            <MenuItem value="yellow">Yellow</MenuItem>
-                            <MenuItem value="red">Red</MenuItem>
-                          </Select>
-                        </TableCell>
-                      )}
-                      <TableCell>
-                        <IconButton onClick={() => setConfirmNewUserOpen(true)}>
-                          <SaveIcon />
-                        </IconButton>
-                        <IconButton onClick={() => setIsAddingUser(false)}>
-                          <CancelIcon />
-                        </IconButton>
-                      </TableCell>
-                    </TableRow>
-                  )}
-
-                  {usersByCrew.map((user) => (
-                    <TableRow key={user.id}>
-                      <TableCell>
-                        {editingUserId === user.id ? (
-                          <Select
-                            value={editedUser.crew_id}
+                            value={editedPosition.assigned_user_id || ""}
                             onChange={(e) =>
-                              handleUserChange("crew_id", e.target.value)
+                              handlePositionChange(
+                                "assigned_user_id",
+                                e.target.value
+                              )
                             }
                             size="small"
                           >
-                            {crews.map((c) => (
-                              <MenuItem key={c.id} value={c.id}>
-                                {c.crew_name}
+                            <MenuItem value="">Unassigned</MenuItem>
+                            {filterUsersForPosition(pos.position).map((user) => (
+                              <MenuItem key={user.id} value={user.id}>
+                                {user.first_name} {user.last_name}
                               </MenuItem>
                             ))}
                           </Select>
                         ) : (
-                          crews.find((c) => c.id === user.crew_id)?.crew_name ||
-                          "N/A"
+                          users.find((u) => u.id === pos.assigned_user_id)
+                            ?.first_name || "Unassigned"
                         )}
                       </TableCell>
-                      <TableCell>{user.first_name}</TableCell>
-                      <TableCell>{user.last_name}</TableCell>
                       <TableCell>
-                        {editingUserId === user.id ? (
-                          <Select
-                            value={editedUser.role}
-                            onChange={(e) =>
-                              handleUserChange("role", e.target.value)
+                        {editingPosition === pos.position ? (
+                          <ExperienceChip
+                            level={
+                              users.find(
+                                (u) => u.id === editedPosition.assigned_user_id
+                              )?.experience_type || "N/A"
                             }
-                            size="small"
-                          >
-                            <MenuItem value="Crew Commander">
-                              Crew Commander
-                            </MenuItem>
-                            <MenuItem value="Crew Chief">Crew Chief</MenuItem>
-                            <MenuItem value="Operator">Operator</MenuItem>
-                          </Select>
+                          />
                         ) : (
-                          user.role
+                          <ExperienceChip
+                            level={
+                              users.find((u) => u.id === pos.assigned_user_id)
+                                ?.experience_type || "N/A"
+                            }
+                          />
                         )}
                       </TableCell>
-                      {canSeeExperience && (
-                        <TableCell>
-                          {editingUserId === user.id ? (
-                            <Select
-                              value={editedUser.experience_type}
-                              onChange={(e) =>
-                                handleUserChange(
-                                  "experience_type",
-                                  e.target.value
-                                )
-                              }
-                              size="small"
-                            >
-                              <MenuItem value="green">Green</MenuItem>
-                              <MenuItem value="yellow">Yellow</MenuItem>
-                              <MenuItem value="red">Red</MenuItem>
-                            </Select>
-                          ) : (
-                            <ExperienceChip level={user.experience_type} />
-                          )}
-                        </TableCell>
-                      )}
-                      {canEdit && (
-                        <TableCell>
-                          {editingUserId === user.id ? (
-                            <>
-                              <IconButton
-                                onClick={() => handleUserSave(user.id)}
-                              >
-                                <SaveIcon />
-                              </IconButton>
-                              <IconButton onClick={handleUserCancel}>
-                                <CancelIcon />
-                              </IconButton>
-                            </>
-                          ) : (
-                            <IconButton onClick={() => handleUserEdit(user)}>
-                              <EditIcon />
+                      <TableCell>
+                        {editingPosition === pos.position ? (
+                          <>
+                            <IconButton onClick={handleSavePosition}>
+                              <SaveIcon />
                             </IconButton>
-                          )}
-                        </TableCell>
-                      )}
+                            <IconButton onClick={handleCancelPosition}>
+                              <CancelIcon />
+                            </IconButton>
+                          </>
+                        ) : (
+                          <IconButton
+                            onClick={() => handleEditPosition(pos.position)}
+                          >
+                            <EditIcon />
+                          </IconButton>
+                        )}
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
             </TableContainer>
-          </>
+          </Box>
         )}
       </Container>
 

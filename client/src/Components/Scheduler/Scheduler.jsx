@@ -102,7 +102,7 @@ export default function Scheduler() {
         <Tab label="Available for Course/Crew" />
         <Tab label="Soon to be Certified" />
         <Tab label="Certified Members & Their Certifications" />
-        <Tab label="Crews" />
+        {/* <Tab label="Crews" /> */}
       </Tabs>
 
       <Box sx={{ display: tabIndex === 0 ? "block" : "none" }}>
@@ -167,10 +167,10 @@ export default function Scheduler() {
           </ul>
         </Paper>
       </Box>
-
+{/*
       <Box sx={{ display: tabIndex === 3 ? "block" : "none" }}>
         <Crews />
-      </Box>
+      </Box> */}
 
       <Box mt={6}>
         <div style={{ height: '500px' }}>
