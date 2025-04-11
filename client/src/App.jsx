@@ -48,7 +48,7 @@ export default function App() {
   return (
     <>
     <ThemeProvider theme={appTheme}>
-    <Paper elevation={0} sx={{ height: "3000px" }} square>
+    <Paper elevation={0} sx={{ minHeight: "100vh" }} square>
     <Switch
           checked={mode}
           onChange={handleChange}

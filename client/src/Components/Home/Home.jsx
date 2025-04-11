@@ -8,9 +8,8 @@ import Footer from "../Footer/Footer.jsx";
 // import { Container, Box, Typography, Button, Stack } from "@mui/material";
 
 export default function Home() {
-  const username = localStorage.getItem("username");
+  // const username = localStorage.getItem("username");
     const [courses, setCourses] = useState([]);
-  // console.log(username);
 
     useEffect(() => {
       const fetchData = async () => {
@@ -25,12 +24,10 @@ export default function Home() {
 
           const courseData = await courseRes.json();
 
-          // Optional: sort by date if needed
           const sortedCourses = courseData.sort(
             (a, b) => new Date(b.date_start) - new Date(a.date_start)
           );
 
-          // Get the latest two courses
           const latestCourses = sortedCourses.slice(0, 2);
 
           setCourses(latestCourses);
@@ -79,7 +76,7 @@ export default function Home() {
             </div>
 
             <div className="roles">
-              <h3>Role Based Access</h3>
+              <h3>Role Based Actions</h3>
               <p>This application breaks down users into various roles based on personnel assignment within the squadron.</p>
 
               <div className="roleGrid">
