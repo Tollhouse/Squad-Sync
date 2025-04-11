@@ -104,7 +104,19 @@ function Navbar() {
             My Schedule
           </Button>
         );
+      } else if (userPrivilege === 'training_manager') {
+        roleBasedButtons = (
+          <Button
+          key="courses"
+          onClick={() => navigate('/training-manager')}
+          sx={{ my: 2, color: 'white', display: 'block' }}
+        >
+          Course Management
+        </Button>
+        );
       }
+
+      
 
       return (
         <>
