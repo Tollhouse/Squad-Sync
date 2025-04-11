@@ -1,5 +1,4 @@
 //Authored by Curtis
-//This is incomplete, need enpoints from the backend for the PATCH
 import React, { useState, useEffect, useMemo } from 'react'
 import './User.css'
 import { useParams } from 'react-router-dom'
@@ -61,14 +60,27 @@ export default function SchedulerUser () {
   //HANDLES UPDATING USER INFORMATION
   const updateUserInformation = async (newRow) => {
     try{
+      const originalRow = userInformation.find((row) => row.id === newRow.id)
+
+      if(originalRow.crew_name !== newRow.crew_name){
+        const crewResponse = await fetch('http://localhost:8080/crews')
+        const crewData = await crewResponse.json()
+        const newCrew = crewData.find((crew) => crew.crew_name === newRow.crew_name)
+      if(!newCrew){
+        throw new Error(`Crew name "${newRow.crew_name}" not found`)
+      }
+      newRow.crew_id = newCrew.id
+      }
       const response = await fetch(`http://localhost:8080/users/${newRow.id}`, {
         method: 'PATCH',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(newRow),
       });
+
       if (!response.ok) {
         throw new Error('Failed to update user information');
       }
+
       const updatedRows = await response.json()
       const updatedRow = updatedRows[0]
       setUserInformation((prevRows) =>

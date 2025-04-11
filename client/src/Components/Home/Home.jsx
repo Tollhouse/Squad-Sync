@@ -4,6 +4,7 @@
 
 import React from "react";
 import "./Home.css";
+import Footer from "../Footer/Footer.jsx";
 // import { Container, Box, Typography, Button, Stack } from "@mui/material";
 
 export default function Home() {
@@ -21,6 +22,7 @@ export default function Home() {
           {username ? <p> Welcome, {username}!</p> : <p> Guest </p>}
         </div>
       </div>
+      <Footer />
     </>
   );
 }

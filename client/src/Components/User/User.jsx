@@ -1,5 +1,4 @@
 //Authored by Curtis
-//This is incomplete, need enpoints from the backend for the PATCH
 import React, { useState, useEffect, useMemo } from 'react'
 import './User.css'
 import { useParams } from 'react-router-dom'
