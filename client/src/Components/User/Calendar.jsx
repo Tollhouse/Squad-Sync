@@ -144,64 +144,61 @@ export default function Calendar() {
 
   return (
     <>
-          <Box sx={{ display: 'flex', gap: 2, mt: 4, mb: 2 }}>
-              <label>
-                View:
-                <select value={currentView} onChange={(e) => setCurrentView(e.target.value)}>
-                  <option value="month">Month</option>
-                  <option value="week">Week</option>
-                  <option value="day">Day</option>
-                </select>
-              </label>
-            </Box>
-
-            <Box>
-              <div style={{ height: '600px', width: '1100px' }}>
-                <BigCalendar
-                  localizer={localizer}
-                  events={filteredEvents}
-                  startAccessor="start"
-                  endAccessor="end"
-                  views={['month', 'week', 'day']}
-                  view={currentView}
-                  onView={(view) => setCurrentView(view)}
-                  popup
-                  style={{ height: '100%' }}
-                  onSelectEvent={(event) => setSelectedEvent(event)}
-                  min={new Date(2025, 0, 1, 6, 0)}
-                  max={new Date(2025, 0, 1, 23, 59)}
-                  eventPropGetter={(event) => {
-                    const shiftColors = {
-                      green: "#4caf50",
-                      yellow: "#fdd835",
-                      red: "#f44336",
-                      day: "#81c784",
-                      swing: "#ffb74d",
-                      night: "#9575cd",
-                      rest: "#4dd0e1"
-                    };
-                    const bgColor = event.cert_earned === null
-                    ? shiftColors[event.shift_type?.toLowerCase()]     // prefer shift_type
-                      || shiftColors[event.experience_type?.toLowerCase()]
-                      || "#90a4ae" // fallback gray
-                    : "#1976d2";
-                    return {
-                      style: {
-                        backgroundColor: bgColor,
-                        color: "#fff",
-                        fontWeight: 600,
-                        fontSize: "0.75rem",
-                        padding: "2px 6px",
-                        borderRadius: "6px",
-                        border: "1px solid #e0e0e0",
-                        whiteSpace: "normal",
-                        textAlign: "center",
-                      }
-                    };
-                  }}
-                />
-              </div>
-            </Box>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          width: '97vw',
+          height: '100vh',
+          overflow: 'hidden',
+        }}
+        >
+        <div style={{ flexGrow: 1, width: '100%', height: '100%' }}>
+          <BigCalendar
+            localizer={localizer}
+            events={filteredEvents}
+            startAccessor="start"
+            endAccessor="end"
+            views={['month', 'week', 'day']}
+            view={currentView}
+            onView={(view) => setCurrentView(view)}
+            popup
+            style={{ height: '100%' }}
+            onSelectEvent={(event) => setSelectedEvent(event)}
+            min={new Date(2025, 0, 1, 6, 0)}
+            max={new Date(2025, 0, 1, 23, 59)}
+            eventPropGetter={(event) => {
+              const shiftColors = {
+                green: "#4caf50",
+                yellow: "#fdd835",
+                red: "#f44336",
+                day: "#81c784",
+                swing: "#ffb74d",
+                night: "#9575cd",
+                rest: "#4dd0e1"
+              };
+              const bgColor = event.cert_earned === null
+              ? shiftColors[event.shift_type?.toLowerCase()]     // prefer shift_type
+                || shiftColors[event.experience_type?.toLowerCase()]
+                || "#90a4ae" // fallback gray
+              : "#1976d2";
+              return {
+                style: {
+                  backgroundColor: bgColor,
+                  color: "#fff",
+                  fontWeight: 600,
+                  fontSize: "0.75rem",
+                  padding: "2px 6px",
+                  borderRadius: "6px",
+                  border: "1px solid #e0e0e0",
+                  whiteSpace: "normal",
+                  textAlign: "center",
+                }
+              };
+            }}
+          />
+        </div>
+      </Box>
     </>
   )
 
