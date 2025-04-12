@@ -17,7 +17,7 @@ router.get("/:id", async (req, res) => {
   } else{
       const course_reg = await knex("course_registration").select("*").where('user_id', user_id)
       if (course_reg.length == 0) {
-        return res.status(200).json({message: `No matching course registration found for id: ${user_id}.`})
+        return res.status(200).json([])
       }
       res.status(200).json(course_reg)
   }

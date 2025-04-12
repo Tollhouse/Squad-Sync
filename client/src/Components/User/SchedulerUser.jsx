@@ -180,6 +180,12 @@ export default function SchedulerUser () {
       );
     };
 
+  const experienceOptions = [
+    { label: "Green", value: "green" },
+    { label: "Yellow", value: "yellow" },
+    { label: "Red", value: "red" },
+  ];
+
   //SETS UP THE COLUMNS FOR THE TABLE
   const columns = [
     {field: 'id', headerName: 'ID', width: 10, editable: false},
@@ -196,7 +202,24 @@ export default function SchedulerUser () {
       width: 150,
       editable: true,
       renderCell: (params) => <ExperienceChip level={params.value} />,
-    },
+      renderEditCell: (params) => {
+        return (
+        <select
+        value={params.value || ''}
+      onChange={(event) => {
+        const newValue = event.target.value;
+        params.api.setEditCellValue({ id: params.id, field: params.field, value: newValue})
+      }}
+      style={{width:'100%', padding: '4px', borderRadius: '4px', border: '1px solid #ccc'}}
+      >
+        <option value="" disabled>Select Experience</option>
+        {experienceOptions.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+    )}},
     {
       field: 'actions',
       type: 'actions',
@@ -272,7 +295,7 @@ export default function SchedulerUser () {
         sx={{
           mt: 4,
           textAlign: 'center',
-          width:'65%',
+          width:'100%',
           '& .actions': {
             color: 'text.secondary',
           },

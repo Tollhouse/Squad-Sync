@@ -41,6 +41,7 @@ export default function User () {
         }
       } catch (err) {
         console.error('Error fetching user information:', err);
+        setUserInformation([]);
       }
     };
 
@@ -177,8 +178,8 @@ export default function User () {
 
     <div className='user-container'>
       <div className='header'>
-        {userInformation.map((user) => (
-          <div key={user.id}>
+        {userInformation.map((user, index) => (
+          <div key={user.id || `user-${index}`}>
             <h1>{user.first_name} {user.last_name}</h1>
           </div>
         ))}
@@ -196,6 +197,7 @@ export default function User () {
           },
         }}
         >
+          {userInformation.length > 0 ? (
         <DataGrid
           rows={userInformation}
           columns={columns}
@@ -210,10 +212,11 @@ export default function User () {
           }}
           hideFooter={true}
           />
+        ) : (
+          <p>No user data available</p>
+        )}
           </Box>
-          {/* <GanttChartCourse /> */}
           <UserCourse />
-          {/* <GanttChartCrew /> */}
           <UserCrew />
           <Calendar />
     </div>
