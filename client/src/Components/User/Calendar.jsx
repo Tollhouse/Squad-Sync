@@ -23,6 +23,9 @@ export default function Calendar() {
   const [tabIndex, setTabIndex] = useState(0);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [crews, setCrews] = useState([]);
+  const [filterCrew, setFilterCrew] = useState("all");
+  const [filterShift, setFilterShift] = useState("all");
+  const [currentView, setCurrentView] = useState("month");
 
   useEffect(() => {
     async function fetchData() {
@@ -56,7 +59,12 @@ export default function Calendar() {
   }, []);
 
   useEffect(() => {
-    console.log("registrations:" , registrations);
+    const shiftTimeMap = {
+      day: "6AM–2PM",
+      swing: "2PM–10PM",
+      night: "10PM–6AM"
+    }
+
     const flattenedRegistrations = registrations.flat();
     const flattenedUsers = Array.isArray(users) ? users.flat() : [];
 
@@ -84,37 +92,116 @@ export default function Calendar() {
     const crewEvents = flattenedRotations.map((rotation) => {
       const crew = users.find((u) => u.crew_id === rotation.crew_id);
       if (!crew) {
-        // console.warn(`No crew found for rotation ID: ${rotation.id}`);
         return null;
       }
-        return {
-          title: `${crew.crew_name} - ${rotation.shift_type}`,
-          start: new Date(rotation.date_start),
-          end: new Date(rotation.date_end),
-          allDay: true,
-        };
-      });
+      const emojiMap = {
+        green: "🟢",
+        yellow: "🟡",
+        red: "🔴",
+      };
+      const emoji = emojiMap[rotation.experience_type] || "⚪";
+      const timeRange = shiftTimeMap[rotation.shift_type] || "N/A";
+
+      const startDate = new Date(rotation.date_start);
+      let shiftStart = new Date(startDate);
+      let shiftEnd = new Date(startDate);
+
+      if (rotation.shift_type === "day") {
+        shiftStart.setHours(6, 0, 0);
+        shiftEnd.setHours(14, 0, 0);
+      } else if (rotation.shift_type === "swing") {
+        shiftStart.setHours(14, 0, 0);
+        shiftEnd.setHours(22, 0, 0);
+      } else if (rotation.shift_type === "night") {
+        shiftStart.setHours(22, 0, 0);
+        shiftEnd = new Date(shiftStart);
+        shiftEnd.setDate(shiftEnd.getDate() + 1);
+        shiftEnd.setHours(6, 0, 0);
+      }
+
+      return {
+        title: `${crew.crew_name} - ${rotation.shift_type} (${timeRange}) ${emoji}`,
+        start: shiftStart,
+        end: shiftEnd,
+        allDay: false,
+        cert_earned: null,
+        experience_type: rotation.experience_type,
+        shift_type: rotation.shift_type,
+        crew_id: rotation.crew_id,
+      };
+    });
+
 
     const allEvents = [...courseEvents, ...crewEvents].filter((event) => event !== null);
     setCalendarEvents(allEvents);
   }, [registrations, courses, users, rotations, crews]);
 
+  const filteredEvents = calendarEvents.filter((event) => {
+    const matchCrew = filterCrew === "all" || event.crew_id === Number(filterCrew);
+    const matchShift = filterShift === "all" || event.shift_type === filterShift;
+    return matchCrew && matchShift;
+  });
+
   return (
     <>
-     <Box mt={6}>
-            <div style={{ height: '500px' }}>
-              <BigCalendar
-                localizer={localizer}
-                events={calendarEvents}
-                startAccessor="start"
-                endAccessor="end"
-                style={{ height: '100%', width: '1200px' }}
-                views={['month']}
-                popup={true}
-                onSelectEvent={(event) => setSelectedEvent(event)}
-              />
-            </div>
-          </Box>
+          <Box sx={{ display: 'flex', gap: 2, mt: 4, mb: 2 }}>
+              <label>
+                View:
+                <select value={currentView} onChange={(e) => setCurrentView(e.target.value)}>
+                  <option value="month">Month</option>
+                  <option value="week">Week</option>
+                  <option value="day">Day</option>
+                </select>
+              </label>
+            </Box>
+
+            <Box>
+              <div style={{ height: '600px', width: '1100px' }}>
+                <BigCalendar
+                  localizer={localizer}
+                  events={filteredEvents}
+                  startAccessor="start"
+                  endAccessor="end"
+                  views={['month', 'week', 'day']}
+                  view={currentView}
+                  onView={(view) => setCurrentView(view)}
+                  popup
+                  style={{ height: '100%' }}
+                  onSelectEvent={(event) => setSelectedEvent(event)}
+                  min={new Date(2025, 0, 1, 6, 0)}
+                  max={new Date(2025, 0, 1, 23, 59)}
+                  eventPropGetter={(event) => {
+                    const shiftColors = {
+                      green: "#4caf50",
+                      yellow: "#fdd835",
+                      red: "#f44336",
+                      day: "#81c784",
+                      swing: "#ffb74d",
+                      night: "#9575cd",
+                      rest: "#4dd0e1"
+                    };
+                    const bgColor = event.cert_earned === null
+                    ? shiftColors[event.shift_type?.toLowerCase()]     // prefer shift_type
+                      || shiftColors[event.experience_type?.toLowerCase()]
+                      || "#90a4ae" // fallback gray
+                    : "#1976d2";
+                    return {
+                      style: {
+                        backgroundColor: bgColor,
+                        color: "#fff",
+                        fontWeight: 600,
+                        fontSize: "0.75rem",
+                        padding: "2px 6px",
+                        borderRadius: "6px",
+                        border: "1px solid #e0e0e0",
+                        whiteSpace: "normal",
+                        textAlign: "center",
+                      }
+                    };
+                  }}
+                />
+              </div>
+            </Box>
     </>
   )
 
