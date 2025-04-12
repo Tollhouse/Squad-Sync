@@ -13,6 +13,8 @@ import {
   GridActionsCellItem,
   GridRowEditStopReasons,
 } from '@mui/x-data-grid';
+import { Chip } from "@mui/material"
+
 
 export default function SchedulerUser () {
   const { id } = useParams()
@@ -52,10 +54,9 @@ export default function SchedulerUser () {
         console.error('Error fetching user information:', err);
       }
     };
-    console.log("userInformation:", userInformation)
 
     fetchUserInformation();
-  }, [id]);
+  }, [id, userInformation]);
 
   //HANDLES UPDATING USER INFORMATION
   const updateUserInformation = async (newRow) => {
@@ -86,7 +87,6 @@ export default function SchedulerUser () {
       setUserInformation((prevRows) =>
         prevRows.map((row) => (row.id === updatedRow.id ? updatedRow : row))
     )
-      window.location.reload()
       return updatedRow
     } catch (error) {
       console.error('Error updating user information:', error);
@@ -127,10 +127,30 @@ export default function SchedulerUser () {
   }
 
   //HANDLES SAVING THE EDIT
-  const handleSaveClick = (id) => () => {
-    setRowModesModel({...rowModesModel, [id]: { mode: GridRowModes.View }})
-    window.location.reload()
-  }
+  const handleSaveClick = (id) => async () => {
+    try {
+      // Find the row being edited
+      const rowToUpdate = userInformation.find((row) => row.id === id);
+
+      if (!rowToUpdate) {
+        throw new Error(`Row with ID ${id} not found`);
+      }
+
+      // Trigger the processRowUpdate function
+      const updatedRow = await updateUserInformation(rowToUpdate)
+
+      // Update the row mode to View
+      setRowModesModel({
+        ...rowModesModel,[id]: { mode: GridRowModes.View }})
+
+      // Update the frontend state
+      setUserInformation((prevRows) =>
+        prevRows.map((row) => (row.id === updatedRow.id ? updatedRow : row))
+      );
+    } catch (error) {
+      console.error('Error saving row:', error);
+    }
+  };
 
   //HANDLES CANCELLING THE EDIT
   const handleCancelClick = (id) => () => {
@@ -152,6 +172,26 @@ export default function SchedulerUser () {
     setRowModesModel(newRowModesModel)
   }
 
+  //HANDLES THE EXPERIENCE LEVEL ICON
+   const ExperienceChip = ({ level }) => {
+      const colorMap = {
+        green: { label: "Green", color: "#4caf50" },
+        yellow: { label: "Yellow", color: "#ffeb3b", textColor: "#000" },
+        red: { label: "Red", color: "#f44336" },
+      };
+      return (
+        <Chip
+          label={colorMap[level]?.label || level}
+          size="small"
+          sx={{
+            backgroundColor: colorMap[level]?.color,
+            color: colorMap[level]?.textColor || "#fff",
+            fontWeight: 600,
+          }}
+        />
+      );
+    };
+
   //SETS UP THE COLUMNS FOR THE TABLE
   const columns = [
     {field: 'id', headerName: 'ID', width: 10, editable: false},
@@ -162,32 +202,13 @@ export default function SchedulerUser () {
     {field: 'crew_name', headerName: 'Crew Name', width: 125, editable: true},
     {field: 'role', headerName: 'Position', width: 140, editable: true},
     {field: 'privilege', headerName: 'Privilege', width: 130, editable: true},
-    {field: 'experience_type',
+    {
+      field: 'experience_type',
       headerName: 'Experience Level',
       width: 150,
       editable: true,
-      renderCell: (params) => {
-        let backgroundColor = 'white';
-        let textColor = 'black';
-        if(params.value === 'red'){
-          backgroundColor = 'red';
-          textColor = 'white';
-        } else if (params.value === 'yellow'){
-          backgroundColor = 'yellow';
-          textColor = 'black';
-        } else if( params.value === 'green'){
-          backgroundColor = 'green';
-          textColor = 'white';
-        }
-        return (
-          <div style={{backgroundColor,
-          color: textColor,
-          padding: '5px',
-          textAlign: 'center',}}>
-            {params.value}
-          </div>
-        )
-      }},
+      renderCell: (params) => <ExperienceChip level={params.value} />,
+    },
     {
       field: 'actions',
       type: 'actions',
@@ -281,7 +302,9 @@ export default function SchedulerUser () {
           rowModesModel={rowModesModel}
           onRowModesModelChange={handleRowModesModelChange}
           onRowEditStop={handleRowEditStop}
-          processRowUpdate={(newRow) => updateUserInformation(newRow)}
+          processRowUpdate={(newRow) => {
+            return updateUserInformation(newRow);
+          }}
           onProcessRowUpdateError={(error) => {
             console.error('Error during row update:', error)
           }}
