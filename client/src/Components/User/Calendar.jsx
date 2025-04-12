@@ -43,7 +43,7 @@ export default function Calendar() {
 
         setCourses(coursesData);
         setUsers([usersData]);
-        setRegistrations(regData);
+        setRegistrations(Array.isArray(regData) ? regData : []);
         setRotations(rotData);
         setCrews(crewsData);
         setLoading(false);
@@ -56,9 +56,9 @@ export default function Calendar() {
   }, []);
 
   useEffect(() => {
-
+    console.log("registrations:" , registrations);
     const flattenedRegistrations = registrations.flat();
-    const flattenedUsers = users.flat();
+    const flattenedUsers = Array.isArray(users) ? users.flat() : [];
 
     const flattenedCourses = courses.flat();
     const courseEvents = flattenedRegistrations.map((r) => {
