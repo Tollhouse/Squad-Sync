@@ -14,13 +14,17 @@ import {
   GridRowEditStopReasons,
 } from '@mui/x-data-grid';
 import { Chip } from "@mui/material"
-
+import { ConfirmSaveModal, ConfirmDeleteModal } from "../Modals/ConfirmModal";
 
 export default function SchedulerUser () {
   const { id } = useParams()
   const [userInformation, setUserInformation] = useState([])
   const [rowModesModel, setRowModesModel] = useState({})
   const [search, setSearch] = useState('')
+  const [confirmUserSaveOpen, setConfirmUserSaveOpen] = useState(false);
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
+  const [selectedRow, setSelectedRow] = useState(null); // For saving
+  const [selectedRowId, setSelectedRowId] = useState(null); // For deleting
 
   //HANDLES GETTING USER INFORMATION
   useEffect(() => {
@@ -60,6 +64,7 @@ export default function SchedulerUser () {
 
   //HANDLES UPDATING USER INFORMATION
   const updateUserInformation = async (newRow) => {
+    console.log("newRow", newRow)
     try{
       const originalRow = userInformation.find((row) => row.id === newRow.id)
 
@@ -91,6 +96,8 @@ export default function SchedulerUser () {
     } catch (error) {
       console.error('Error updating user information:', error);
       throw error
+    }finally{
+      setConfirmUserSaveOpen(false);
     }
   }
 
@@ -116,6 +123,9 @@ export default function SchedulerUser () {
 
   //HANDLES WHEN USER IS DONE EDITING ROW
   const handleRowEditStop = (params, event) => {
+    if(event.key === 'Enter'){
+      event.defaultMuiPrevented = true
+    }
     if (params.reason === GridRowEditStopReasons.rowFocusOut) {
       event.defaultMuiPrevented = true
     }
@@ -127,30 +137,12 @@ export default function SchedulerUser () {
   }
 
   //HANDLES SAVING THE EDIT
-  const handleSaveClick = (id) => async () => {
-    try {
-      // Find the row being edited
-      const rowToUpdate = userInformation.find((row) => row.id === id);
-
-      if (!rowToUpdate) {
-        throw new Error(`Row with ID ${id} not found`);
-      }
-
-      // Trigger the processRowUpdate function
-      const updatedRow = await updateUserInformation(rowToUpdate)
-
-      // Update the row mode to View
-      setRowModesModel({
-        ...rowModesModel,[id]: { mode: GridRowModes.View }})
-
-      // Update the frontend state
-      setUserInformation((prevRows) =>
-        prevRows.map((row) => (row.id === updatedRow.id ? updatedRow : row))
-      );
-    } catch (error) {
-      console.error('Error saving row:', error);
-    }
-  };
+  const handleSaveClick = (id) => () => {
+    const rowToSave = userInformation.find((row) => row.id === id);
+    console.log("Row to save:", rowToSave); // Debugging
+    setSelectedRow(rowToSave);
+    setConfirmUserSaveOpen(true);
+  }
 
   //HANDLES CANCELLING THE EDIT
   const handleCancelClick = (id) => () => {
@@ -158,13 +150,9 @@ export default function SchedulerUser () {
   }
 
   //HANDLES DELETING THE USER
-  const handleDeleteClick = (id) => async () => {
-    try {
-      alert('Are you sure you want to delete this user?')
-      await deleteUserInformation(id); // Call the delete function
-    } catch (error) {
-      console.error('Error deleting user:', error);
-    }
+  const handleDeleteClick = (id) => () => {
+    setSelectedRowId(id);
+    setConfirmDeleteOpen(true);
   };
 
   //HANDLES THE ROW MODES MODEL CHANGE
@@ -216,44 +204,43 @@ export default function SchedulerUser () {
       width: 100,
       cellClassName: 'actions',
       getActions: ({ id }) => {
-        const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit
+        const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
 
         if (isInEditMode) {
           return [
             <GridActionsCellItem
               icon={<SaveIcon />}
               label="Save"
-              sx={{color: 'primary.main'}}
+              sx={{ color: 'primary.main' }}
               onClick={handleSaveClick(id)}
             />,
             <GridActionsCellItem
               icon={<CancelIcon />}
               label="Cancel"
-              className='textPrimary'
+              className="textPrimary"
               onClick={handleCancelClick(id)}
               color="inherit"
-            />
-          ]
+            />,
+          ];
         }
 
         return [
           <GridActionsCellItem
             icon={<EditIcon />}
             label="Edit"
-            className='textPrimary'
+            className="textPrimary"
             onClick={handleEditClick(id)}
             color="inherit"
           />,
-
           <GridActionsCellItem
-          icon={<DeleteIcon />}
-          label="Delete"
-          className='textPrimary'
-          onClick={handleDeleteClick(id)}
-          color="inherit"
-          />
-        ]
-      }
+            icon={<DeleteIcon />}
+            label="Delete"
+            className="textPrimary"
+            onClick={handleDeleteClick(id)}
+            color="inherit"
+          />,
+        ];
+      },
     }
   ]
 
@@ -297,14 +284,12 @@ export default function SchedulerUser () {
         <DataGrid
           rows={filteredRows}
           columns={columns}
-          getRowId={(row) => `${row.id}-${row.flight}-${row.crew_name}`}
+          getRowId={(row) => row.id}
           editMode='row'
           rowModesModel={rowModesModel}
           onRowModesModelChange={handleRowModesModelChange}
           onRowEditStop={handleRowEditStop}
-          processRowUpdate={(newRow) => {
-            return updateUserInformation(newRow);
-          }}
+          processRowUpdate={(newRow) => {return updateUserInformation(newRow)}}
           onProcessRowUpdateError={(error) => {
             console.error('Error during row update:', error)
           }}
@@ -312,6 +297,41 @@ export default function SchedulerUser () {
           />
           </Box>
 
+           {/* Confirm Modals */}
+
+          <ConfirmSaveModal
+            open={confirmUserSaveOpen}
+            onClose={() => {
+              setConfirmUserSaveOpen(false)
+              document.querySelector('[aria-label="Save"]').focus();
+            }}
+
+            onConfirm={() => {
+              if (selectedRow) {
+                console.log("Saving selectedRow:", selectedRow); // Debugging
+                updateUserInformation(selectedRow)
+                  .then(() => {
+                    setRowModesModel((prevModel) => ({
+                      ...prevModel,
+                      [selectedRow.id]: { mode: GridRowModes.View }, // Switch to view mode
+                    }));
+                    setConfirmUserSaveOpen(false); // Close the modal after saving
+                  })
+                  .catch((error) => {
+                    console.error("Error saving user information:", error);
+                  });
+              }
+            }}
+          />
+          <ConfirmDeleteModal
+            open={confirmDeleteOpen}
+            onClose={() => setConfirmDeleteOpen(false)}
+            onConfirm={() => {
+              if (selectedRowId) {
+                deleteUserInformation(selectedRowId);
+              }
+            }}
+          />
     </div>
   )
 }
