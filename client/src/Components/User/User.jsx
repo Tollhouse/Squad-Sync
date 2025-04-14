@@ -218,7 +218,9 @@ export default function User () {
           </Box>
           <UserCourse />
           <UserCrew />
+          <div>
           <Calendar />
+          </div>
     </div>
   )
 }
