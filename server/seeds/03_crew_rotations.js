@@ -35,6 +35,15 @@
 //   return schedule;
 // }
 
+const simplifiedCrewRotation = [
+  {crew_id: 1, date_start: '2025-01-01', date_end: '2025-06-30', shift_type: 'Day', shift_duration: 8, experience_type: 'green'},
+  {crew_id: 2, date_start: '2025-01-01', date_end: '2025-06-30', shift_type: 'Swing', shift_duration: 8, experience_type: 'yellow'},
+  {crew_id: 3, date_start: '2025-01-01', date_end: '2025-06-30', shift_type: 'Night', shift_duration: 8, experience_type: 'red'},
+  {crew_id: 4, date_start: '2025-07-01', date_end: '2025-12-31', shift_type: 'Day', shift_duration: 8, experience_type: 'green'},
+  {crew_id: 5, date_start: '2025-07-01', date_end: '2025-12-31', shift_type: 'Swing', shift_duration: 8, experience_type: 'yellow'},
+  {crew_id: 6, date_start: '2025-07-01', date_end: '2025-12-31', shift_type: 'Night', shift_duration: 8, experience_type: 'red'},
+]
+
 /**
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
@@ -44,14 +53,7 @@ async function seed(knex) {
   // const newSchedule = createSchedule();
   await knex('crew_rotations').del();
   // await knex('crew_rotations').insert(newSchedule);
-  await knex('crew_rotations').insert([
-    {crew_id: 1, date_start: '2025-01-01', date_end: '2025-06-30', shift_type: 'Day', shift_duration: 8, experience_type: 'green'},
-    {crew_id: 2, date_start: '2025-01-01', date_end: '2025-06-30', shift_type: 'Swing', shift_duration: 8, experience_type: 'yellow'},
-    {crew_id: 3, date_start: '2025-01-01', date_end: '2025-06-30', shift_type: 'Night', shift_duration: 8, experience_type: 'red'},
-    {crew_id: 4, date_start: '2025-07-01', date_end: '2025-12-31', shift_type: 'Day', shift_duration: 8, experience_type: 'green'},
-    {crew_id: 5, date_start: '2025-07-01', date_end: '2025-12-31', shift_type: 'Swing', shift_duration: 8, experience_type: 'yellow'},
-    {crew_id: 6, date_start: '2025-07-01', date_end: '2025-12-31', shift_type: 'Night', shift_duration: 8, experience_type: 'red'},
-  ]);
+  await knex('crew_rotations').insert(simplifiedCrewRotation);
 };
 
 module.exports = { seed };
