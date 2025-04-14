@@ -18,7 +18,7 @@ function ConfirmSaveModal({ open, onClose, onConfirm, message = "Are you sure yo
       <DialogActions>
         <Button onClick={onClose}>Cancel</Button>
         <Button onClick={onConfirm} variant="contained" color="primary">
-          Confirm
+          Yes, Save
         </Button>
       </DialogActions>
     </Dialog>
@@ -35,7 +35,7 @@ function ConfirmDeleteModal({ open, onClose, onConfirm, message = "Are you sure 
       <DialogActions>
         <Button onClick={onClose}>Cancel</Button>
         <Button onClick={onConfirm} variant="contained" color="error">
-          Delete
+          Yes, Delete
         </Button>
       </DialogActions>
     </Dialog>
