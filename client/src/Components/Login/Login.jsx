@@ -38,7 +38,7 @@ export default function Login() {
               // Remove all authentication-related details.
               localStorage.removeItem("session_id");
               localStorage.removeItem("username");
-              localStorage.removeItem("userRole");
+              localStorage.removeItem("userPrivilege");
               localStorage.removeItem("userId");
               setLoggedIn(false);
               navigate("/logout");
