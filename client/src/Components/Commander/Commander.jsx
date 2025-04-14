@@ -127,7 +127,7 @@ export default function Commander() {
     <Fade in={!loading}>
       <Container sx={{ mt: 4 }}>
         <Typography variant="h4" align="center" gutterBottom>
-          🧭 Commander Dashboard — Welcome, {user?.first_name}!
+          🧭 Commander Dashboard
         </Typography>
 
         {/* Summary Panel */}
