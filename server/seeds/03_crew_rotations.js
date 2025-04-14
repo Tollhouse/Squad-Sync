@@ -27,7 +27,7 @@ const createSchedule = () => {
         {crew_id: ((i + 2) % 6) + 1, date_start: dateStart.format('YYYY-MM-DD'), date_end: dateEnd.format('YYYY-MM-DD'), shift_type: 'Night', shift_duration: 8, experience_type: 'red'},
         {crew_id: ((i + 3) % 6) + 1, date_start: dateStart.format('YYYY-MM-DD'), date_end: dateEnd.format('YYYY-MM-DD'), shift_type: 'Swing', shift_duration: 8, experience_type: 'yellow'},
         {crew_id: ((i + 4) % 6) + 1, date_start: dateStart.format('YYYY-MM-DD'), date_end: dateEnd.format('YYYY-MM-DD'), shift_type: 'Day', shift_duration: 8, experience_type: 'green'},
-        {crew_id: (i % 6) + 1, date_start: weekendStartDate.format('YYYY-MM-DD'), date_end: weekendEndDate.format('YYYY-MM-DD'), shift_type: 'Day', shift_duration: 12, experience_type: 'green'},
+        {crew_id: ((i + 5) % 6) + 1, date_start: weekendStartDate.format('YYYY-MM-DD'), date_end: weekendEndDate.format('YYYY-MM-DD'), shift_type: 'Day', shift_duration: 12, experience_type: 'green'},
       )
       weekCount += 1;
     }
