@@ -550,7 +550,7 @@ export default function Crews() {
                         </TableCell>
                       )}
                       <TableCell>
-                        <IconButton onClick={() => handleSave(row.id)}>
+                        <IconButton onClick={() => handleSave(row.id)} data-testid='test-saveIcon'>
                           <SaveIcon />
                         </IconButton>
                         <IconButton onClick={handleCancel}>
@@ -575,10 +575,10 @@ export default function Crews() {
                       )}
                       {canEdit && (
                         <TableCell>
-                          <IconButton onClick={() => handleEdit(row)}>
+                          <IconButton onClick={() => handleEdit(row)} data-testid="test-editButton">
                             <EditIcon />
                           </IconButton>
-                          <IconButton onClick={() => handleDelete(row.id)}>
+                          <IconButton onClick={() => handleDelete(row.id)} data-testid='test-deleteButton'>
                             <DeleteIcon />
                           </IconButton>
                         </TableCell>

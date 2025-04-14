@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import Crews from '../Components/Crews/Crews.jsx';
@@ -47,6 +47,56 @@ describe('Testing Crews component ("/Crews" route)', () => {
         await userEvent.click(new_rotation_button)
 
         expect(screen.getByText('New')).toBeInTheDocument()
+    });
+
+    it('delete button is rendered for crew rotations entries', async () => {
+        renderCrews();
+        await screen.findByText("Not Assigned");
+        await waitFor(() => {
+            expect(screen.getAllByTestId("test-deleteButton").length).toBeGreaterThan(0);
+          });
+    });
+
+    it('edit button is rendered for crew rotations entries', async () => {
+        renderCrews();
+        await screen.findByText("Not Assigned");
+        await waitFor(() => {
+            expect(screen.getAllByTestId("test-editButton").length).toBeGreaterThan(0);
+          });
+    });
+
+    it('delete button is rendered for crew rotations entries', async () => {
+        renderCrews();
+        await screen.findByText("Not Assigned");
+        const deleteButtons = screen.getAllByTestId("test-deleteButton");
+        await userEvent.click(deleteButtons[0]);
+        const na = await screen.findAllByText("N/A");
+        expect(na.length).toBeGreaterThan(0)
+    });
+
+    it('save icon is rendered after edit is clicked for crew rotations entries', async () => {
+        renderCrews();
+        await screen.findByText("Not Assigned");
+        const editButtons = screen.getAllByTestId("test-editButton");
+        await userEvent.click(editButtons[0]);
+        const save = await screen.getAllByTestId("test-saveIcon");
+        expect(save.length).toBeGreaterThan(0)
+    });
+
+    it('renders Not assigned crew when edit is clicked', async () => {
+        renderCrews()
+        await screen.findByText("Not Assigned");
+        const editButtons = screen.getAllByTestId("test-editButton");
+        await userEvent.click(editButtons[0]);
+        expect(screen.getByText(/Not Assigned Crew/i)).toBeInTheDocument();
+    });
+
+    it('renders Add crew member button when edit is clicked', async () => {
+        renderCrews()
+        await screen.findByText("Not Assigned");
+        const editButtons = screen.getAllByTestId("test-editButton");
+        await userEvent.click(editButtons[0]);
+        expect(screen.getByText(/add crew member/i)).toBeInTheDocument();
     });
 
 });
