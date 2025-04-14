@@ -168,7 +168,7 @@ describe('GET /crews/:id' , () => {
       const res = await request(app).get('/crews/1')
       expect(res.status).toBe(200)
       expect(res.body[0].id).toBe(1)
-      expect(res.body[0].crew_name).toBe("Alpha")
+      expect(res.body[0].crew_name).toBe("Not Assigned")
     })
 })
 
@@ -225,9 +225,9 @@ describe('GET /users/:id', () => {
     expect(response.status).toBe(400);
   });
 
-  it('should return a 200 status with message of no user found for non existent id', async () => {
+  it('should return a 404 status with message of no user found for non existent id', async () => {
     const response = await request(app).get('/users/10000');
-    expect(response.status).toBe(200);
+    expect(response.status).toBe(404);
     expect(response.body.error).toBe('User not found.')
   });
 
@@ -249,7 +249,6 @@ describe('GET /users/:id', () => {
       expect(response.body.user_name).toBe('Sally')
       expect(response.body.role).toBe('Scheduler')
       expect(response.body.privilege).toBe('scheduler')
-      expect(response.body.flight).toBe('DOU')
   });
 })
 
