@@ -1,4 +1,3 @@
-
 // code by lorena - styled with MUI
 
 import React, { useEffect, useState } from "react";
@@ -29,6 +28,7 @@ import CancelIcon from "@mui/icons-material/Cancel";
 
 export default function Crews() {
   const theme = useTheme();
+  const [certificationData, setCertificationData] = useState([]);
   const [crews, setCrews] = useState([]);
   const [rotations, setRotations] = useState([]);
   const [users, setUsers] = useState([]);
@@ -36,7 +36,13 @@ export default function Crews() {
   const [editingRowId, setEditingRowId] = useState(null);
   const [editedRow, setEditedRow] = useState({});
   const [editingUserId, setEditingUserId] = useState(null);
-  const [editedUser, setEditedUser] = useState({});
+  const [editedUser, setEditedUser] = useState({
+    certified_user_id: "",
+    first_name: "",
+    last_name: "",
+    role: "",
+    experience_type: "",
+  });
   const [confirmUserSaveOpen, setConfirmUserSaveOpen] = useState(false);
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
   const [pendingDeleteId, setPendingDeleteId] = useState(null);
@@ -54,6 +60,7 @@ export default function Crews() {
   });
   const [confirmNewUserOpen, setConfirmNewUserOpen] = useState(false);
   const [isAddingUser, setIsAddingUser] = useState(false);
+  const [pendingUserDeleteId, setPendingUserDeleteId] = useState(null);
   const [newUser, setNewUser] = useState({
     crew_id: selectedCrewId,
     first_name: "",
@@ -86,6 +93,10 @@ export default function Crews() {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    getUsersCertificationData();
+  }, []);
+
   // Auto-fill crew_id in form when a crew is selected
   useEffect(() => {
     if (isAddingUser && selectedCrewId) {
@@ -101,7 +112,7 @@ export default function Crews() {
   };
 
   const handleNewUserChange = (field, value) => {
-    setNewUser((prev) => ({ ...prev, [field]: value }));
+    setNewUser((prev) => ({ ...prev, [field]: value || "" }));
   };
 
   const handleNewRotationSubmit = async () => {
@@ -188,9 +199,16 @@ export default function Crews() {
     setEditedRow({});
   };
 
-  const handleUserEdit = (user) => {
-    setEditingUserId(user.id);
-    setEditedUser(user);
+  const handleUserEdit = async (user) => {
+    try {
+      await getUsersCertificationData();
+      const certifiedUsers = getUsersByCertification(user.role);
+      console.log("Certified Users:", certifiedUsers);
+      setEditingUserId(user.id);
+      setEditedUser(user);
+    } catch (error) {
+      console.error("Error fetching certification data:", error);
+    }
   };
 
   const handleUserCancel = () => {
@@ -291,6 +309,28 @@ export default function Crews() {
     }
   };
 
+  const handleUserDelete = (id) => {
+    setPendingUserDeleteId(id);
+    setConfirmDeleteOpen(true);
+  };
+
+  const confirmUserDelete = async () => {
+    try {
+      const res = await fetch(`http://localhost:8080/users/${pendingUserDeleteId}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) throw new Error("Delete failed");
+
+      setUsers((prev) => prev.filter((u) => u.id !== pendingUserDeleteId));
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setConfirmDeleteOpen(false);
+      setPendingUserDeleteId(null);
+    }
+  };
+
   const ExperienceChip = ({ level }) => {
     const colorMap = {
       green: { label: "Green", color: "#4caf50" },
@@ -308,6 +348,45 @@ export default function Crews() {
         }}
       />
     );
+  };
+
+  const getUsersCertificationData = async () => {
+    try {
+      const response = await fetch("http://localhost:8080/users/certification");
+      if (!response.ok) {
+        throw new Error("Failed to fetch certification data");
+      }
+      const data = await response.json();
+      return setCertificationData(data)
+    } catch (error) {
+      console.error("Error fetching certification data:", error);
+      return [];
+    }
+  };
+console.log("certificationData", certificationData)
+  const getUsersByCertification = (role) => {
+    if (!role) return [];
+    return certificationData.filter((user) => user.cert_granted?.includes(role));
+  };
+
+  const handleUserSelection = (userId) => {
+    if (!userId) {
+      setEditedUser((prev) => ({
+        ...prev,
+        certified_user_id: "",
+      }));
+      return;
+    }
+
+    const selectedUser = users.find((user) => user.id === parseInt(userId, 10));
+    if (selectedUser) {
+      setEditedUser((prev) => ({
+        ...prev,
+        certified_user_id: selectedUser.id,
+        first_name: selectedUser.first_name,
+        last_name: selectedUser.last_name,
+      }));
+    }
   };
 
   const selectedCrew = crews.find((c) => c.id === selectedCrewId);
@@ -592,9 +671,8 @@ export default function Crews() {
                 <TableHead>
                   <TableRow>
                     <TableCell>Crew</TableCell>
-                    <TableCell>First Name</TableCell>
-                    <TableCell>Last Name</TableCell>
                     <TableCell>Role</TableCell>
+                    <TableCell>Name</TableCell>
                     {canSeeExperience && <TableCell>Experience</TableCell>}
                     {canEdit && <TableCell>Actions</TableCell>}
                   </TableRow>
@@ -617,20 +695,6 @@ export default function Crews() {
                         </Select>
                       </TableCell>
                       <TableCell>
-                        <TextField
-                          size="small"
-                          value={newUser.first_name}
-                          onChange={(e) => handleNewUserChange("first_name", e.target.value)}
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <TextField
-                          size="small"
-                          value={newUser.last_name}
-                          onChange={(e) => handleNewUserChange("last_name", e.target.value)}
-                        />
-                      </TableCell>
-                      <TableCell>
                         <Select
                           size="small"
                           value={newUser.role}
@@ -641,6 +705,20 @@ export default function Crews() {
                           <MenuItem value="Operator">Operator</MenuItem>
                         </Select>
                       </TableCell>
+                      <TableCell>
+                        <TextField
+                          size="small"
+                          value={newUser.first_name}
+                          onChange={(e) => handleNewUserChange("first_name", e.target.value)}
+                        />
+                      </TableCell>
+                      {/* <TableCell>
+                        <TextField
+                          size="small"
+                          value={newUser.last_name}
+                          onChange={(e) => handleNewUserChange("last_name", e.target.value)}
+                        />
+                      </TableCell> */}
                       {canSeeExperience && (
                         <TableCell>
                           <Select
@@ -687,20 +765,14 @@ export default function Crews() {
                           "N/A"
                         )}
                       </TableCell>
-                      <TableCell>{user.first_name}</TableCell>
-                      <TableCell>{user.last_name}</TableCell>
                       <TableCell>
                         {editingUserId === user.id ? (
                           <Select
                             value={editedUser.role}
-                            onChange={(e) =>
-                              handleUserChange("role", e.target.value)
-                            }
+                            onChange={(e) => handleUserChange("role", e.target.value)}
                             size="small"
                           >
-                            <MenuItem value="Crew Commander">
-                              Crew Commander
-                            </MenuItem>
+                            <MenuItem value="Crew Commander">Crew Commander</MenuItem>
                             <MenuItem value="Crew Chief">Crew Chief</MenuItem>
                             <MenuItem value="Operator">Operator</MenuItem>
                           </Select>
@@ -708,6 +780,34 @@ export default function Crews() {
                           user.role
                         )}
                       </TableCell>
+                      <TableCell>
+                        {editingUserId === user.id ? (
+                          <Select
+                            value={editedUser.certified_user_id || ""}
+                            onChange={(e) => handleUserSelection(e.target.value)}
+                            size="small"
+                          >
+                            {getUsersByCertification(editedUser.role).map((certifiedUser) => (
+                              <MenuItem key={certifiedUser.id} value={certifiedUser.id}>
+                                {certifiedUser.first_name} {certifiedUser.last_name}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        ) : (
+                          `${user.first_name} ${user.last_name}`
+                        )}
+                      </TableCell>
+                      {editingUserId === user.id ? (
+                        <TextField
+                          size="small"
+                          value={editedUser.first_name || ""}
+                          onChange={(e) => handleUserChange("first_name", e.target.value)}
+                        />
+                      ) : (
+                        user.first_name
+                      )}
+                      {/* <TableCell>{user.first_name}</TableCell>
+                      <TableCell>{user.last_name}</TableCell> */}
                       {canSeeExperience && (
                         <TableCell>
                           {editingUserId === user.id ? (
@@ -734,9 +834,7 @@ export default function Crews() {
                         <TableCell>
                           {editingUserId === user.id ? (
                             <>
-                              <IconButton
-                                onClick={() => handleUserSave(user.id)}
-                              >
+                              <IconButton onClick={() => handleUserSave(user.id)}>
                                 <SaveIcon />
                               </IconButton>
                               <IconButton onClick={handleUserCancel}>
@@ -744,9 +842,14 @@ export default function Crews() {
                               </IconButton>
                             </>
                           ) : (
-                            <IconButton onClick={() => handleUserEdit(user)}>
-                              <EditIcon />
-                            </IconButton>
+                            <>
+                              <IconButton onClick={() => handleUserEdit(user)}>
+                                <EditIcon />
+                              </IconButton>
+                              <IconButton onClick={() => handleUserDelete(user.id)}>
+                                <DeleteIcon />
+                              </IconButton>
+                            </>
                           )}
                         </TableCell>
                       )}
@@ -773,7 +876,13 @@ export default function Crews() {
       <ConfirmDeleteModal
         open={confirmDeleteOpen}
         onClose={() => setConfirmDeleteOpen(false)}
-        onConfirm={confirmDelete}
+        onConfirm={() => {
+          if (pendingDeleteId !== null) {
+            confirmDelete();
+          } else if (pendingUserDeleteId !== null) {
+            confirmUserDelete();
+          }
+        }}
       />
       <ConfirmSaveModal
         open={confirmNewRotationOpen}

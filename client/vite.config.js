@@ -6,5 +6,16 @@ export default defineConfig({
   server: {
     port: 3000 // Change this to the port you want
   },
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: './src/tests/setupTests.js',
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'html'],
+      exclude: ['node_modules/', 'test/', '*.config.js']
+    },
+  },
   plugins: [react()],
+
 })
