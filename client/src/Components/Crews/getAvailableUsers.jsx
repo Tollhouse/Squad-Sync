@@ -2,7 +2,7 @@ export async function getAvailableUsers(crew_id) {
   try {
     const [rotationsRes, schedulesRes] = await Promise.all([
       fetch("http://localhost:8080/crew_rotations"),
-      fetch("http://localhost:8080/users/schedule"),
+      fetch("http://localhost:8080/users/userSchedule"),
     ]);
 
     const [rotations, schedules] = await Promise.all([

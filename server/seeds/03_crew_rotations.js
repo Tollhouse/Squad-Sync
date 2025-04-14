@@ -3,7 +3,7 @@ const dayjs = require('dayjs');
 
 const createSchedule = () => {
   const schedule = [];
-  const shiftChanges = 4;
+  const shiftChanges = 3;
   const numberOfWeeks =4;
   let weekCount = 0;
 

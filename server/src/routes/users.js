@@ -24,33 +24,33 @@ router.get("/", (req, res) => {
 // });
 
 
-// router.get("/schedule", async (req, res) => {
-//     let data = []
+router.get("/schedule", async (req, res) => {
+    let data = []
 
-//     try{
-//         let courseDates = await knex("users")
-//         .join('course_registration', 'users.id', 'user_id')
-//         .join('courses', 'courses.id', 'course_id')
-//         .select('users.id as user_id','first_name','last_name','course_registration.id as registration_id' ,'course_id','course_name', 'cert_granted', 'date_start', 'date_end')
-//         .select(knex.raw(`'courses' as source`))
-//         .orderBy('users.id');
+    try{
+        let courseDates = await knex("users")
+        .join('course_registration', 'users.id', 'user_id')
+        .join('courses', 'courses.id', 'course_id')
+        .select('users.id as user_id','first_name','last_name','course_registration.id as registration_id' ,'course_id','course_name', 'cert_granted', 'date_start', 'date_end')
+        .select(knex.raw(`'courses' as source`))
+        .orderBy('users.id');
 
-//         let crewDates = await knex("users")
-//         .join('crews', 'users.crew_id', 'crews.id')
-//         .join('crew_rotations', 'crews.id', 'crew_rotations.crew_id')
-//         .select('users.id as user_id','first_name', 'last_name','crews.id as crew_id', 'crew_name','crew_rotations.id as rotation_id','shift_type',  'date_start', 'date_end')
-//         .select(knex.raw(`'crews' as source`))
-//         .orderBy('users.id');
+        let crewDates = await knex("users")
+        .join('crews', 'users.crew_id', 'crews.id')
+        .join('crew_rotations', 'crews.id', 'crew_rotations.crew_id')
+        .select('users.id as user_id','first_name', 'last_name','crews.id as crew_id', 'crew_name','crew_rotations.id as rotation_id','shift_type',  'date_start', 'date_end')
+        .select(knex.raw(`'crews' as source`))
+        .orderBy('users.id');
 
-//         data.push({crewDates})
-//         data.push({courseDates})
+        data.push({crewDates})
+        data.push({courseDates})
 
-//         return res.status(200).json(data)
-//     }
-//     catch (error){
-//         return res.status(500).json({ error: error });
-//     }
-// });
+        return res.status(200).json(data)
+    }
+    catch (error){
+        return res.status(500).json({ error: error });
+    }
+});
 
 router.get("/schedule", async (req, res) => {
     try {
@@ -95,39 +95,39 @@ router.get("/schedule", async (req, res) => {
 
 
 // get route to get the schedule of a specific user
-// router.get("/schedule/:id", async (req, res) => {
-//     const id = parseInt(req.params.id)
-//     let data = []
-
-//     try{
-//         let courseDates = await knex("users")
-//         .join('course_registration', 'users.id', 'user_id')
-//         .join('courses', 'courses.id', 'course_id')
-//         .select('users.id as user_id','first_name','last_name','course_registration.id as registration_id' ,'course_id','course_name', 'cert_granted', 'date_start', 'date_end')
-//         .select(knex.raw(`'courses' as source`))
-//         .orderBy('course_id')
-//         .where('users.id', id);
-
-//         let crewDates = await knex("users")
-//         .join('crews', 'users.crew_id', 'crews.id')
-//         .join('crew_rotations', 'crews.id', 'crew_rotations.crew_id')
-//         .select('users.id as user_id','first_name', 'last_name','crews.id as crew_id', 'crew_name','crew_rotations.id as rotation_id','shift_type',  'date_start', 'date_end', 'shift_duration', 'role')
-//         .select(knex.raw(`'crews' as source`))
-//         .orderBy('rotation_id')
-//         .where('users.id', id);
-
-//         data.push({crewDates})
-//         data.push({courseDates})
-
-//         return res.status(200).json(data)
-//     }
-//     catch (error){
-//         return res.status(500).json({ error: error });
-//     }
-
-// });
-
 router.get("/schedule/:id", async (req, res) => {
+    const id = parseInt(req.params.id)
+    let data = []
+
+    try{
+        let courseDates = await knex("users")
+        .join('course_registration', 'users.id', 'user_id')
+        .join('courses', 'courses.id', 'course_id')
+        .select('users.id as user_id','first_name','last_name','course_registration.id as registration_id' ,'course_id','course_name', 'cert_granted', 'date_start', 'date_end')
+        .select(knex.raw(`'courses' as source`))
+        .orderBy('course_id')
+        .where('users.id', id);
+
+        let crewDates = await knex("users")
+        .join('crews', 'users.crew_id', 'crews.id')
+        .join('crew_rotations', 'crews.id', 'crew_rotations.crew_id')
+        .select('users.id as user_id','first_name', 'last_name','crews.id as crew_id', 'crew_name','crew_rotations.id as rotation_id','shift_type',  'date_start', 'date_end', 'shift_duration', 'role')
+        .select(knex.raw(`'crews' as source`))
+        .orderBy('rotation_id')
+        .where('users.id', id);
+
+        data.push({crewDates})
+        data.push({courseDates})
+
+        return res.status(200).json(data)
+    }
+    catch (error){
+        return res.status(500).json({ error: error });
+    }
+
+});
+
+router.get("/userSchedule/:id", async (req, res) => {
     const id = parseInt(req.params.id)
 
     try{
@@ -152,7 +152,6 @@ router.get("/schedule/:id", async (req, res) => {
           };
 
 
-
         return res.status(200).json(combinedDates)
     }
     catch (error){
@@ -172,8 +171,6 @@ router.get("/certification", async (req, res) => {
     }
     res.status(200).json(course_reg)
 });
-
-
 
 router.get("/:id", async (req, res) => {
     const id = parseInt(req.params.id)
