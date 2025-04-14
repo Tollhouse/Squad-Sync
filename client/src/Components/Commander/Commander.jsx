@@ -1,3 +1,5 @@
+// Code written by Essence
+
 import React, { useEffect, useState } from "react";
 import {
   Container,
@@ -121,7 +123,6 @@ export default function Commander() {
       },
     },
   };
-
   return (
     <Fade in={!loading}>
       <Container sx={{ mt: 4 }}>
@@ -154,7 +155,9 @@ export default function Commander() {
           <CardContent>
             <Tabs
               value={tabIndex}
-              onChange={(e, newIndex) => setTabIndex(newIndex)}
+              onChange={(e, newIndex) => {
+                console.log(newIndex)
+                setTabIndex(newIndex)}}
               variant="scrollable"
               scrollButtons="auto"
               centered
@@ -175,6 +178,7 @@ export default function Commander() {
                         label={`${user.first_name} ${user.last_name} — ${user.role} (${user.experience_type})`}
                         color="default"
                         variant="outlined"
+                        role='chip'
                         sx={{ width: "100%" }}
                       />
                     </Grid>

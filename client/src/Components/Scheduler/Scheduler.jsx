@@ -1,3 +1,5 @@
+// Code written by Essence
+
 import React, { useEffect, useState } from "react";
 import Crews from '../Crews/Crews';
 import { Box, Typography, Paper, Divider, Tabs, Tab } from "@mui/material";
@@ -19,6 +21,9 @@ export default function Scheduler() {
   const [calendarEvents, setCalendarEvents] = useState([]);
   const [tabIndex, setTabIndex] = useState(0);
   const [selectedEvent, setSelectedEvent] = useState(null);
+  const [filterCrew, setFilterCrew] = useState("all");
+  const [filterShift, setFilterShift] = useState("all");
+  const [currentView, setCurrentView] = useState("month");
 
   useEffect(() => {
     async function fetchData() {
@@ -49,7 +54,13 @@ export default function Scheduler() {
   }, []);
 
   useEffect(() => {
-    const events = registrations.map((r) => {
+    const shiftTimeMap = {
+      day: "6AM–2PM",
+      swing: "2PM–10PM",
+      night: "10PM–6AM"
+    };
+
+    const registrationEvents = registrations.map((r) => {
       const user = users.find((u) => u.id === r.user_id);
       const course = courses.find((c) => c.id === r.course_id);
       return {
@@ -60,8 +71,47 @@ export default function Scheduler() {
         cert_earned: r.cert_earned,
       };
     });
-    setCalendarEvents(events);
-  }, [registrations, courses, users]);
+
+    const crewEvents = rotations.map((rotation) => {
+      const emojiMap = {
+        green: "🟢",
+        yellow: "🟡",
+        red: "🔴",
+      };
+      const emoji = emojiMap[rotation.experience_type] || "⚪";
+      const timeRange = shiftTimeMap[rotation.shift_type] || "N/A";
+
+      const startDate = new Date(rotation.date_start);
+      let shiftStart = new Date(startDate);
+      let shiftEnd = new Date(startDate);
+
+      if (rotation.shift_type === "day") {
+        shiftStart.setHours(6, 0, 0);
+        shiftEnd.setHours(14, 0, 0);
+      } else if (rotation.shift_type === "swing") {
+        shiftStart.setHours(14, 0, 0);
+        shiftEnd.setHours(22, 0, 0);
+      } else if (rotation.shift_type === "night") {
+        shiftStart.setHours(22, 0, 0);
+        shiftEnd = new Date(shiftStart);
+        shiftEnd.setDate(shiftEnd.getDate() + 1);
+        shiftEnd.setHours(6, 0, 0);
+      }
+
+      return {
+        title: `Crew ${rotation.crew_id} - ${rotation.shift_type} (${timeRange}) ${emoji}`,
+        start: shiftStart,
+        end: shiftEnd,
+        allDay: false,
+        cert_earned: null,
+        experience_type: rotation.experience_type,
+        shift_type: rotation.shift_type,
+        crew_id: rotation.crew_id,
+      };
+    });
+
+    setCalendarEvents([...registrationEvents, ...crewEvents]);
+  }, [registrations, courses, users, rotations]);
 
   if (loading) return <Typography>Loading scheduler data...</Typography>;
 
@@ -88,9 +138,11 @@ export default function Scheduler() {
     })
     .sort((a, b) => a.daysLeft - b.daysLeft);
 
-  const handleTabChange = (event, newTabIndex) => {
-    setTabIndex(newTabIndex);
-  };
+  const filteredEvents = calendarEvents.filter((event) => {
+    const matchCrew = filterCrew === "all" || event.crew_id === Number(filterCrew);
+    const matchShift = filterShift === "all" || event.shift_type === filterShift;
+    return matchCrew && matchShift;
+  });
 
   return (
     <Box p={4}>
@@ -98,102 +150,175 @@ export default function Scheduler() {
         🗓️ Scheduler Dashboard
       </Typography>
 
-      <Tabs value={tabIndex} onChange={handleTabChange} centered>
+      <Tabs value={tabIndex} onChange={(e, val) => setTabIndex(val)} centered>
         <Tab label="Available for Course/Crew" />
         <Tab label="Soon to be Certified" />
         <Tab label="Certified Members & Their Certifications" />
-        <Tab label="Crews" />
+        {/* <Tab label="Crews" /> */}
       </Tabs>
 
-      <Box sx={{ display: tabIndex === 0 ? "block" : "none" }}>
-        <Paper elevation={3} sx={{ p: 2, minHeight: 350, maxHeight: '350px', overflowY: 'auto' }}>
+      {tabIndex === 0 && (
+        <Paper elevation={3} sx={{ p: 2, mt: 2 }}>
           <Typography variant="h6"><GroupIcon sx={{ mr: 1 }} />Available for Course/Crew</Typography>
-          <Typography variant="body2" sx={{ mb: 1, fontStyle: 'italic', color: 'lightgray' }}>
+          <Typography variant="body2" sx={{ mb: 1, fontStyle: 'italic', color: 'gray' }}>
             ✅ Users listed here are not enrolled in any course AND not assigned to a crew.
           </Typography>
           <Divider sx={{ my: 1 }} />
-          <ul>
-            {availableUsers.map((user) => (
-              <li key={user.id}>
-                {user.first_name} {user.last_name} — {user.role}
-              </li>
-            ))}
-          </ul>
+          <Box sx={{ maxHeight: 300, overflowY: 'auto', pr: 1 }}>
+  <ul style={{ margin: 0, padding: 0, listStyle: 'none' }}>
+    {availableUsers.map((user) => (
+      <li key={user.id}>
+        {user.first_name} {user.last_name} — {user.role}
+      </li>
+    ))}
+  </ul>
+</Box>
         </Paper>
-      </Box>
+      )}
 
-      <Box sx={{ display: tabIndex === 1 ? "block" : "none" }}>
-        <Paper elevation={3} sx={{ p: 2, minHeight: 350, maxHeight: '350px', overflowY: 'auto' }}>
+      {tabIndex === 1 && (
+        <Paper elevation={3} sx={{ p: 2, mt: 2 }}>
           <Typography variant="h6"><HourglassTopIcon sx={{ mr: 1 }} />Soon to be Certified</Typography>
           <Divider sx={{ my: 1 }} />
-          <ul>
-            {upcomingCertifications.map(({ user, course, daysLeft }, index) => {
-              let urgencyColor = 'inherit';
-              if (daysLeft <= 7) urgencyColor = 'red';
-              else if (daysLeft <= 10) urgencyColor = 'orange';
-
-              return (
-                <li key={index} style={{ color: urgencyColor }}>
-                  {user.first_name} {user.last_name} — {course.course_name} by{" "}
-                  {new Date(course.date_end).toLocaleDateString()}{" "}
-                  {daysLeft <= 7 && <span style={{ fontWeight: 'bold' }}>⚠️ Urgent!</span>}
-                </li>
-              );
-            })}
-          </ul>
+          <Box sx={{ maxHeight: 300, overflowY: 'auto', pr: 1 }}>
+  <ul style={{ margin: 0, padding: 0, listStyle: 'none' }}>
+    {upcomingCertifications.map(({ user, course, daysLeft }, index) => {
+      let urgencyColor = 'inherit';
+      if (daysLeft <= 7) urgencyColor = 'red';
+      else if (daysLeft <= 10) urgencyColor = 'orange';
+      return (
+        <li key={index} style={{ color: urgencyColor }}>
+          {user.first_name} {user.last_name} — {course.course_name} by{" "}
+          {new Date(course.date_end).toLocaleDateString()}
+          {daysLeft <= 7 && <strong> ⚠️ Urgent!</strong>}
+        </li>
+      );
+    })}
+  </ul>
+</Box>
         </Paper>
-      </Box>
+      )}
 
-      <Box sx={{ display: tabIndex === 2 ? "block" : "none" }}>
-        <Paper elevation={3} sx={{ p: 2, minHeight: 350, maxHeight: '350px', overflowY: 'auto' }}>
+      {tabIndex === 2 && (
+        <Paper elevation={3} sx={{ p: 2, mt: 2 }}>
           <Typography variant="h6"><WorkspacePremiumIcon sx={{ mr: 1 }} />Certified Members & Their Certifications</Typography>
           <Divider sx={{ my: 1 }} />
           <ul>
             {users.map((user) => {
               const earnedCourses = registrations
                 .filter((r) => r.user_id === user.id && r.cert_earned)
-                .map((r) => {
-                  const course = courses.find((c) => c.id === r.course_id);
-                  return course ? course.course_name : null;
-                })
+                .map((r) => courses.find((c) => c.id === r.course_id)?.course_name)
                 .filter(Boolean);
-
               return earnedCourses.length > 0 ? (
-                <li key={user.id}>
-                  <strong>{user.first_name} {user.last_name}</strong>: {earnedCourses.join(", ")}
-                </li>
+                <li key={user.id}><strong>{user.first_name} {user.last_name}</strong>: {earnedCourses.join(", ")}</li>
               ) : null;
             })}
           </ul>
         </Paper>
+      )}
+
+      {tabIndex === 3 && <Crews />}
+
+      <Box sx={{ display: 'flex', gap: 2, mt: 4, mb: 2 }}>
+        <label>
+          Filter by Crew:
+          <select value={filterCrew} onChange={(e) => setFilterCrew(e.target.value)}>
+            <option value="all">All</option>
+            {[...new Set(rotations.map(r => r.crew_id))].map(id => (
+              <option key={id} value={id}>Crew {id}</option>
+            ))}
+          </select>
+        </label>
+        <label>
+          Filter by Shift Type:
+          <select value={filterShift} onChange={(e) => setFilterShift(e.target.value)}>
+            <option value="all">All</option>
+            <option value="day">Day</option>
+            <option value="swing">Swing</option>
+            <option value="night">Night</option>
+          </select>
+        </label>
+        <label>
+          View:
+          <select value={currentView} onChange={(e) => setCurrentView(e.target.value)}>
+            <option value="month">Month</option>
+            <option value="week">Week</option>
+            <option value="day">Day</option>
+          </select>
+        </label>
       </Box>
 
-      <Box sx={{ display: tabIndex === 3 ? "block" : "none" }}>
-        <Crews />
-      </Box>
-
-      <Box mt={6}>
-        <div style={{ height: '500px' }}>
+      <Box>
+        <div style={{ height: '600px' }}>
           <BigCalendar
             localizer={localizer}
-            events={calendarEvents}
+            events={filteredEvents}
             startAccessor="start"
             endAccessor="end"
+            views={['month', 'week', 'day']}
+            view={currentView}
+            onView={(view) => setCurrentView(view)}
+            popup
             style={{ height: '100%' }}
-            views={['month']}
-            popup={true}
             onSelectEvent={(event) => setSelectedEvent(event)}
+            min={new Date(2025, 0, 1, 6, 0)}
+            max={new Date(2025, 0, 1, 23, 59)}
+            eventPropGetter={(event) => {
+              const shiftColors = {
+                green: "#4caf50",
+                yellow: "#fdd835",
+                red: "#f44336",
+                day: "#81c784",
+                swing: "#ffb74d",
+                night: "#9575cd",
+                rest: "#4dd0e1"
+              };
+              const bgColor = event.cert_earned === null
+              ? shiftColors[event.shift_type?.toLowerCase()]     // prefer shift_type
+                || shiftColors[event.experience_type?.toLowerCase()] 
+                || "#90a4ae" // fallback gray
+              : "#1976d2";
+              return {
+                style: {
+                  backgroundColor: bgColor,
+                  color: "#fff",
+                  fontWeight: 600,
+                  fontSize: "0.75rem",
+                  padding: "2px 6px",
+                  borderRadius: "6px",
+                  border: "1px solid #e0e0e0",
+                  whiteSpace: "normal",
+                  textAlign: "center",
+                }
+              };
+            }}
           />
         </div>
       </Box>
 
       {selectedEvent && (
-        <Box mt={2} sx={{ p: 3, backgroundColor: "#1e1e1e", borderRadius: 2, color: "white" }}>
+        <Box sx={{
+          position: 'fixed',
+          top: '20%',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          zIndex: 2000,
+          backgroundColor: "#1e1e1e",
+          color: "white",
+          borderRadius: 2,
+          padding: 3,
+          minWidth: 300,
+          boxShadow: 24
+        }}>
           <Typography variant="h6" gutterBottom>📋 Event Details</Typography>
           <Typography><strong>Title:</strong> {selectedEvent.title}</Typography>
-          <Typography><strong>Start:</strong> {selectedEvent.start.toDateString()}</Typography>
-          <Typography><strong>End:</strong> {selectedEvent.end.toDateString()}</Typography>
-          <Typography><strong>Certification Earned:</strong> {selectedEvent.cert_earned ? "✅ Yes" : "❌ No"}</Typography>
+          <Typography><strong>Start:</strong> {selectedEvent.start.toString()}</Typography>
+          <Typography><strong>End:</strong> {selectedEvent.end.toString()}</Typography>
+          {selectedEvent.cert_earned !== null && (
+            <Typography>
+              <strong>Certification Earned:</strong> {selectedEvent.cert_earned ? "✅ Yes" : "❌ No"}
+            </Typography>
+          )}
           <Box mt={2}>
             <button
               style={{

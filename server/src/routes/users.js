@@ -85,6 +85,18 @@ router.get("/schedule/:id", async (req, res) => {
 
 });
 
+router.get("/certification", async (req, res) => {
+    const course_reg = await knex("users")
+    .join("course_registration", "users.id", "course_registration.user_id")
+    .join("courses", "course_registration.course_id", "courses.id")
+    .select("*")
+    .where('course_registration.cert_earned', true)
+    if (course_reg.length === 0) {
+        return res.status(200).json([])
+    }
+    res.status(200).json(course_reg)
+});
+
 
 router.get("/:id", async (req, res) => {
     const id = parseInt(req.params.id)
