@@ -9,7 +9,7 @@ export default function handleDelete({ crew_id }) {
     );
 
     if (confirmDelete) {
-      fetch(`http://localhost:8080/crews/roster/${crew_id}`, {
+      fetch(`http://localhost:8080/crews/${crew_id}`, {
         method: "DELETE",
         mode: "cors",
         headers: {

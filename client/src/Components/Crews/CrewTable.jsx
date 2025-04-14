@@ -15,11 +15,12 @@ import CrewRoster from "./CrewRoster";
 import AddIcon from "@mui/icons-material/Add";
 import ExperienceChip from "../AddOns/ExperinceChip";
 import HandleDelete from "./HandleDelete";
-
+import HandleEdit from "./HandleEdit";
 
 function CrewTable({ schedule }) {
   const [rosterMode, setRosterMode] = useState(false);
   const [rosterId, setRosterId] = useState(0);
+  const [isEditing, setIsEditing] = useState(false);
 
 
   function handleRosterMode(s) {
@@ -70,7 +71,13 @@ function CrewTable({ schedule }) {
               <TableRow key={index} onClick={() => handleRosterMode(s)}>
                 <TableCell>{s.crew_id}</TableCell>
                 <TableCell>{s.crew_name}</TableCell>
-                <TableCell>{s.date_start}</TableCell>
+                <TableCell>{s.date_start}
+                  {/* {editing ? (
+                    <DatePicker value={editFormData.date_start} onChange={(date) => dateChange("date_start", date)} />
+                  ) : (s.date_start
+                  )}
+                  {s.date_start} */}
+                </TableCell>
                 <TableCell>{s.date_end}</TableCell>
                 <TableCell>{s.shift_type}</TableCell>
                 <TableCell>
@@ -78,6 +85,7 @@ function CrewTable({ schedule }) {
                 </TableCell>
                 <TableCell>
                   <HandleDelete crew_id={s.crew_id} />
+                  <HandleEdit rowData={s} isEditing={isEditing} setIsEditing={setIsEditing} />
                 </TableCell>
               </TableRow>
             ))}
