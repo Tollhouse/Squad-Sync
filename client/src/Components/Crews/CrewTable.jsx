@@ -9,24 +9,22 @@ import {
   Paper,
   Box,
   Button,
-  Typography,
-} from "@mui/material";
+  Typography
+} from '@mui/material';
 import CrewRoster from "./CrewRoster";
-import AddIcon from "@mui/icons-material/Add";
-import ExperienceChip from "../AddOns/ExperinceChip";
-import HandleDelete from "./HandleDelete";
-import HandleEdit from "./HandleEdit";
+import AddIcon from '@mui/icons-material/Add';
+import ExperienceChip from '../AddOns/ExperinceChip'
+import HandleAddRotation from './HandleAddRotation';
 
 function CrewTable({ schedule }) {
-  const [rosterMode, setRosterMode] = useState(false);
-  const [rosterId, setRosterId] = useState(0);
-  const [isEditing, setIsEditing] = useState(false);
-
+  const [rosterMode, setRosterMode] = useState(false)
+  const [rosterId, setRosterId] = useState(0)
+  const [addRotationOpen, setAddRotationOpen] = useState(false);
 
   function handleRosterMode(s) {
     if (rosterMode && rosterId === s.crew_id) {
       setRosterMode(false);
-      setRosterId(0);
+      setRosterId(0)
     } else {
       setRosterMode(true);
       setRosterId(s.crew_id);
@@ -36,6 +34,11 @@ function CrewTable({ schedule }) {
 
   const handleAddCrewRotation = () => {
     console.log("Clicked on Add Crew Rotation");
+    setAddRotationOpen(true);
+  };
+
+  const handleRotationAdded = (newRotation) => {
+    console.log("Rotation added from HandleAddRotation:", newRotation);
   };
 
   return (
@@ -63,7 +66,6 @@ function CrewTable({ schedule }) {
               <TableCell>End Date</TableCell>
               <TableCell>Shift Type</TableCell>
               <TableCell>Crew Experience</TableCell>
-              <TableCell>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -71,31 +73,26 @@ function CrewTable({ schedule }) {
               <TableRow key={index} onClick={() => handleRosterMode(s)}>
                 <TableCell>{s.crew_id}</TableCell>
                 <TableCell>{s.crew_name}</TableCell>
-                <TableCell>{s.date_start}
-                  {/* {editing ? (
-                    <DatePicker value={editFormData.date_start} onChange={(date) => dateChange("date_start", date)} />
-                  ) : (s.date_start
-                  )}
-                  {s.date_start} */}
-                </TableCell>
+                <TableCell>{s.date_start}</TableCell>
                 <TableCell>{s.date_end}</TableCell>
                 <TableCell>{s.shift_type}</TableCell>
-                <TableCell>
-                  <ExperienceChip level={s.crew_experience} />
-                </TableCell>
-                <TableCell>
-                  <HandleDelete crew_id={s.crew_id} />
-                  <HandleEdit rowData={s} isEditing={isEditing} setIsEditing={setIsEditing} />
-                </TableCell>
+                <TableCell><ExperienceChip level={s.crew_experience} /></TableCell>
               </TableRow>
+
             ))}
           </TableBody>
         </Table>
       </TableContainer>
 
       {rosterMode ? <CrewRoster key={rosterId} crew_id={rosterId} /> : null}
+      <HandleAddRotation
+        open={addRotationOpen}
+        onClose={() => setAddRotationOpen(false)}
+        onAddRotation={handleRotationAdded}
+      />
     </>
   );
 }
+
 
 export default CrewTable;
