@@ -1,5 +1,5 @@
 const registeredUsers = [];
-const numberOfUsers = 25;
+const numberOfUsers = 30;
 
 for (let i = 0; i < numberOfUsers; i++) {
   let registeredCourse = {};
@@ -14,6 +14,18 @@ for (let i = 0; i < numberOfUsers; i++) {
     registeredCourse.user_id = i + 1;
     registeredCourse.in_progress = 'completed';
     registeredCourse.cert_earned = true;
+    registeredUsers.push(registeredCourse);
+  } else if ((i - 3) % 5 == 0 && i < 20) {
+    registeredCourse.course_id = i + 6;
+    registeredCourse.user_id = i + 1;
+    registeredCourse.in_progress = 'scheduled';
+    registeredCourse.cert_earned = false;
+    registeredUsers.push(registeredCourse);
+  } else if ((i - 4) % 5 == 0 && i < 20) {
+    registeredCourse.course_id = i + 2;
+    registeredCourse.user_id = i + 1;
+    registeredCourse.in_progress = 'scheduled';
+    registeredCourse.cert_earned = false;
     registeredUsers.push(registeredCourse);
   }
 }
