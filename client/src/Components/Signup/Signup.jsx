@@ -21,7 +21,7 @@ export default function Signup() {
     first_name: '',
     last_name: '',
     crew_id: 1,
-    role: "Operator",
+    role: "Not Assigned",
     experience_type: "red"
   });
   const [error, setError] = useState('');
@@ -34,7 +34,7 @@ export default function Signup() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-   
+
     fetch('http://localhost:8080/users', {
       method: 'POST',
       mode: 'cors',
