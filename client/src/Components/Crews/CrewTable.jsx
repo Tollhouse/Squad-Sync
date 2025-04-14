@@ -9,6 +9,7 @@ import {
   Paper,
   Box,
   Button,
+
   Typography,
   TextField,
   Select,
@@ -23,14 +24,15 @@ import ExperienceChip from "../AddOns/ExperinceChip";
 import CrewRoster from "./CrewRoster";
 
 function CrewTable({ schedule, setSchedule }) {
-  const [editingRowId, setEditingRowId] = useState(null); // Track the row being edited
-  const [editFormData, setEditFormData] = useState({}); // Store the edited data
+  const [editingRowId, setEditingRowId] = useState(null); 
+  const [editFormData, setEditFormData] = useState({}); 
   const [rosterMode, setRosterMode] = useState(false);
   const [rosterId, setRosterId] = useState(0);
+  const [addRotationOpen, setAddRotationOpen] = useState(false);
 
   const handleEditClick = (row) => {
-    setEditingRowId(row.crew_id); // Set the row ID being edited
-    setEditFormData({ ...row }); // Initialize the form data with the row's current values
+    setEditingRowId(row.crew_id);
+    setEditFormData({ ...row }); 
   };
 
   const handleCancelClick = () => {
@@ -77,7 +79,7 @@ function CrewTable({ schedule, setSchedule }) {
   function handleRosterMode(s) {
     if (rosterMode && rosterId === s.crew_id) {
       setRosterMode(false);
-      setRosterId(0);
+      setRosterId(0)
     } else {
       setRosterMode(true);
       setRosterId(s.crew_id);
@@ -87,6 +89,11 @@ function CrewTable({ schedule, setSchedule }) {
 
   const handleAddCrewRotation = () => {
     console.log("Clicked on Add Crew Rotation");
+    setAddRotationOpen(true);
+  };
+
+  const handleRotationAdded = (newRotation) => {
+    console.log("Rotation added from HandleAddRotation:", newRotation);
   };
 
   return (
@@ -114,10 +121,10 @@ function CrewTable({ schedule, setSchedule }) {
               <TableCell>End Date</TableCell>
               <TableCell>Shift Type</TableCell>
               <TableCell>Crew Experience</TableCell>
-              <TableCell>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
+
             {schedule.map((row) => (
               <TableRow key={row.crew_id} onClick={() => handleRosterMode(row)}>
                 <TableCell>{row.crew_id}</TableCell>
@@ -207,15 +214,24 @@ function CrewTable({ schedule, setSchedule }) {
                     </IconButton>
                   )}
                 </TableCell>
+
               </TableRow>
+
             ))}
           </TableBody>
         </Table>
       </TableContainer>
 
       {rosterMode ? <CrewRoster key={rosterId} crew_id={rosterId} /> : null}
+
+      <HandleAddRotation
+        open={addRotationOpen}
+        onClose={() => setAddRotationOpen(false)}
+        onAddRotation={handleRotationAdded}
+      />
     </>
   );
 }
 
 export default CrewTable;
+
