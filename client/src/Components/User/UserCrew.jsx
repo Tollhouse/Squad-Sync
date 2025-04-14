@@ -70,8 +70,8 @@ return (
                 <TableCell>{crew.crew_id}</TableCell>
                 <TableCell>{crew.crew_name}</TableCell>
                 <TableCell>{crew.role}</TableCell>
-                <TableCell>{crew.date_start}</TableCell>
-                <TableCell>{crew.date_end}</TableCell>
+                <TableCell>{new Date(crew.date_start).toISOString().split("T")[0]}</TableCell>
+                <TableCell>{new Date(crew.date_end).toISOString().split("T")[0]}</TableCell>
                 <TableCell>{crew.shift_type}</TableCell>
                 <TableCell>{crew.shift_duration}</TableCell>
               </TableRow>

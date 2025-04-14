@@ -10,10 +10,10 @@ import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Close';
 
-export default function HandleEdit({ rowData,isEditing,setIsEditing, onEditSuccess }) {
+export default function HandleEdit({ rowData, onEditSuccess }) {
 
   const { rotation_id, crew_name, date_start, date_end, shift_type } = rowData;
-
+  const [isEditing, setIsEditing] = useState(false);
   const [editedData, setEditedData] = useState({
     crew_name,
     date_start,
@@ -51,6 +51,9 @@ export default function HandleEdit({ rowData,isEditing,setIsEditing, onEditSucce
           alert('Crew updated successfully!');
           setIsEditing(false);
 
+          if (onEditSuccess) {
+            onEditSuccess(editedData);
+          }
         } else {
           alert('Failed to update crew.');
         }
