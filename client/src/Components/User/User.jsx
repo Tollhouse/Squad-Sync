@@ -173,7 +173,7 @@ export default function User () {
       }
     }
   ]
-// console.log("userInformation:", userInformation)
+
   return (
 
     <div className='user-container'>
