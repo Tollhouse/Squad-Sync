@@ -179,7 +179,7 @@ export default function User () {
     <div className='user-container'>
       <div className='header'>
         {userInformation.map((user, index) => (
-          <div key={user.id || `user-${index}`}>
+          <div key={user.id || `user-${index}`} data-testid='test-userNameText'>
             <h1>{user.first_name} {user.last_name}</h1>
           </div>
         ))}
