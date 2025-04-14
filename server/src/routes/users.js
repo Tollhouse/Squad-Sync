@@ -288,6 +288,32 @@ router.patch("/:id", async (req, res) => {
     }
 });
 
+router.patch("/password/:id", async (req, res) => {
+    const id = parseInt(req.params.id);
+    if (typeof id !== 'number' || isNaN(id)) {
+        res.status(400).json({ error: 'Must include id of employee to update if updating from this endpoint' });
+        return
+    }
+    try{
+        const { password } = req.body;
+        const hashedPassword = await hashPassword(password);
+        const updates = { password: hashedPassword };
+
+        Object.keys(updates).forEach(key => updates[key] === undefined && delete updates[key]);
+        if (Object.keys(updates).length == 0) {
+            return res.status(400).json({error: 'Must include a new password to update'})
+        }
+
+        const updated_user = await knex("users")
+        .where('id',id)
+        .update(updates)
+        .returning("*")
+        res.status(201).json(updated_user)
+    }catch (error){
+        return res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
 router.delete("/:id", async (req, res) => {
     const id = parseInt(req.params.id)
     if(typeof id !== "number" || isNaN(id)){
