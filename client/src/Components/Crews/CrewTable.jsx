@@ -84,7 +84,7 @@ function CrewTable({ schedule }) {
                   <ExperienceChip level={s.crew_experience} />
                 </TableCell>
                 <TableCell>
-                  <HandleDelete crew_id={s.s.crew_id} />
+                  <HandleDelete crew_id={s.crew_id} />
                   <HandleEdit rowData={s} isEditing={isEditing} setIsEditing={setIsEditing} />
                 </TableCell>
               </TableRow>
