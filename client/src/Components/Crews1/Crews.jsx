@@ -1,7 +1,7 @@
 // code by lorena - styled with MUI
 
 import React, { useEffect, useState } from "react";
-import { ConfirmSaveModal, ConfirmDeleteModal } from "../Modals/ConfirmModal";
+import { ConfirmSaveModal, ConfirmDeleteModal } from "../AddOns/ConfirmModal";
 import {
   Container,
   Box,
