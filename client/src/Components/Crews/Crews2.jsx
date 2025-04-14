@@ -663,10 +663,10 @@ export default function Crews2() {
                       )}
                       {canEdit && (
                         <TableCell>
-                          <IconButton onClick={() => handleEdit(row)}>
+                          <IconButton onClick={() => handleEdit(row)} data-testid="test-editButton">
                             <EditIcon />
                           </IconButton>
-                          <IconButton onClick={() => handleDelete(row.id)}>
+                          <IconButton onClick={() => handleDelete(row.id)} data-testid="test-deleteButton">
                             <DeleteIcon />
                           </IconButton>
                         </TableCell>

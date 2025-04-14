@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import {ConfirmSaveModal, ConfirmDeleteModal} from '../Components/Modals/ConfirmModal.jsx';
+import {ConfirmSaveModal, ConfirmDeleteModal} from '../Components/AddOns/ConfirmModal.jsx';
 
 beforeEach(() => {
   localStorage.clear();
