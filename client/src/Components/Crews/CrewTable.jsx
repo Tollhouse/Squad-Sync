@@ -40,7 +40,7 @@ function CrewTable({ schedule, setSchedule }) {
     setEditingRowId(null); // Exit edit mode
     setEditFormData({}); // Clear the form data
   };
-console.log("schedule", schedule)
+
   const handleSaveClick = () => {
     // Save the changes (you can also send this to the backend)
     fetch(`http://localhost:8080/crew_rotations/${editFormData.crew_id}`, {
