@@ -15,9 +15,9 @@ describe('Testing ConfirmSaveModal component ', () => {
         );
     };
 
-    it('renders "Confirm Save" text', () => {
+    it('renders "Yes, Save" text', () => {
         renderConfirmSave()
-        expect(screen.getByText("Confirm Save")).toBeInTheDocument()
+        expect(screen.getByText("Yes, Save")).toBeInTheDocument()
     });
 
     it('renders default "message" text', () => {
@@ -42,9 +42,9 @@ describe('Testing ConfirmSaveModal component ', () => {
         expect(screen.getByText('Cancel')).toBeInTheDocument()
     })
 
-    it('renders "Confirm" button', () => {
+    it('renders "Yes, Save" button', () => {
         renderConfirmSave()
-        expect(screen.getByText('Confirm')).toBeInTheDocument()
+        expect(screen.getByText('Yes, Save')).toBeInTheDocument()
     })
 
 });
@@ -58,9 +58,9 @@ describe('Testing ConfirmDeleteModal component ', () => {
         );
     };
 
-    it('renders "Confirm Delete" text', () => {
+    it('renders "Yes, Delete" text', () => {
         renderConfirmDelete()
-        expect(screen.getByText("Confirm Delete")).toBeInTheDocument()
+        expect(screen.getByText("Yes, Delete")).toBeInTheDocument()
     });
 
     it('renders default "message" text', () => {
@@ -85,9 +85,9 @@ describe('Testing ConfirmDeleteModal component ', () => {
         expect(screen.getByText('Cancel')).toBeInTheDocument()
     })
 
-    it('renders "Delete" button', () => {
+    it('renders "Yes, Delete" button', () => {
         renderConfirmDelete()
-        expect(screen.getByText('Delete')).toBeInTheDocument()
+        expect(screen.getByText('Yes, Delete')).toBeInTheDocument()
     })
 
 });

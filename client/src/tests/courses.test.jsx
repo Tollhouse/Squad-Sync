@@ -34,7 +34,7 @@ describe('Testing Courses component ("/courses" route)', () => {
             expect(screen.getByText(/Cert Granted/i)).toBeInTheDocument();
         });
         await waitFor(() => {
-            expect(screen.getAllByText(/Systems Engineer/i)).toHaveLength(2);
+            expect(screen.getAllByText(/Systems Engineer/i)).toHaveLength(4);
             expect(screen.getByText(/2025-06-01/i)).toBeInTheDocument();
             expect(screen.getByText(/2025-12-01/i)).toBeInTheDocument();
         });
@@ -50,9 +50,9 @@ describe('Testing Courses component ("/courses" route)', () => {
             expect(screen.getByText(/Cert Granted/i)).toBeInTheDocument();
         });
         await waitFor(() => {
-            expect(screen.getAllByText(/Systems Engineer/i)).toHaveLength(2);
-            expect(screen.getByText(/2025-06-01/i)).toBeInTheDocument();
-            expect(screen.getByText(/2025-12-01/i)).toBeInTheDocument();
+            expect(screen.getAllByText(/Systems Engineer/i)).toHaveLength(4);
+            expect(screen.getByText(/2025-02-01/i)).toBeInTheDocument();
+            expect(screen.getByText(/2025-02-28/i)).toBeInTheDocument();
         });
         const courseButton = screen.getAllByTestId('test-courseRow')
         await userEvent.click(courseButton[0])
