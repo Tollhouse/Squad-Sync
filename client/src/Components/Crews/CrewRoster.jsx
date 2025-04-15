@@ -15,7 +15,7 @@ import {
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { getAvailableUsers } from './getAvailableUsers';
-import ExperienceChip from '../AddOns/ExperinceChip';
+import { ExperienceChip } from '../AddOns/ExperienceChip';
 
 function CrewRoster({ crew_id }) {
   const [roster, setRoster] = useState([]);

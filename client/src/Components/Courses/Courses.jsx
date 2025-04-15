@@ -1,5 +1,3 @@
-// code by lorena - styled with MUI
-
 import React, { useEffect, useState } from "react";
 import {
   Container,
@@ -12,9 +10,9 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Chip,
   useTheme,
 } from "@mui/material";
+import CoursePersonnel from "./CoursePersonnel";
 
 export default function Courses() {
   const theme = useTheme();
@@ -64,21 +62,6 @@ export default function Courses() {
       };
     });
 
-  // Chip color component for cert_earned
-  const CertChip = ({ earned }) => {
-    return (
-      <Chip
-        label={earned ? "Yes" : "No"}
-        size="small"
-        sx={{
-          backgroundColor: earned ? "#4caf50" : "#f44336",
-          color: "#fff",
-          fontWeight: 600,
-        }}
-      />
-    );
-  };
-
   return (
     <Container maxWidth="lg">
       {/* Courses Table */}
@@ -103,7 +86,7 @@ export default function Courses() {
             {courses.map((course) => (
               <TableRow
                 key={course.id}
-                data-testid='test-courseRow'
+                data-testid="test-courseRow"
                 onClick={() =>
                   setSelectedCourseId((prevId) =>
                     prevId === course.id ? null : course.id
@@ -131,40 +114,12 @@ export default function Courses() {
         </Table>
       </TableContainer>
 
-      {/* Conditional: Registered Users Table */}
+      {/* Render Registered Personnel only when a course is selected */}
       {selectedCourse && (
-        <>
-          <Box sx={{ mt: 6, textAlign: "center" }}>
-            <Typography variant="h4" gutterBottom>
-              {selectedCourse.course_name} - Registered Personnel
-            </Typography>
-          </Box>
-
-          <TableContainer component={Paper} sx={{ mt: 2 }}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>First Name</TableCell>
-                  <TableCell>Last Name</TableCell>
-                  <TableCell>In Progress</TableCell>
-                  <TableCell>Cert Earned</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {registeredUsers.map((user) => (
-                  <TableRow key={`${user.user_id}-${user.course_id}`}>
-                    <TableCell>{user.first_name}</TableCell>
-                    <TableCell>{user.last_name}</TableCell>
-                    <TableCell>{user.in_progress}</TableCell>
-                    <TableCell>
-                      <CertChip earned={user.cert_earned} />
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </>
+        <CoursePersonnel
+          course={selectedCourse}
+          registeredUsers={registeredUsers}
+        />
       )}
     </Container>
   );
