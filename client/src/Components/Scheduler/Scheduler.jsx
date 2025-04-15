@@ -197,7 +197,7 @@ export default function Scheduler() {
                 .map((r) => courses.find((c) => c.id === r.course_id)?.course_name)
                 .filter(Boolean);
               return earnedCourses.length > 0 ? (
-                <li key={user.id}><strong>{user.first_name} {user.last_name}</strong>: {earnedCourses.join(", ")}</li>
+                <ul key={user.id}><strong>{user.first_name} {user.last_name}</strong>: {earnedCourses.join(", ")}</ul>
               ) : null;
             })}
           </ul>
