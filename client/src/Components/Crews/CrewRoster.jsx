@@ -9,7 +9,9 @@ import {
   TableRow,
   Box,
   Button,
-  Typography
+  Typography,
+  Select,
+  MenuItem,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { getAvailableUsers } from './getAvailableUsers';
@@ -22,14 +24,18 @@ function CrewRoster({ crew_id }) {
 
   useEffect(() => {
     async function fetchData() {
-      let rosterData = await fetch(`http://localhost:8080/crews/roster/${crew_id}`)
+      let rosterData = await fetch(`http://localhost:8080/crews/roster/${crew_id}`);
       rosterData = await rosterData.json()
       setRoster(rosterData)
+
+console.log("rosterData", rosterData)
+
       const availableUsersByRole = {}
       for (const member of rosterData) {
         const available = await getAvailableUsers(crew_id, member.role)
         availableUsersByRole[member.role] = available
       }
+      console.log("Available Users by Role:", availableUsersByRole);
       setAvailableUsers(availableUsersByRole);
     }
     fetchData()
