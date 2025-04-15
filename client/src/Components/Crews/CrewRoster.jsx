@@ -34,9 +34,10 @@ function CrewRoster({ crew_id }) {
     fetchAvailableUsers();
   }, [crew_id])
 
-  const handleAddMember = () => {
-    console.log(`Available for crew ${crew_id}: user_id: ${availableUserID}`);
-  };
+  // Replace 'Add Member' button with dropdown menu showing available users
+  // const handleAddMember = () => {
+  //   console.log(`Available for crew ${crew_id}: user_id: ${availableUserID}`);
+  // };
 
   return (
     <>
@@ -44,23 +45,22 @@ function CrewRoster({ crew_id }) {
         <Typography variant="h4" sx={{ mb: 1 }}>
           Crew Roster
         </Typography>
-        <Button
+        {/* <Button
           color="primary"
           variant="contained"
           startIcon={<AddIcon />}
           onClick={handleAddMember}
         >
           Add Member
-        </Button>
+        </Button> */}
       </Box>
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
             <TableRow>
               <TableCell>Crew ID</TableCell>
-              <TableCell>First Name</TableCell>
-              <TableCell>Last Name</TableCell>
               <TableCell>Role</TableCell>
+              <TableCell>Name</TableCell>
               <TableCell>Experience</TableCell>
             </TableRow>
           </TableHead>
@@ -68,9 +68,8 @@ function CrewRoster({ crew_id }) {
             {roster.map((s) => (
               <TableRow key={s.user_id}>
                 <TableCell>{s.crew_id}</TableCell>
-                <TableCell>{s.first_name}</TableCell>
-                <TableCell>{s.last_name}</TableCell>
                 <TableCell>{s.role}</TableCell>
+                <TableCell>{s.last_name}, {s.first_name}</TableCell>
                 <TableCell><ExperienceChip level={s.user_experience} /></TableCell>
               </TableRow>
 

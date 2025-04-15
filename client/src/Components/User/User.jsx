@@ -173,7 +173,7 @@ export default function User () {
       }
     }
   ]
-// console.log("userInformation:", userInformation)
+
   return (
 
     <div className='user-container'>
@@ -218,7 +218,9 @@ export default function User () {
           </Box>
           <UserCourse />
           <UserCrew />
+          <div>
           <Calendar />
+          </div>
     </div>
   )
 }

@@ -68,8 +68,8 @@ router.patch("/:id", async (req, res) => {
       return
   }
   try{
-      const { course_name, date_start, date_end, cert_granted } = req.body;
-      const updates = { course_name, date_start, date_end, cert_granted };
+      const { course_name, description, seats, date_start, date_end, cert_granted } = req.body;
+      const updates = { course_name, description, seats, date_start, date_end, cert_granted };
       Object.keys(updates).forEach(key => updates[key] === undefined && delete updates[key]);
       if (Object.keys(updates).length == 0) {
         return res.status(400).json({error: 'Must include at least one valid field to patch'})

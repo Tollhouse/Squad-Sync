@@ -67,8 +67,8 @@ return (
               <TableRow key={course.registration_id}>
                 <TableCell>{course.registration_id}</TableCell>
                 <TableCell>{course.course_name}</TableCell>
-                <TableCell>{course.date_start}</TableCell>
-                <TableCell>{course.date_end}</TableCell>
+                <TableCell>{new Date(course.date_start).toISOString().split("T")[0]}</TableCell>
+                <TableCell>{new Date(course.date_end).toISOString().split("T"[0])}</TableCell>
                 <TableCell>{course.cert_granted}</TableCell>
               </TableRow>
              ))
