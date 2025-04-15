@@ -27,7 +27,7 @@ export default function UserCrew () {
       try {
         const response = await fetch(`http://localhost:8080/users/schedule/${id}`);
         const data = await response.json();
-        console.log("data", data)
+        // console.log("data", data)
         if (!data || (Array.isArray(data) && data.length === 0)) {
           setUserCrew([]);
           console.warn('No user data was found');
@@ -41,7 +41,7 @@ export default function UserCrew () {
     };
     fetchUserCrew();
   }, [id]);
-  console.log("userCrew", userCrew)
+  // console.log("userCrew", userCrew)
 
 return (
 <Container maxWidth="md">

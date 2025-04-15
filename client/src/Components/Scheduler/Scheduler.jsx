@@ -310,9 +310,9 @@ export default function Scheduler() {
           Filter by Shift Type:
           <select value={filterShift} onChange={(e) => setFilterShift(e.target.value)}>
             <option value="all">All</option>
-            <option value="day">Day</option>
-            <option value="swing">Swing</option>
-            <option value="night">Night</option>
+            <option value="Day">Day</option>
+            <option value="Swing">Swing</option>
+            <option value="Night">Night</option>
           </select>
         </label>
         <label>
