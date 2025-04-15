@@ -46,6 +46,19 @@ export default function About() {
                 </div>
               </div>
             </div>
+
+            <div className="featureSection">
+              <h3>Contact Us</h3>
+                <div className="featuresGrid">
+                  <div className="featureCard">
+                    <img src="/images/feedback.png" alt="Feedback" />
+                    <h4>Feedback</h4>
+                    <p>Tell us what's working—and what you'd like to see added!</p>
+                    <p>Email: DevTeam@sqaudsync.com  Phone: 555-555-1234</p>
+                  </div>
+                </div>
+            </div>
+
           </div>
         </div>
 

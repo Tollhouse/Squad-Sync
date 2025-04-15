@@ -8,7 +8,6 @@ import Footer from "../Footer/Footer.jsx";
 // import { Container, Box, Typography, Button, Stack } from "@mui/material";
 
 export default function Home() {
-  // const username = localStorage.getItem("username");
     const [courses, setCourses] = useState([]);
 
     useEffect(() => {
@@ -42,7 +41,7 @@ export default function Home() {
   return (
     <>
       <div className="pageConatiner">
-        {/* <h1>Welcome to Squad Sync, {username ? username + '!' : 'Guest'}</h1> */}
+        <br></br>
         <h1>Welcome to Squad Sync!</h1>
 
         <div className="NavContainer">
@@ -65,34 +64,26 @@ export default function Home() {
 
             </div>
 
-
             <div className="featureSection">
               <h3>Features</h3>
-            <div className="featuresGrid">
-              <div className="featureCard">
-                <img src="/images/compass.svg" alt="Dashboard" />
-                <h4>Commander's Dashboard</h4>
-                <p>At-a-glance snapshot of current unit readiness.</p>
-              </div>
-              <div className="featureCard">
-                <img src="/images/crew-schedule.png" alt="Schedule" />
-                <h4>Crew Schedules</h4>
-                <p>Manage your crew assignment and rotation.</p>
-              </div>
-              <div className="featureCard">
-                <img src="/images/calendar.jpg" alt="Calendar" />
-                <h4>Training Calendar</h4>
-                <p>Stay up to date with upcoming training course information.</p>
-              </div>
-              <div className="featureCard">
-                <img src="/images/feedback.png" alt="Feedback" />
-                <h4>Feedback</h4>
-                <p>Tell us what's working—and what you'd like to see added!</p>
-              </div>
+                <div className="featuresGrid">
+                  <div className="featureCard">
+                    <img src="/images/compass.svg" alt="Dashboard" />
+                    <h4>Commander's Dashboard</h4>
+                    <p>At-a-glance snapshot of current unit readiness.</p>
+                  </div>
+                  <div className="featureCard">
+                    <img src="/images/crew-schedule.png" alt="Schedule" />
+                    <h4>Crew Schedules</h4>
+                    <p>Manage your crew assignment and rotation.</p>
+                  </div>
+                  <div className="featureCard">
+                    <img src="/images/calendar.jpg" alt="Calendar" />
+                    <h4>Training Calendar</h4>
+                    <p>Stay up to date with upcoming training course information.</p>
+                  </div>
+                </div>
             </div>
-
-            </div>
-
           </div>
         </div>
 
