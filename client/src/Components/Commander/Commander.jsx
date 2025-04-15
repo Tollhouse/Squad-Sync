@@ -43,6 +43,15 @@ export default function Commander() {
 
   const theme = useTheme();
 
+  const today = new Date();
+  var dd = today.getDate();
+  var mm = today.getMonth()+1;
+  var yyyy = today.getFullYear();
+  if(dd<10) { dd='0'+dd; }
+  if(mm<10) { mm='0'+mm; }
+  const todaysDate = yyyy + '-' + mm + '-' + dd;
+  // console.log(todaysDate);
+
   useEffect(() => {
     async function fetchData() {
       try {
@@ -77,9 +86,9 @@ export default function Commander() {
   const certifiedCount = registrations.filter((reg) => reg.cert_earned).length;
   const crewCount = [...new Set(users.map((user) => user.crew_id))].length;
   const experienceStats = {
-    red: users.filter((u) => u.experience_type === "red").length,
-    yellow: users.filter((u) => u.experience_type === "yellow").length,
-    green: users.filter((u) => u.experience_type === "green").length,
+    red: users.filter((u) => u.experience_type === "Red").length,
+    yellow: users.filter((u) => u.experience_type === "Yellow").length,
+    green: users.filter((u) => u.experience_type === "Green").length,
   };
 
   const chartData = {
@@ -156,7 +165,7 @@ export default function Commander() {
             <Tabs
               value={tabIndex}
               onChange={(e, newIndex) => {
-                console.log(newIndex)
+                // console.log(newIndex)
                 setTabIndex(newIndex)}}
               variant="scrollable"
               scrollButtons="auto"
@@ -188,7 +197,8 @@ export default function Commander() {
 
               {tabIndex === 1 && (
                 <Stack spacing={1}>
-                  {courses.map((course) => (
+                  {courses.filter((course) => (course.date_end > todaysDate))
+                  .map((course) => (
                     <Box key={course.id}>
                       <Typography variant="body1">
                         {course.course_name}{" "}

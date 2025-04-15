@@ -23,6 +23,14 @@ export default function Courses() {
   const [users, setUsers] = useState([]);
   const [selectedCourseId, setSelectedCourseId] = useState(null);
 
+  const today = new Date();
+  var dd = today.getDate();
+  var mm = today.getMonth()+1;
+  var yyyy = today.getFullYear();
+  if(dd<10) { dd='0'+dd; }
+  if(mm<10) { mm='0'+mm; }
+  const todaysDate = yyyy + '-' + mm + '-' + dd;
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -100,7 +108,7 @@ export default function Courses() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {courses.map((course) => (
+            {courses.filter((course) => (course.date_end > todaysDate)).map((course) => (
               <TableRow
                 key={course.id}
                 onClick={() =>
