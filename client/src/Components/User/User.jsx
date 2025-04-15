@@ -5,8 +5,6 @@ import { useParams } from 'react-router-dom'
 import UserCourse from './UserCourse.jsx'
 import UserCrew from './UserCrew.jsx'
 import Calendar from './Calendar'
-import GanttChartCourse from './GanttChartCourse.jsx'
-import GanttChartCrew from './GanttChartCrew.jsx'
 import Box from '@mui/material/Box';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
@@ -18,6 +16,7 @@ import {
   GridRowEditStopReasons,
 } from '@mui/x-data-grid';
 import { Chip } from "@mui/material"
+import PasswordChange from '../Setting/PasswordChange.jsx'
 
 export default function User () {
   const { id } = useParams()
@@ -179,7 +178,7 @@ export default function User () {
     <div className='user-container'>
       <div className='header'>
         {userInformation.map((user, index) => (
-          <div key={user.id || `user-${index}`}>
+          <div key={user.id || `user-${index}`} data-testid='test-userNameText'>
             <h1>{user.first_name} {user.last_name}</h1>
           </div>
         ))}
@@ -197,6 +196,7 @@ export default function User () {
           },
         }}
         >
+          
           {userInformation.length > 0 ? (
         <DataGrid
           rows={userInformation}
