@@ -5,8 +5,6 @@ import { useParams } from 'react-router-dom'
 import UserCourse from './UserCourse.jsx'
 import UserCrew from './UserCrew.jsx'
 import Calendar from './Calendar'
-import GanttChartCourse from './GanttChartCourse.jsx'
-import GanttChartCrew from './GanttChartCrew.jsx'
 import Box from '@mui/material/Box';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
