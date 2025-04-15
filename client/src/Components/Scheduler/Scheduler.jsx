@@ -84,7 +84,7 @@ export default function Scheduler() {
 
       const startDate = new Date(rotation.date_start);
       const endDate = new Date(rotation.date_end);
-      console.log("rotation", rotation);
+      // console.log("rotation", rotation);
       return {
         title: `${rotation.crew_name} Crew - ${rotation.shift_type} ${emoji}`,
         start: startDate,

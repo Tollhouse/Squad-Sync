@@ -156,7 +156,6 @@ export default function Commander() {
             <Tabs
               value={tabIndex}
               onChange={(e, newIndex) => {
-                console.log(newIndex)
                 setTabIndex(newIndex)}}
               variant="scrollable"
               scrollButtons="auto"
