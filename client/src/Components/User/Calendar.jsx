@@ -50,7 +50,7 @@ export default function Calendar() {
         setRotations(rotData);
         setCrews(crewsData);
         setLoading(false);
-        console.log("registrations", regData);
+        
       } catch (err) {
         console.error("Error loading scheduler data:", err);
       }
@@ -94,17 +94,24 @@ export default function Calendar() {
       if (!crew) {
         return null;
       }
+
       const emojiMap = {
         green: "🟢",
         yellow: "🟡",
         red: "🔴",
       };
-      const emoji = emojiMap[rotation.experience_type] || "⚪";
-      const timeRange = shiftTimeMap[rotation.shift_type] || "N/A";
+
+      const experienceMapping = rotation.experience_type?.toLowerCase();
+      const emoji = emojiMap[experienceMapping] || "⚪";
+
+      const shiftMapping = rotation.shift_type?.toLowerCase();
+      const timeRange = shiftTimeMap[shiftMapping] || "N/A";
 
       const startDate = new Date(rotation.date_start);
+      const endDate = new Date(rotation.date_end);
+
       let shiftStart = new Date(startDate);
-      let shiftEnd = new Date(startDate);
+      let shiftEnd = new Date(endDate);
 
       if (rotation.shift_type === "day") {
         shiftStart.setHours(6, 0, 0);
@@ -114,8 +121,7 @@ export default function Calendar() {
         shiftEnd.setHours(22, 0, 0);
       } else if (rotation.shift_type === "night") {
         shiftStart.setHours(22, 0, 0);
-        shiftEnd = new Date(shiftStart);
-        shiftEnd.setDate(shiftEnd.getDate() + 1);
+        shiftEnd.setDate(shiftEnd.getDate() + 1); // Extend to the next day
         shiftEnd.setHours(6, 0, 0);
       }
 
@@ -130,7 +136,6 @@ export default function Calendar() {
         crew_id: rotation.crew_id,
       };
     });
-
 
     const allEvents = [...courseEvents, ...crewEvents].filter((event) => event !== null);
     setCalendarEvents(allEvents);
@@ -177,11 +182,15 @@ export default function Calendar() {
                 night: "#9575cd",
                 rest: "#4dd0e1"
               };
-              const bgColor = event.cert_earned === null
-              ? shiftColors[event.shift_type?.toLowerCase()]     // prefer shift_type
-                || shiftColors[event.experience_type?.toLowerCase()]
-                || "#90a4ae" // fallback gray
-              : "#1976d2";
+
+              const experienceColor = shiftColors[event.experience_type?.toLowerCase()];
+              const shiftColor = shiftColors[event.shift_type?.toLowerCase()];
+
+              const bgColor =
+                event.cert_earned === null
+                  ? experienceColor || shiftColor || "#90a4ae"
+                  : "#1976d2";
+
               return {
                 style: {
                   backgroundColor: bgColor,

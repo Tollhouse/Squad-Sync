@@ -4,7 +4,8 @@ const knex = require("knex")(require("../../knexfile")["development"]);
 
 router.get("/", (req, res) => {
   knex("crew_rotations")
-    .select(
+  .join("crews", "crew_rotations.crew_id", "crews.id")
+  .select(
       '*',
       knex.raw(`TO_CHAR(date_start, 'YYYY-MM-DD') AS date_start`),
       knex.raw(`TO_CHAR(date_end, 'YYYY-MM-DD') AS date_end`)
