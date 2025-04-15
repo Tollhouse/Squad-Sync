@@ -173,9 +173,9 @@ export default function SchedulerUser () {
   //HANDLES THE EXPERIENCE LEVEL ICON
   const ExperienceChip = ({ level }) => {
     const colorMap = {
-      green: { label: "Green", color: "#4caf50" },
-      yellow: { label: "Yellow", color: "#ffeb3b", textColor: "#000" },
-      red: { label: "Red", color: "#f44336" },
+      Green: { label: "Green", color: "#4caf50" },
+      Yellow: { label: "Yellow", color: "#ffeb3b", textColor: "#000" },
+      Red: { label: "Red", color: "#f44336" },
     };
     return (
       <Chip
@@ -512,7 +512,7 @@ export default function SchedulerUser () {
             onProcessRowUpdateError={(error) => {
               console.error("Error during row update:", error);
             }}
-            
+
             hideFooter={false}
           />
         </Box>
