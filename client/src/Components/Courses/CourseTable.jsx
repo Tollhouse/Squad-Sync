@@ -38,6 +38,7 @@ export default function CourseTable({
         onUpdateCourse(data);
         setEditCourseId(null);
         setEditedCourse({});
+        window.location.reload();
       })
       .catch((error) => {
         console.error("Error updating course:", error);

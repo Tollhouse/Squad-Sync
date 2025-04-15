@@ -29,6 +29,8 @@ export default function Courses() {
         const registrationData = await regRes.json();
         const userData = await userRes.json();
 
+        courseData.sort((a, b) => a.id - b.id);
+
         setCourses(courseData);
         setRegistrations(registrationData);
         setUsers(userData);
@@ -40,19 +42,17 @@ export default function Courses() {
     fetchData();
   }, []);
 
-  // Callback for adding a new course
   const handleAddCourse = (newCourse) => {
     setCourses((prev) => [...prev, newCourse]);
+    window.location.reload();
   };
 
-  // Callback for inline editing updates from CourseTable
   const handleUpdateCourse = (updatedCourse) => {
     setCourses((prev) =>
       prev.map((course) => (course.id === updatedCourse.id ? updatedCourse : course))
     );
   };
 
-  // Compute selected course for personnel display
   const selectedCourse = courses.find((course) => course.id === selectedCourseId);
   const registeredUsers = registrations
     .filter((reg) => reg.course_id === selectedCourseId)
@@ -81,7 +81,7 @@ export default function Courses() {
         </Button>
       </Box>
 
-      {/* Render the courses table with inline editing */}
+      {/* Render the courses table w/ inline editing */}
       <CourseTable
         courses={courses}
         selectedCourseId={selectedCourseId}
@@ -89,7 +89,7 @@ export default function Courses() {
         onUpdateCourse={handleUpdateCourse}
       />
 
-      {/* Render registered personnel for selected course */}
+      {/* Render registered personnel table */}
       {selectedCourse && (
         <CoursePersonnel
           course={selectedCourse}
