@@ -11,8 +11,11 @@ import {
   TableRow,
   Paper,
   useTheme,
+  Button
 } from "@mui/material";
 import CoursePersonnel from "./CoursePersonnel";
+import HandleAddCourse from './HandleAddCourse';
+import AddIcon from "@mui/icons-material/Add";
 
 export default function Courses() {
   const theme = useTheme();
@@ -20,6 +23,7 @@ export default function Courses() {
   const [registrations, setRegistrations] = useState([]);
   const [users, setUsers] = useState([]);
   const [selectedCourseId, setSelectedCourseId] = useState(null);
+  const [addCourseOpen, setAddCourseOpen] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -49,6 +53,10 @@ export default function Courses() {
     fetchData();
   }, []);
 
+  const handleAddCourse = (newCourse) => {
+    setCourses((prevCourses) => [...prevCourses, newCourse]);
+  };
+
   const selectedCourse = courses.find((course) => course.id === selectedCourseId);
 
   const registeredUsers = registrations
@@ -65,12 +73,19 @@ export default function Courses() {
   return (
     <Container maxWidth="lg">
       {/* Courses Table */}
-      <Box sx={{ mt: 4, textAlign: "center" }}>
-        <Typography variant="h4" gutterBottom>
+      <Box sx={{ m: 2 }}>
+        <Typography variant="h4" sx={{ mb: 1 }}>
           Courses
         </Typography>
+        <Button
+          color="primary"
+          variant="contained"
+          startIcon={<AddIcon />}
+          onClick={() => setAddCourseOpen(true)}
+        >
+          Add Course
+        </Button>
       </Box>
-
       <TableContainer component={Paper} sx={{ mt: 2 }}>
         <Table>
           <TableHead>
@@ -79,6 +94,7 @@ export default function Courses() {
               <TableCell>Name</TableCell>
               <TableCell>Start Date</TableCell>
               <TableCell>End Date</TableCell>
+              <TableCell>Seats</TableCell>
               <TableCell>Cert Granted</TableCell>
             </TableRow>
           </TableHead>
@@ -107,6 +123,7 @@ export default function Courses() {
                 <TableCell>{course.course_name}</TableCell>
                 <TableCell>{course.date_start}</TableCell>
                 <TableCell>{course.date_end}</TableCell>
+                <TableCell>{course.seats}</TableCell>
                 <TableCell>{course.cert_granted}</TableCell>
               </TableRow>
             ))}
@@ -114,13 +131,19 @@ export default function Courses() {
         </Table>
       </TableContainer>
 
-      {/* Render Registered Personnel only when a course is selected */}
+      {/* Render registered personnel table only when a course is selected */}
       {selectedCourse && (
         <CoursePersonnel
           course={selectedCourse}
           registeredUsers={registeredUsers}
         />
       )}
+      {/* Add Course */}
+      <HandleAddCourse
+        open={addCourseOpen}
+        onClose={() => setAddCourseOpen(false)}
+        onAddCourse={handleAddCourse}
+      />
     </Container>
   );
 }
