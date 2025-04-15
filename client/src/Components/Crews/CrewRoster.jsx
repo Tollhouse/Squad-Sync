@@ -29,7 +29,7 @@ function CrewRoster({ crew_id }) {
   useEffect(() => {
     async function fetchData() {
       try {
-        // Fetch roster data
+
         let rosterData = await fetch(`http://localhost:8080/crews/roster/${crew_id}`);
         rosterData = await rosterData.json();
 
@@ -88,7 +88,7 @@ function CrewRoster({ crew_id }) {
     fetchData();
   }, [crew_id]);
 console.log("availableUsers", availableUsers)
-console.log("roster", roster)
+
   const handleEditClick = (index) => {
     const updatedRoster = [...roster];
     updatedRoster[index].isEditing = true;
@@ -136,12 +136,15 @@ console.log("roster", roster)
         alert('Error updating crew roster.');
       });
   };
+  console.log("roster", roster)
+
+  const crewName = roster.length > 0 ? roster[0].crew_name || "Unknown Crew" : "Unknown Crew";
 
   return (
     <>
     <Box sx={{ m: 2 }}>
         <Typography variant="h4" sx={{ mb: 1 }}>
-          Crew Roster
+          {crewName} Crew Roster
         </Typography>
       </Box>
       <TableContainer component={Paper}>
