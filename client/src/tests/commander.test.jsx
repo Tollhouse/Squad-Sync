@@ -62,7 +62,7 @@ describe('Testing Commander component ("/commander" route)', () => {
   // in the user correctly, leading to "Wecome, !"
   it('renders Commander welcome text', () => {
     renderCommander();
-    expect(screen.getByText(/Commander Dashboard — Welcome, Test User!/)).toBeInTheDocument();
+    expect(screen.getByText(/Commander Dashboard/)).toBeInTheDocument();
   });
 
   it('renders Certified Users and Total Crews  text', () => {

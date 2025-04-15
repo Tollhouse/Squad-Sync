@@ -18,6 +18,7 @@ export default function Scheduler() {
   const [users, setUsers] = useState([]);
   const [registrations, setRegistrations] = useState([]);
   const [rotations, setRotations] = useState([]);
+  const [crews, setCrews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [calendarEvents, setCalendarEvents] = useState([]);
   const [tabIndex, setTabIndex] = useState(0);
@@ -25,27 +26,44 @@ export default function Scheduler() {
   const [filterCrew, setFilterCrew] = useState("all");
   const [filterShift, setFilterShift] = useState("all");
   const [currentView, setCurrentView] = useState("month");
+  const [crewsWithOnlyRed, setCrewsWithOnlyRed] = useState([]);
+  const [overlapWarnings, setOverlapWarnings] = useState([]);
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const [courseRes, userRes, regRes, rotRes] = await Promise.all([
+        const [courseRes, userRes, regRes, rotRes, crewRes] = await Promise.all([
           fetch("http://localhost:8080/courses"),
           fetch("http://localhost:8080/users"),
           fetch("http://localhost:8080/course_registration"),
           fetch("http://localhost:8080/crew_rotations"),
+          fetch("http://localhost:8080/crews"),
         ]);
 
         const coursesData = await courseRes.json();
         const usersData = await userRes.json();
         const regData = await regRes.json();
         const rotData = await rotRes.json();
+        const crewData = await crewRes.json();
 
         setCourses(coursesData);
         setUsers(usersData);
         setRegistrations(regData);
         setRotations(rotData);
+        setCrews(crewData);
         setLoading(false);
+        const crewExperience = {};
+        usersData.forEach(user => {
+          if (!crewExperience[user.crew_id]) crewExperience[user.crew_id] = new Set();
+          crewExperience[user.crew_id].add(user.experience_type?.toLowerCase());
+        });
+
+        const onlyRedCrews = crewData.filter(crew => {
+          const experiences = crewExperience[crew.id];
+          return experiences && experiences.size === 1 && experiences.has("red");
+        });
+
+        setCrewsWithOnlyRed(onlyRedCrews);
       } catch (err) {
         console.error("Error loading scheduler data:", err);
       }
@@ -70,10 +88,15 @@ export default function Scheduler() {
         end: new Date(course?.date_end),
         allDay: true,
         cert_earned: r.cert_earned,
+        tooltip: `${user?.first_name} ${user?.last_name}\n${course?.course_name}\n${moment(course?.date_start).format("h:mm A")} – ${moment(course?.date_end).format("h:mm A")}`
       };
     });
 
-    const crewEvents = rotations.map((rotation) => {
+    const crewEvents = [];
+    const crewExperienceMap = {};
+    const shiftMap = {};
+
+    rotations.forEach((rotation) => {
       const emojiMap = {
         green: "🟢",
         yellow: "🟡",
@@ -81,24 +104,71 @@ export default function Scheduler() {
       };
 
       const emoji = emojiMap[rotation.experience_type?.toLowerCase()] || "⚪";
+      const crew = crews.find((c) => c.id === rotation.crew_id);
+      const crewName = crew?.crew_name || "Unknown";
 
-      const startDate = new Date(rotation.date_start);
-      const endDate = new Date(rotation.date_end);
-      console.log("rotation", rotation);
-      return {
-        title: `${rotation.crew_name} Crew - ${rotation.shift_type} ${emoji}`,
-        start: startDate,
-        end: endDate,
-        allDay: true,
-        cert_earned: null,
-        experience_type: rotation.experience_type,
-        shift_type: rotation.shift_type,
-        crew_id: rotation.crew_id,
-      };
+      const current = new Date(rotation.date_start);
+      const end = new Date(rotation.date_end);
+
+      while (current <= end) {
+        const start = new Date(current);
+        const eventStart = new Date(start);
+        const eventEnd = new Date(start);
+
+        switch (rotation.shift_type?.toLowerCase()) {
+          case "day":
+            eventStart.setHours(6, 0, 0);
+            eventEnd.setHours(14, 0, 0);
+            break;
+          case "swing":
+            eventStart.setHours(14, 0, 0);
+            eventEnd.setHours(22, 0, 0);
+            break;
+          case "night":
+            eventStart.setHours(22, 0, 0);
+            eventEnd.setDate(eventEnd.getDate() + 1);
+            eventEnd.setHours(6, 0, 0);
+            break;
+          case "rest":
+            eventStart.setHours(8, 0, 0);
+            eventEnd.setHours(16, 0, 0);
+            break;
+          default:
+            eventStart.setHours(6, 0, 0);
+            eventEnd.setHours(14, 0, 0);
+        }
+
+        const event = {
+          title: `${crewName} Crew - ${rotation.shift_type} ${emoji}`,
+          start: eventStart,
+          end: eventEnd,
+          cert_earned: null,
+          experience_type: rotation.experience_type,
+          shift_type: rotation.shift_type,
+          crew_id: rotation.crew_id,
+          tooltip: `${crewName} Crew\n${rotation.shift_type} Shift ${emoji}\n${moment(eventStart).format("h:mm A")} – ${moment(eventEnd).format("h:mm A")}`
+        };
+
+        // Check for overlaps
+        const key = `${rotation.crew_id}-${eventStart.toDateString()}`;
+        if (!shiftMap[key]) shiftMap[key] = [];
+        for (let e of shiftMap[key]) {
+          if (
+            (eventStart < e.end && eventEnd > e.start) ||
+            (eventStart.getTime() === e.start.getTime() && eventEnd.getTime() === e.end.getTime())
+          ) {
+            setOverlapWarnings(prev => [...prev, `${crewName} Crew has overlapping shifts on ${eventStart.toDateString()}`]);
+            break;
+          }
+        }
+        shiftMap[key].push({ start: eventStart, end: eventEnd });
+        crewEvents.push(event);
+        current.setDate(current.getDate() + 1);
+      }
     });
-
+    
     setCalendarEvents([...registrationEvents, ...crewEvents]);
-  }, [registrations, courses, users, rotations]);
+  }, [registrations, courses, users, rotations, crews]);
 
   if (loading) return <Typography>Loading scheduler data...</Typography>;
 
@@ -266,9 +336,9 @@ export default function Scheduler() {
             onChange={(e) => setFilterShift(e.target.value)}
           >
             <option value="all">All</option>
-            <option value="day">Day</option>
-            <option value="swing">Swing</option>
-            <option value="night">Night</option>
+            <option value="Day">Day</option>
+            <option value="Swing">Swing</option>
+            <option value="Night">Night</option>
           </select>
         </label>
         <label>
@@ -328,6 +398,20 @@ export default function Scheduler() {
                   textAlign: "center",
                 },
               };
+            }}
+            components={{
+              event: ({ event }) => (
+                <Tooltip title={<span style={{ whiteSpace: 'pre-line' }}>{event.tooltip}</span>} arrow>
+                  <div>{event.title}</div>
+                </Tooltip>
+              )
+            }}
+            components={{
+              event: ({ event }) => (
+                <Tooltip title={<span style={{ whiteSpace: 'pre-line' }}>{event.tooltip}</span>} arrow>
+                  <div>{event.title}</div>
+                </Tooltip>
+              )
             }}
           />
         </div>

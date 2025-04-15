@@ -5,8 +5,6 @@ import { useParams } from 'react-router-dom'
 import UserCourse from './UserCourse.jsx'
 import UserCrew from './UserCrew.jsx'
 import Calendar from './Calendar'
-import GanttChartCourse from './GanttChartCourse.jsx'
-import GanttChartCrew from './GanttChartCrew.jsx'
 import Box from '@mui/material/Box';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
@@ -103,9 +101,9 @@ export default function User () {
   //HANDLES THE EXPERIENCE LEVEL ICON
   const ExperienceChip = ({ level }) => {
     const colorMap = {
-      green: { label: "Green", color: "#4caf50" },
-      yellow: { label: "Yellow", color: "#ffeb3b", textColor: "#000" },
-      red: { label: "Red", color: "#f44336" },
+      Green: { label: "Green", color: "#4caf50" },
+      Yellow: { label: "Yellow", color: "#ffeb3b", textColor: "#000" },
+      Red: { label: "Red", color: "#f44336" },
     };
     return (
       <Chip
@@ -180,7 +178,7 @@ export default function User () {
     <div className='user-container'>
       <div className='header'>
         {userInformation.map((user, index) => (
-          <div key={user.id || `user-${index}`}>
+          <div key={user.id || `user-${index}`} data-testid='test-userNameText'>
             <h1>{user.first_name} {user.last_name}</h1>
           </div>
         ))}
@@ -199,7 +197,7 @@ export default function User () {
           },
         }}
         >
-          
+
           {userInformation.length > 0 ? (
         <DataGrid
           rows={userInformation}

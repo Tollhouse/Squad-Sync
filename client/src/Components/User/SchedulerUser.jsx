@@ -16,11 +16,12 @@ import {
 import { Chip } from "@mui/material";
 import { ConfirmSaveModal, ConfirmDeleteModal } from "../AddOns/ConfirmModal";
 
-export default function SchedulerUser() {
-  const { id } = useParams();
-  const [userInformation, setUserInformation] = useState([]);
-  const [rowModesModel, setRowModesModel] = useState({});
-  const [search, setSearch] = useState("");
+
+export default function SchedulerUser () {
+  const { id } = useParams()
+  const [userInformation, setUserInformation] = useState([])
+  const [rowModesModel, setRowModesModel] = useState({})
+  const [search, setSearch] = useState('')
   const [confirmUserSaveOpen, setConfirmUserSaveOpen] = useState(false);
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
@@ -195,9 +196,9 @@ export default function SchedulerUser() {
   }));
 
   const experienceOptions = [
-    { label: "Green", value: "green" },
-    { label: "Yellow", value: "yellow" },
-    { label: "Red", value: "red" },
+    { label: "Green", value: "Green" },
+    { label: "Yellow", value: "Yellow" },
+    { label: "Red", value: "Red" },
   ];
 
   const flightOptions = [
