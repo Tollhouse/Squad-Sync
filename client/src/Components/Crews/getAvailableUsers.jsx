@@ -1,16 +1,19 @@
 export async function getAvailableUsers(crew_id, role) {
+
 try{
     const [rotationsRes, schedulesRes, usersRes, certRes] = await Promise.all([
       fetch("http://localhost:8080/crew_rotations"),
       fetch("http://localhost:8080/users/schedule"),
       fetch("http://localhost:8080/users"),
       fetch("http://localhost:8080/users/user/schedule"),
+
     ]);
 
     const [rotations, schedules, users, certs] = await Promise.all([
       rotationsRes.json(),
       schedulesRes.json(),
       usersRes.json(),
+
       certRes.json()
     ]);
 
@@ -22,6 +25,7 @@ try{
 
       const rotationStart = new Date(rotation.date_start);
       const rotationEnd = new Date(rotation.date_end);
+
 
     const flattenedSchedules = schedules.flatMap((schedule) => schedule)
 
@@ -55,6 +59,7 @@ try{
     })
 
     return certifiedUsers
+
   } catch (err) {
     console.error("Error finding available crew members:", err)
     return []

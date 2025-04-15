@@ -33,6 +33,7 @@ function CrewRoster({ crew_id }) {
         let rosterData = await fetch(`http://localhost:8080/crews/roster/${crew_id}`);
         rosterData = await rosterData.json();
 
+
         if (!Array.isArray(rosterData)) {
           rosterData = []
         }
@@ -72,7 +73,7 @@ function CrewRoster({ crew_id }) {
           //const initializedRoster = mergedRoster.map((member) => ({ ...member, isEditing: false }));
           setRoster(mergedRoster)
         }
-
+        
         const availableUsersByRole = {};
         for (const member of mergedRoster) {
           const available = await getAvailableUsers(crew_id, member.role);
@@ -137,6 +138,7 @@ console.log("roster", roster)
       });
   };
 
+
   return (
     <>
     <Box sx={{ m: 2 }}>
@@ -156,6 +158,7 @@ console.log("roster", roster)
             </TableRow>
           </TableHead>
           <TableBody>
+
           {roster.map((s, index) => {
               const assignedUser =
               availableUsers[s.role]?.find((user) => user.id === s.user_id) || null;
@@ -167,21 +170,24 @@ console.log("roster", roster)
 
               return (
                 <TableRow key={s.user_id || index}>
+
                   <TableCell>{s.crew_id}</TableCell>
                   <TableCell>{s.role}</TableCell>
                   <TableCell>
                     <Select
+
                       value={s.user_id || ""}
                       onChange={(e) => handleDropdownChange(index, e.target.value)}
                       displayEmpty
                       size="small"
                       fullWidth
                       disabled={!s.isEditing}
+
                     >
                       <MenuItem value="" disabled>
                         Select User
                       </MenuItem>
-                      <MenuItem value={null}>-Unassigned-</MenuItem>
+      <MenuItem value={null}>-Unassigned-</MenuItem>
                       {dropdownOptions.map((user) => (
                         <MenuItem key={user.user_id} value={user.user_id}>
                           {user.first_name} {user.last_name}
@@ -192,6 +198,7 @@ console.log("roster", roster)
                   <TableCell>
                     <ExperienceChip level={s.user_experience} />
                   </TableCell>
+
                   <TableCell>
                     {s.isEditing ? (
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -208,12 +215,15 @@ console.log("roster", roster)
                       </IconButton>
                     )}
                   </TableCell>
+
                 </TableRow>
               );
             })}
             {roster.length === 0 && (
               <TableRow>
+
                 <TableCell colSpan={5} align="center">
+
                   No members assigned to this crew
                 </TableCell>
               </TableRow>
