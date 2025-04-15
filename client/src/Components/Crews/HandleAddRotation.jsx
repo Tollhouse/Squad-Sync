@@ -1,3 +1,6 @@
+
+// HandleAddRotation.jsx
+
 import React, { useState } from "react";
 import {
   Dialog,
@@ -179,4 +182,6 @@ function HandleAddRotation({ open, onClose, onAddRotation }) {
   );
 }
 
+
 export default HandleAddRotation;
+

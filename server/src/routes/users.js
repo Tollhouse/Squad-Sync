@@ -19,10 +19,6 @@ router.get("/", (req, res) => {
       .catch((err) => res.status(500).json({ error: err.message }));
 });
 
-// router.get('/', async (req, res) => {
-//     res.status(200).json({message:"Working route."})
-// });
-
 
 router.get("/schedule", async (req, res) => {
     let data = []
