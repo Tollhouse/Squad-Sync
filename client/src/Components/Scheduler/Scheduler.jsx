@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Crews from '../Crews/Crews';
-import { Box, Typography, Paper, Divider, Tabs, Tab } from "@mui/material";
+import { Box, Typography, Paper, Divider, Tabs, Tab, Tooltip } from "@mui/material";
 import GroupIcon from '@mui/icons-material/Group';
 import HourglassTopIcon from '@mui/icons-material/HourglassTop';
 import WorkspacePremiumIcon from '@mui/icons-material/WorkspacePremium';
@@ -25,6 +25,8 @@ export default function Scheduler() {
   const [filterCrew, setFilterCrew] = useState("all");
   const [filterShift, setFilterShift] = useState("all");
   const [currentView, setCurrentView] = useState("month");
+  const [crewsWithOnlyRed, setCrewsWithOnlyRed] = useState([]);
+  const [overlapWarnings, setOverlapWarnings] = useState([]);
 
   useEffect(() => {
     async function fetchData() {
@@ -49,6 +51,18 @@ export default function Scheduler() {
         setRotations(rotData);
         setCrews(crewData);
         setLoading(false);
+        const crewExperience = {};
+        usersData.forEach(user => {
+          if (!crewExperience[user.crew_id]) crewExperience[user.crew_id] = new Set();
+          crewExperience[user.crew_id].add(user.experience_type?.toLowerCase());
+        });
+
+        const onlyRedCrews = crewData.filter(crew => {
+          const experiences = crewExperience[crew.id];
+          return experiences && experiences.size === 1 && experiences.has("red");
+        });
+
+        setCrewsWithOnlyRed(onlyRedCrews);
       } catch (err) {
         console.error("Error loading scheduler data:", err);
       }
@@ -67,10 +81,13 @@ export default function Scheduler() {
         end: new Date(course?.date_end),
         allDay: true,
         cert_earned: r.cert_earned,
+        tooltip: `${user?.first_name} ${user?.last_name}\n${course?.course_name}\n${moment(course?.date_start).format("h:mm A")} – ${moment(course?.date_end).format("h:mm A")}`
       };
     });
 
     const crewEvents = [];
+    const crewExperienceMap = {};
+    const shiftMap = {};
 
     rotations.forEach((rotation) => {
       const emojiMap = {
@@ -114,7 +131,7 @@ export default function Scheduler() {
             eventEnd.setHours(14, 0, 0);
         }
 
-        crewEvents.push({
+        const event = {
           title: `${crewName} Crew - ${rotation.shift_type} ${emoji}`,
           start: eventStart,
           end: eventEnd,
@@ -122,12 +139,27 @@ export default function Scheduler() {
           experience_type: rotation.experience_type,
           shift_type: rotation.shift_type,
           crew_id: rotation.crew_id,
-        });
+          tooltip: `${crewName} Crew\n${rotation.shift_type} Shift ${emoji}\n${moment(eventStart).format("h:mm A")} – ${moment(eventEnd).format("h:mm A")}`
+        };
 
+        // Check for overlaps
+        const key = `${rotation.crew_id}-${eventStart.toDateString()}`;
+        if (!shiftMap[key]) shiftMap[key] = [];
+        for (let e of shiftMap[key]) {
+          if (
+            (eventStart < e.end && eventEnd > e.start) ||
+            (eventStart.getTime() === e.start.getTime() && eventEnd.getTime() === e.end.getTime())
+          ) {
+            setOverlapWarnings(prev => [...prev, `${crewName} Crew has overlapping shifts on ${eventStart.toDateString()}`]);
+            break;
+          }
+        }
+        shiftMap[key].push({ start: eventStart, end: eventEnd });
+        crewEvents.push(event);
         current.setDate(current.getDate() + 1);
       }
     });
-
+    
     setCalendarEvents([...registrationEvents, ...crewEvents]);
   }, [registrations, courses, users, rotations, crews]);
 
@@ -175,6 +207,29 @@ export default function Scheduler() {
         {/* <Tab label="Crews" /> */}
       </Tabs>
 
+      {crewsWithOnlyRed.length > 0 && (
+        <Paper sx={{ mt: 3, p: 2, backgroundColor: '#801313', color: 'white', textAlign: 'center' }}>
+          <Typography variant="h6">⚠️ Urgent: Crews With No Experience</Typography>
+          <Typography variant="body2">
+            These crews only have members with no experience (🔴 Red):
+          </Typography>
+          {crewsWithOnlyRed.map((crew, i) => (
+            <Typography key={i} variant="subtitle1" sx={{ fontWeight: 'bold' }}>{crew.crew_name}</Typography>
+          ))}
+        </Paper>
+)}
+
+{overlapWarnings.length > 0 && (
+  <Paper elevation={3} sx={{ p: 2, my: 2, borderLeft: '5px solid orange', backgroundColor: '#332000' }}>
+    <Typography variant="h6" color="warning.main">⚠️ Shift Overlap Warning</Typography>
+    <ul style={{ margin: 0, padding: 0, listStyle: 'none', color: 'white' }}>
+      {overlapWarnings.map((warning, index) => (
+        <li key={index}>{warning}</li>
+      ))}
+    </ul>
+  </Paper>
+)}
+
       {tabIndex === 0 && (
         <Paper elevation={3} sx={{ p: 2, mt: 2 }}>
           <Typography variant="h6"><GroupIcon sx={{ mr: 1 }} />Available for Course/Crew</Typography>
@@ -221,17 +276,21 @@ export default function Scheduler() {
         <Paper elevation={3} sx={{ p: 2, mt: 2 }}>
           <Typography variant="h6"><WorkspacePremiumIcon sx={{ mr: 1 }} />Certified Members & Their Certifications</Typography>
           <Divider sx={{ my: 1 }} />
-          <ul>
-            {users.map((user) => {
-              const earnedCourses = registrations
-                .filter((r) => r.user_id === user.id && r.cert_earned)
-                .map((r) => courses.find((c) => c.id === r.course_id)?.course_name)
-                .filter(Boolean);
-              return earnedCourses.length > 0 ? (
-                <li key={user.id}><strong>{user.first_name} {user.last_name}</strong>: {earnedCourses.join(", ")}</li>
-              ) : null;
-            })}
-          </ul>
+          <Box sx={{ maxHeight: 300, overflowY: 'auto', pr: 1 }}>
+  <ul style={{ margin: 0, padding: 0, listStyle: 'none' }}>
+    {users.map((user) => {
+      const earnedCourses = registrations
+        .filter((r) => r.user_id === user.id && r.cert_earned)
+        .map((r) => courses.find((c) => c.id === r.course_id)?.course_name)
+        .filter(Boolean);
+      return earnedCourses.length > 0 ? (
+        <li key={user.id}>
+          <strong>{user.first_name} {user.last_name}</strong>: {earnedCourses.join(", ")}
+        </li>
+      ) : null;
+    })}
+  </ul>
+</Box>
         </Paper>
       )}
 
@@ -309,6 +368,13 @@ export default function Scheduler() {
                   textAlign: "center",
                 }
               };
+            }}
+            components={{
+              event: ({ event }) => (
+                <Tooltip title={<span style={{ whiteSpace: 'pre-line' }}>{event.tooltip}</span>} arrow>
+                  <div>{event.title}</div>
+                </Tooltip>
+              )
             }}
           />
         </div>
