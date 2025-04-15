@@ -14,7 +14,7 @@ import {
   Paper,
   Box
 } from "@mui/material";
-
+import { todaysDate } from '../AddOns/helperFunctions.js';
 
 export default function UserCourse () {
   const { id } = useParams()
@@ -33,7 +33,7 @@ export default function UserCourse () {
           console.warn('No user data was found');
         } else {
           const courseData = data.find((course) => course.courseDates)?.courseDates || [];
-          setUserCourse(courseData);
+          setUserCourse(courseData.filter((course) => (course.date_end > todaysDate())));
         }
       } catch (err) {
         console.error('Error fetching user information:', err);
