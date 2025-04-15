@@ -14,10 +14,12 @@ import {
 import CrewRoster from "./CrewRoster";
 import AddIcon from '@mui/icons-material/Add';
 import ExperienceChip from '../AddOns/ExperinceChip'
+import HandleAddRotation from './HandleAddRotation';
 
 function CrewTable({ schedule }) {
   const [rosterMode, setRosterMode] = useState(false)
   const [rosterId, setRosterId] = useState(0)
+  const [addRotationOpen, setAddRotationOpen] = useState(false);
 
   function handleRosterMode(s) {
     if (rosterMode && rosterId === s.crew_id) {
@@ -32,6 +34,11 @@ function CrewTable({ schedule }) {
 
   const handleAddCrewRotation = () => {
     console.log("Clicked on Add Crew Rotation");
+    setAddRotationOpen(true);
+  };
+
+  const handleRotationAdded = (newRotation) => {
+    console.log("Rotation added from HandleAddRotation:", newRotation);
   };
 
   return (
@@ -78,7 +85,11 @@ function CrewTable({ schedule }) {
       </TableContainer>
 
       {rosterMode ? <CrewRoster key={rosterId} crew_id={rosterId} /> : null}
-
+      <HandleAddRotation
+        open={addRotationOpen}
+        onClose={() => setAddRotationOpen(false)}
+        onAddRotation={handleRotationAdded}
+      />
     </>
   );
 }
