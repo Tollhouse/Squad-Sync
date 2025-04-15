@@ -353,6 +353,7 @@ export default function SchedulerUser () {
             <GridActionsCellItem
               icon={<SaveIcon />}
               label="Save"
+              data-testid='test-saveIcon'
               sx={{ color: 'primary.main' }}
               onClick={handleSaveClick(id)}
             />,
@@ -370,6 +371,7 @@ export default function SchedulerUser () {
           <GridActionsCellItem
             icon={<EditIcon />}
             label="Edit"
+            data-testid='test-editIcon'
             className="textPrimary"
             onClick={handleEditClick(id)}
             color="inherit"
@@ -377,6 +379,7 @@ export default function SchedulerUser () {
           <GridActionsCellItem
             icon={<DeleteIcon />}
             label="Delete"
+            data-testid='test-deleteIcon'
             className="textPrimary"
             onClick={handleDeleteClick(id)}
             color="inherit"
