@@ -91,13 +91,14 @@ describe('GET /crew_rotations/:id' , () => {
     expect(res.body.length < 2).toBe(true) // can be zero if there were no matching rows
   })
 
+  // works with 'simplifiedCrewRotation' in seed data
   it('returned object should be equal to crew with id: 1', async () => {
     const res = await request(app).get('/crew_rotations/1')
     expect(res.status).toBe(200)
     expect(res.body[0].id).toBe(1)
-    expect(res.body[0].crew_id).toBe(2)
-    expect(res.body[0].shift_type).toBe('Night')
-    expect(res.body[0].shift_duration).toBe(12)
+    expect(res.body[0].crew_id).toBe(1)
+    expect(res.body[0].shift_type).toBe('Day')
+    expect(res.body[0].shift_duration).toBe(8)
     expect(res.body[0].experience_type).toBe('green')
   })
 })
@@ -264,11 +265,13 @@ describe('GET /users/schedule', () => {
     expect(Array.isArray(response.body)).toBe(true)
   });
 
-  it('an individual element of the array should be contain both user_id and dates, (each obj of array should have 2 fields)', async () => {
+  it('there should be 2 objects in the array, one for crew_dates, one for course_dates', async () => {
       const response = await request(app).get('/users/schedule');
       expect(response.status).toBe(200);
       expect(Array.isArray(response.body)).toBe(true)
-      expect(Object.keys(response.body[0]).length).toBe(2)
+      expect(response.body.length).toBe(2)
+      expect(Array.isArray(response.body[0].crewDates)).toBe(true)
+      expect(Array.isArray(response.body[1].courseDates)).toBe(true)
   });
 })
 
@@ -278,24 +281,19 @@ describe('GET /users/schedule/:id', () => {
     expect(response.status).toBe(200);
   });
 
-  it('should return an obj ', async () => {
+  it('should return an array ', async () => {
     const response = await request(app).get('/users/schedule/1');
     expect(response.status).toBe(200);
-    expect(typeof response.body).toBe('object')
+    expect(Array.isArray(response.body)).toBe(true)
   });
 
-  it('an individual element of the array should be contain both user_id and dates, (2 fields for the obj)', async () => {
+  it('array should have 2 elements, one for crewDates, one for courseDates', async () => {
     const response = await request(app).get('/users/schedule/1');
     expect(response.status).toBe(200);
-    expect(Object.keys(response.body).length).toBe(2)
+    expect(response.body.length).toBe(2)
+    expect(Array.isArray(response.body[0].crewDates)).toBe(true)
+    expect(Array.isArray(response.body[1].courseDates)).toBe(true)
   });
-
-  it('the dates field should be an array', async () => {
-    const response = await request(app).get('/users/schedule/1');
-    expect(response.status).toBe(200);
-    expect(typeof response.body).toBe('object')
-    expect(Array.isArray(response.body.dates)).toBe(true)
-  })
 })
 
 // -------------------------------------------------------   Course Registrations   -------------------------------------------------------
@@ -431,14 +429,17 @@ describe('GET /courses/:id' , () => {
     expect(res.body.length < 2).toBe(true) // can be zero if there were no matching rows
   })
 
+  // works with simplifiedCourses in seed data
   it('returned object should be equal to crew with id: 1', async () => {
     const res = await request(app).get('/courses/1')
     expect(res.status).toBe(200)
     expect(res.body[0].id).toBe(1)
-    expect(res.body[0].course_name).toBe('Systems Engineer')
-    expect(res.body[0].date_start).toBe('2025-03-17')
-    expect(res.body[0].date_end).toBe('2025-03-28')
-    expect(res.body[0].cert_granted).toBe('Systems Engineer')
+    expect(res.body[0].course_name).toBe('Crew Commander')
+    expect(res.body[0].seats).toBe(10)
+    expect(res.body[0].description).toBe('Training teaches how to supervise and how to oversee all crew requirements.')
+    expect(res.body[0].date_start).toBe('2024-03-01')
+    expect(res.body[0].date_end).toBe('2024-03-31')
+    expect(res.body[0].cert_granted).toBe('Crew Commander')
   })
 })
 

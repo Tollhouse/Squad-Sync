@@ -37,7 +37,7 @@ describe('PATCH testing of /crew_rotations route', () => {
         crew_id: 1,
         date_start: "11-29-2018",
         date_end: "11-29-2019",
-        shift_type: "rest",
+        shift_type: "Night",
         shift_duration: 12,
         experience_type: 'red'
     }
@@ -54,7 +54,7 @@ describe('PATCH testing of /crew_rotations route', () => {
         expect(res.body[0].crew_id).toBe(1)
         expect(res.body[0].date_start).toBe("2018-11-29")
         expect(res.body[0].date_end).toBe("2019-11-29")
-        expect(res.body[0].shift_type).toBe("rest")
+        expect(res.body[0].shift_type).toBe("Night")
         expect(res.body[0].shift_duration).toBe(12)
         expect(res.body[0].experience_type).toBe("red")
     })
@@ -64,12 +64,12 @@ describe('PATCH testing of /crew_rotations route', () => {
         expect(res.status).toBe(201)
         expect(typeof res.body[0].id).toBe('number')
         res = await request(app).get('/crew_rotations')
-        expect(res.body[res.body.length - 1].crew_id).toBe(1)
-        expect(res.body[res.body.length - 1].date_start).toBe("2018-11-29")
-        expect(res.body[res.body.length - 1].date_end).toBe("2019-11-29")
-        expect(res.body[res.body.length - 1].shift_type).toBe("rest")
-        expect(res.body[res.body.length - 1].shift_duration).toBe(12)
-        expect(res.body[res.body.length - 1].experience_type).toBe("red")
+        expect(res.body[0].crew_id).toBe(1)
+        expect(res.body[0].date_start).toBe("2018-11-29")
+        expect(res.body[0].date_end).toBe("2019-11-29")
+        expect(res.body[0].shift_type).toBe("Night")
+        expect(res.body[0].shift_duration).toBe(12)
+        expect(res.body[0].experience_type).toBe("red")
     })
 })
 
