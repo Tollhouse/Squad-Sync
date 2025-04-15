@@ -23,11 +23,11 @@
 //       const weekendStartDate = dateStart.add(4, 'day');
 //       const weekendEndDate = dateStart.add(6, 'day');
 //       schedule.push(
-//         {crew_id: ((i + 1) % 6) + 1, date_start: weekendStartDate.format('YYYY-MM-DD'), date_end: weekendEndDate.format('YYYY-MM-DD'), shift_type: 'Night', shift_duration: 12, experience_type: 'green'},
-//         {crew_id: ((i + 2) % 6) + 1, date_start: dateStart.format('YYYY-MM-DD'), date_end: dateEnd.format('YYYY-MM-DD'), shift_type: 'Night', shift_duration: 8, experience_type: 'red'},
-//         {crew_id: ((i + 3) % 6) + 1, date_start: dateStart.format('YYYY-MM-DD'), date_end: dateEnd.format('YYYY-MM-DD'), shift_type: 'Swing', shift_duration: 8, experience_type: 'yellow'},
-//         {crew_id: ((i + 4) % 6) + 1, date_start: dateStart.format('YYYY-MM-DD'), date_end: dateEnd.format('YYYY-MM-DD'), shift_type: 'Day', shift_duration: 8, experience_type: 'green'},
-//         {crew_id: ((i + 5) % 6) + 1, date_start: weekendStartDate.format('YYYY-MM-DD'), date_end: weekendEndDate.format('YYYY-MM-DD'), shift_type: 'Day', shift_duration: 12, experience_type: 'green'},
+//         {crew_id: ((i + 1) % 6) + 1, date_start: weekendStartDate.format('YYYY-MM-DD'), date_end: weekendEndDate.format('YYYY-MM-DD'), shift_type: 'Night', shift_duration: 12, experience_type: 'Green'},
+//         {crew_id: ((i + 2) % 6) + 1, date_start: dateStart.format('YYYY-MM-DD'), date_end: dateEnd.format('YYYY-MM-DD'), shift_type: 'Night', shift_duration: 8, experience_type: 'Red'},
+//         {crew_id: ((i + 3) % 6) + 1, date_start: dateStart.format('YYYY-MM-DD'), date_end: dateEnd.format('YYYY-MM-DD'), shift_type: 'Swing', shift_duration: 8, experience_type: 'Yellow'},
+//         {crew_id: ((i + 4) % 6) + 1, date_start: dateStart.format('YYYY-MM-DD'), date_end: dateEnd.format('YYYY-MM-DD'), shift_type: 'Day', shift_duration: 8, experience_type: 'Green'},
+//         {crew_id: ((i + 5) % 6) + 1, date_start: weekendStartDate.format('YYYY-MM-DD'), date_end: weekendEndDate.format('YYYY-MM-DD'), shift_type: 'Day', shift_duration: 12, experience_type: 'Green'},
 //       )
 //       weekCount += 1;
 //     }
@@ -36,12 +36,12 @@
 // }
 
 const simplifiedCrewRotation = [
-  {crew_id: 1, date_start: '2025-01-01', date_end: '2025-06-30', shift_type: 'Day', shift_duration: 8, experience_type: 'green'},
-  {crew_id: 2, date_start: '2025-01-01', date_end: '2025-06-30', shift_type: 'Swing', shift_duration: 8, experience_type: 'yellow'},
-  {crew_id: 3, date_start: '2025-01-01', date_end: '2025-06-30', shift_type: 'Night', shift_duration: 8, experience_type: 'red'},
-  {crew_id: 4, date_start: '2025-07-01', date_end: '2025-12-31', shift_type: 'Day', shift_duration: 8, experience_type: 'green'},
-  {crew_id: 5, date_start: '2025-07-01', date_end: '2025-12-31', shift_type: 'Swing', shift_duration: 8, experience_type: 'yellow'},
-  {crew_id: 6, date_start: '2025-07-01', date_end: '2025-12-31', shift_type: 'Night', shift_duration: 8, experience_type: 'red'},
+  {crew_id: 1, date_start: '2025-01-01', date_end: '2025-06-30', shift_type: 'Day', shift_duration: 8, experience_type: 'Green'},
+  {crew_id: 2, date_start: '2025-01-01', date_end: '2025-06-30', shift_type: 'Swing', shift_duration: 8, experience_type: 'Yellow'},
+  {crew_id: 3, date_start: '2025-01-01', date_end: '2025-06-30', shift_type: 'Night', shift_duration: 8, experience_type: 'Red'},
+  {crew_id: 4, date_start: '2025-07-01', date_end: '2025-12-31', shift_type: 'Day', shift_duration: 8, experience_type: 'Green'},
+  {crew_id: 5, date_start: '2025-07-01', date_end: '2025-12-31', shift_type: 'Swing', shift_duration: 8, experience_type: 'Yellow'},
+  {crew_id: 6, date_start: '2025-07-01', date_end: '2025-12-31', shift_type: 'Night', shift_duration: 8, experience_type: 'Red'},
 ]
 
 /**

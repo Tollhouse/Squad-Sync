@@ -16,7 +16,7 @@ import { getAvailableUsers } from './getAvailableUsers';
 import ExperienceChip from '../AddOns/ExperinceChip';
 
 function CrewRoster({ crew_id }) {
-  console.log(crew_id)
+  // console.log(crew_id)
   const [roster, setRoster] = useState([]);
   const [availableUserID, setAvailableUserID] = useState([]);
 
