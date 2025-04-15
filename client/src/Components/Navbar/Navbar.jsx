@@ -169,6 +169,13 @@ function Navbar() {
             >
               Home
             </Button>
+            <Button
+              key="about"
+              onClick={() => navigate('/about')}
+              sx={{ my: 2, color: 'white', display: 'block' }}
+            >
+              About
+            </Button>
             {renderNavItems()}
           </Box>
         </Toolbar>

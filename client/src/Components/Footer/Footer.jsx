@@ -25,11 +25,6 @@ function Footer() {
     >
       <Container>
         <Typography variant="body2">
-          <Link to="/about" style={{ textDecoration: 'underline', color: 'inherit' }}>
-            About
-          </Link>
-        </Typography>
-        <Typography variant="body2">
           &copy; {currentYear} Curtis Bonham, Tyson
           Butler-Currier, Harman Gidda, Essence Jackson, Lorena Longoria, Jackie Luu, Landon Spencer,
           Michael Thomas, and Erik Voss. All rights reserved.
