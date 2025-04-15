@@ -11,11 +11,15 @@ import {
   TableRow,
   Paper,
   useTheme,
-  Button
+  Button,
+  IconButton,
 } from "@mui/material";
 import CoursePersonnel from "./CoursePersonnel";
-import HandleAddCourse from './HandleAddCourse';
+import HandleAddCourse from "./HandleAddCourse";
+import HandleEditCourse from "./HandleEditCourse";
 import AddIcon from "@mui/icons-material/Add";
+import EditIcon from "@mui/icons-material/Edit";
+// import DeleteIcon from "@mui/icons-material/Delete";
 
 export default function Courses() {
   const theme = useTheme();
@@ -24,6 +28,9 @@ export default function Courses() {
   const [users, setUsers] = useState([]);
   const [selectedCourseId, setSelectedCourseId] = useState(null);
   const [addCourseOpen, setAddCourseOpen] = useState(false);
+  // inline editing
+  const [editCourseOpen, setEditCourseOpen] = useState(false);
+  const [courseToEdit, setCourseToEdit] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -57,6 +64,14 @@ export default function Courses() {
     setCourses((prevCourses) => [...prevCourses, newCourse]);
   };
 
+  const handleEditCourse = (editedCourse) => {
+    setCourses((prev) =>
+      prev.map((course) =>
+        course.id === editedCourse.id ? editedCourse : course
+      )
+    );
+  };
+
   const selectedCourse = courses.find((course) => course.id === selectedCourseId);
 
   const registeredUsers = registrations
@@ -72,7 +87,7 @@ export default function Courses() {
 
   return (
     <Container maxWidth="lg">
-      {/* Courses Table */}
+      {/* Header with Add Course Button */}
       <Box sx={{ m: 2 }}>
         <Typography variant="h4" sx={{ mb: 1 }}>
           Courses
@@ -86,6 +101,8 @@ export default function Courses() {
           Add Course
         </Button>
       </Box>
+
+      {/* Courses Table */}
       <TableContainer component={Paper} sx={{ mt: 2 }}>
         <Table>
           <TableHead>
@@ -96,6 +113,7 @@ export default function Courses() {
               <TableCell>End Date</TableCell>
               <TableCell>Seats</TableCell>
               <TableCell>Cert Granted</TableCell>
+              <TableCell>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -125,6 +143,19 @@ export default function Courses() {
                 <TableCell>{course.date_end}</TableCell>
                 <TableCell>{course.seats}</TableCell>
                 <TableCell>{course.cert_granted}</TableCell>
+                <TableCell>
+                  {/* Edit Button */}
+                  <IconButton
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setCourseToEdit(course);
+                      setEditCourseOpen(true);
+                    }}
+                  >
+                    <EditIcon />
+                  </IconButton>
+                  {/* Delete button could be added here */}
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -138,12 +169,23 @@ export default function Courses() {
           registeredUsers={registeredUsers}
         />
       )}
-      {/* Add Course */}
+
+      {/* Add Course Modal */}
       <HandleAddCourse
         open={addCourseOpen}
         onClose={() => setAddCourseOpen(false)}
         onAddCourse={handleAddCourse}
       />
+
+      {/* Edit Course Modal */}
+      {courseToEdit && (
+        <HandleEditCourse
+          open={editCourseOpen}
+          onClose={() => setEditCourseOpen(false)}
+          course={courseToEdit}
+          onEditCourse={handleEditCourse}
+        />
+      )}
     </Container>
   );
 }
