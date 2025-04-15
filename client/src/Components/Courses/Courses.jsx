@@ -103,6 +103,7 @@ export default function Courses() {
             {courses.map((course) => (
               <TableRow
                 key={course.id}
+                data-testid='test-courseRow'
                 onClick={() =>
                   setSelectedCourseId((prevId) =>
                     prevId === course.id ? null : course.id

@@ -3,6 +3,7 @@
 // styled with MUI by Lorena
 
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Box, Container, Typography } from "@mui/material";
 import './Footer.css';
 
@@ -10,18 +11,16 @@ function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
+
     <Box
       component="footer"
       sx={(theme) => ({
-        position: "fixed",
-        bottom: 0,
-        left: 0,
         width: "100%",
         bgcolor: "transparent",
         color: theme.palette.text.primary,
         py: 2,
         textAlign: "center",
-        zIndex: 1000,
+        mt: "auto",
       })}
     >
       <Container>

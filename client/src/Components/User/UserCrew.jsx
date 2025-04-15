@@ -14,7 +14,7 @@ import {
   Paper,
   Box
 } from "@mui/material";
-
+import { todaysDate } from '../AddOns/helperFunctions.js';
 
 export default function UserCrew () {
   const { id } = useParams()
@@ -27,13 +27,13 @@ export default function UserCrew () {
       try {
         const response = await fetch(`http://localhost:8080/users/schedule/${id}`);
         const data = await response.json();
-        console.log("data", data)
+        // console.log("data", data)
         if (!data || (Array.isArray(data) && data.length === 0)) {
           setUserCrew([]);
           console.warn('No user data was found');
         } else {
           const crewData = data.find((crew) => crew.crewDates)?.crewDates || [];
-          setUserCrew(crewData);
+          setUserCrew(crewData.filter((shift) => (shift.date_end > todaysDate())));
         }
       } catch (err) {
         console.error('Error fetching user information:', err);
@@ -41,12 +41,12 @@ export default function UserCrew () {
     };
     fetchUserCrew();
   }, [id]);
-  console.log("userCrew", userCrew)
+  // console.log("userCrew", userCrew)
 
 return (
 <Container maxWidth="md">
-      <Box sx={{ mt: 4, textAlign: "center" }}>
-        <Typography variant="h4" gutterBottom>
+      <Box sx={{ mt: 1, textAlign: "center" }}>
+        <Typography variant="h5" gutterBottom>
           Your Crew
         </Typography>
       </Box>

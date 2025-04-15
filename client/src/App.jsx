@@ -20,6 +20,8 @@ import TrainingManager from './Components/TrainingManager/TrainingManager.jsx';
 import SchedulerUser from './Components/User/SchedulerUser.jsx';
 import NotFound from './Components/NotFound/NotFound.jsx'
 import Crews from './Components/Crews/Crews.jsx';
+import About from './Components/About/About.jsx'
+import Setting from './Components/Setting/Setting.jsx'
 import {Paper, Switch} from '@mui/material'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -48,7 +50,7 @@ export default function App() {
   return (
     <>
     <ThemeProvider theme={appTheme}>
-    <Paper elevation={0} sx={{ height: "3000px" }} square>
+    <Paper elevation={0} sx={{ minHeight: "100vh" }} square>
     <Switch
           checked={mode}
           onChange={handleChange}
@@ -65,10 +67,12 @@ export default function App() {
       <Route path='/crews' element={<Crews />}/>
       <Route path='/course_registrations' element={<CourseReg />}/>
       <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/setting" element={<Setting />} />
       <Route path="/scheduler" element={<Scheduler />} />
       <Route path="/training-manager" element={<TrainingManager />} />
       <Route path="/user/scheduler" element={<SchedulerUser />} />
       <Route path="*" element={<NotFound />} />
+      <Route path="/about" element={<About />} />
     </Routes>
     </Paper>
 

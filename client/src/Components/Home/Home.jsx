@@ -2,69 +2,95 @@
 // Code written by Harman
 // MUI styling by Lorena
 
+import React, { useEffect, useState } from "react";
 import "./Home.css";
 import Footer from "../Footer/Footer.jsx";
 // import { Container, Box, Typography, Button, Stack } from "@mui/material";
 
 export default function Home() {
-  const username = localStorage.getItem("username");
-  // console.log(username);
+    const [courses, setCourses] = useState([]);
+
+    useEffect(() => {
+      const fetchData = async () => {
+        try {
+          const [courseRes] = await Promise.all([
+            fetch("http://localhost:8080/courses"),
+          ]);
+
+          if (!courseRes.ok) {
+            throw new Error("Failed to fetch data");
+          }
+
+          const courseData = await courseRes.json();
+
+          const sortedCourses = courseData.sort(
+            (a, b) => new Date(b.date_start) - new Date(a.date_start)
+          );
+
+          const latestCourses = sortedCourses.slice(0, 2);
+
+          setCourses(latestCourses);
+        } catch (error) {
+          console.error("Error fetching data:", error);
+        }
+      };
+
+      fetchData();
+    }, []);
 
   return (
     <>
-      <h3> Welcome to Squad Sync</h3>
-      <div className="NavContainer">
+      <div className="pageConatiner">
+        <br></br>
+        <h1>Welcome to Squad Sync!</h1>
 
-        <p>Our app strives to provide a one stop, scalable solution that provides command and user dashboards for monitoring and tracking as well as the ability for the scheduling lead to easily track availability, monitor gaps in mission support and mitigate those issues within a combat reliable timeframe.</p>
+        <div className="NavContainer">
+          <div className="homeContainer">
+            <div className="news">
+              <h3>News</h3>
+              {courses.length > 0 ? (
+                <>
+                  <h4>New Courses Available!</h4>
+                  <ul>
+                    {courses.map((course, index) => (
+                      <li key={index}>{course.course_name} - Start date: {course.date_start}</li>
+                    ))}
+                  </ul>
+                  <p>Contact your Training Manager for more information.</p>
+                </>
+              ) : (
+                <p>No new courses available at this time, check back soon!</p>
+              )}
 
-        <div className="userStatus">
-          {username ? <p> Welcome, {username}!</p> : <p> Guest </p>}
+            </div>
+
+            <div className="featureSection">
+              <h3>Features</h3>
+                <div className="featuresGrid">
+                  <div className="featureCard">
+                    <img src="/images/compass.svg" alt="Dashboard" />
+                    <h4>Commander's Dashboard</h4>
+                    <p>At-a-glance snapshot of current unit readiness.</p>
+                  </div>
+                  <div className="featureCard">
+                    <img src="/images/crew-schedule.png" alt="Schedule" />
+                    <h4>Crew Schedules</h4>
+                    <p>Manage your crew assignment and rotation.</p>
+                  </div>
+                  <div className="featureCard">
+                    <img src="/images/calendar.jpg" alt="Calendar" />
+                    <h4>Training Calendar</h4>
+                    <p>Stay up to date with upcoming training course information.</p>
+                  </div>
+                </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="footer">
+          <Footer />
         </div>
       </div>
-      <Footer />
     </>
   );
 }
-
-// return (
-//   <Container maxWidth="sm">
-//     <Box sx={{ mt: 4, textAlign: "center" }}>
-//       <Typography variant="h3" gutterBottom>
-//         Welcome to Home Page
-//       </Typography>
-//       <Stack
-//         spacing={2}
-//         direction="row"
-//         justifyContent="center"
-//         sx={{ my: 2 }}
-//       >
-//         <Button
-//           variant="contained"
-//           component={Link}
-//           to="/login"
-//         >
-//           User Log In
-//         </Button>
-//         <Button
-//           variant="outlined"
-//           component={Link}
-//           to="/signup"
-//         >
-//           New User Sign Up
-//         </Button>
-//       </Stack>
-//       <Box sx={{ mt: 3 }}>
-//         {username ? (
-//           <Typography variant="h6">
-//             Welcome, {username}!
-//           </Typography>
-//         ) : (
-//           <Typography variant="h6">
-//             Guest
-//           </Typography>
-//         )}
-//       </Box>
-//     </Box>
-//   </Container>
-// );
-// }

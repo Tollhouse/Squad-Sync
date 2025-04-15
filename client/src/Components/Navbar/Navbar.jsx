@@ -1,29 +1,29 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
-import Button from '@mui/material/Button';
-import AdbIcon from '@mui/icons-material/Adb';
-import './Navbar.css';
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import AppBar from "@mui/material/AppBar";
+import Box from "@mui/material/Box";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import Container from "@mui/material/Container";
+import Button from "@mui/material/Button";
+import AdbIcon from "@mui/icons-material/Adb";
+import "./Navbar.css";
 
 function Navbar() {
   const navigate = useNavigate();
   // Check authentication by seeing if a username exists in localStorage.
-  const isAuthenticated = localStorage.getItem('username');
-  const username = localStorage.getItem('username');
-  const userPrivilege = localStorage.getItem('userPrivilege');
-  const userId = localStorage.getItem('userId');
+  const isAuthenticated = localStorage.getItem("username");
+  const username = localStorage.getItem("username");
+  const userPrivilege = localStorage.getItem("userPrivilege");
+  const userId = localStorage.getItem("userId");
 
   const handleLogout = () => {
     // Remove all authentication details.
-    localStorage.removeItem('session_id');
-    localStorage.removeItem('username');
-    localStorage.removeItem('userId');
-    localStorage.removeItem('userPrivilege');
-    navigate('/login');
+    localStorage.removeItem("session_id");
+    localStorage.removeItem("username");
+    localStorage.removeItem("userId");
+    localStorage.removeItem("userPrivilege");
+    navigate("/login");
   };
 
   // Render nav items based on whether the user is authenticated,
@@ -34,15 +34,15 @@ function Navbar() {
         <>
           <Button
             key="signup"
-            onClick={() => navigate('/signup')}
-            sx={{ my: 2, color: 'white', display: 'block' }}
+            onClick={() => navigate("/signup")}
+            sx={{ my: 2, color: "white", display: "block" }}
           >
             Sign Up
           </Button>
           <Button
             key="login"
-            onClick={() => navigate('/login')}
-            sx={{ my: 2, color: 'white', display: 'block' }}
+            onClick={() => navigate("/login")}
+            sx={{ my: 2, color: "white", display: "block" }}
           >
             Log In
           </Button>
@@ -51,79 +51,82 @@ function Navbar() {
     } else {
       let roleBasedButtons = null;
 
-      if (userPrivilege === 'commander') {
+      if (userPrivilege === "commander") {
         roleBasedButtons = (
           <Button
             key="dashboard"
-            onClick={() => navigate('/commander')}
-            sx={{ my: 2, color: 'white', display: 'block' }}
+            onClick={() => navigate("/commander")}
+            sx={{ my: 2, color: "white", display: "block" }}
           >
             Dashboard
           </Button>
         );
-      } else if (userPrivilege === 'scheduler') { //change crew chief back to scheduler
+      } else if (userPrivilege === "scheduler") {
+        //change crew chief back to scheduler
         roleBasedButtons = (
           <>
-          <Button
-            key="dashboard"
-            onClick={() => navigate('/scheduler')} // or '/scheduler-dashboard', depending on the route
-            sx={{ my: 2, color: 'white', display: 'block' }}
-          >
-            Dashboard
-          </Button>
-          <Button
-            key="mySchedule"
-            onClick={() => navigate(`/user/${userId}`)}
-            sx={{ my: 2, color: 'white', display: 'block' }}
-          >
-            My Schedule
-          </Button>
+            <Button
+              key="dashboard"
+              onClick={() => navigate("/scheduler")} // or '/scheduler-dashboard', depending on the route
+              sx={{ my: 2, color: "white", display: "block" }}
+            >
+              Dashboard
+            </Button>
+            <Button
+              key="mySchedule"
+              onClick={() => navigate(`/user/${userId}`)}
+              sx={{ my: 2, color: "white", display: "block" }}
+            >
+              My Schedule
+            </Button>
             <Button
               key="courses"
-              onClick={() => navigate('/courses')}
-              sx={{ my: 2, color: 'white', display: 'block' }}
+              onClick={() => navigate("/courses")}
+              sx={{ my: 2, color: "white", display: "block" }}
             >
               Courses
             </Button>
             <Button
               key="crewSchedule"
-              onClick={() => navigate('/crews')}
-              sx={{ my: 2, color: 'white', display: 'block' }}
+              onClick={() => navigate("/crews")}
+              sx={{ my: 2, color: "white", display: "block" }}
             >
               Crew Schedule
             </Button>
             <Button
               key="users"
-              onClick={() => navigate('/user/scheduler')}
-              sx={{ my: 2, color: 'white', display: 'block' }}
+              onClick={() => navigate("/user/scheduler")}
+              sx={{ my: 2, color: "white", display: "block" }}
             >
               Update Users
             </Button>
           </>
         );
-      } else if (userPrivilege === 'user') {
+      } else if (userPrivilege === "user") {
         roleBasedButtons = (
-          <Button
-            key="mySchedule"
-            onClick={() => navigate(`/user/${userId}`)}
-            sx={{ my: 2, color: 'white', display: 'block' }}
-          >
-            My Schedule
-          </Button>
+          <>
+            <Button
+              key="mySchedule"
+              onClick={() => navigate(`/user/${userId}`)}
+              sx={{ my: 2, color: "white", display: "block" }}
+            >
+              My Schedule
+            </Button>
+          </>
         );
-      } else if (userPrivilege === 'training_manager') {
+      } else if (userPrivilege === "training_manager") {
         roleBasedButtons = (
-          <Button
-          key="courses"
-          onClick={() => navigate('/training-manager')}
-          sx={{ my: 2, color: 'white', display: 'block' }}
-        >
-          Course Management
-        </Button>
+          <>
+            <Button
+              key="courses"
+              onClick={() => navigate("/training-manager")}
+              sx={{ my: 2, color: "white", display: "block" }}
+            >
+              Course Management
+            </Button>
+          </>
         );
       }
-
-      
 
       return (
         <>
@@ -131,9 +134,9 @@ function Navbar() {
             variant="body1"
             sx={{
               my: 2,
-              color: 'white',
-              display: 'flex',
-              alignItems: 'center',
+              color: "white",
+              display: "flex",
+              alignItems: "center",
               px: 2,
             }}
           >
@@ -141,9 +144,16 @@ function Navbar() {
           </Typography>
           {roleBasedButtons}
           <Button
+            key="setting"
+            onClick={() => navigate(`/setting`)}
+            sx={{ my: 2, color: "white", display: "block" }}
+          >
+            Settings
+          </Button>
+          <Button
             key="logout"
             onClick={handleLogout}
-            sx={{ my: 2, color: 'white', display: 'block' }}
+            sx={{ my: 2, color: "white", display: "block" }}
           >
             Log Out
           </Button>
@@ -156,30 +166,37 @@ function Navbar() {
     <AppBar position="static">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          <AdbIcon sx={{ display: 'flex', mr: 1 }} />
+          <AdbIcon sx={{ display: "flex", mr: 1 }} />
           <Typography
             variant="h6"
             noWrap
             component="div"
-            onClick={() => navigate('/')}
+            onClick={() => navigate("/")}
             sx={{
               mr: 2,
-              display: 'flex',
+              display: "flex",
               fontWeight: 700,
-              color: 'inherit',
-              textDecoration: 'none',
-              cursor: 'pointer',
+              color: "inherit",
+              textDecoration: "none",
+              cursor: "pointer",
             }}
           >
             SquadSync
           </Typography>
-          <Box sx={{ flexGrow: 1, display: 'flex' }}>
+          <Box sx={{ flexGrow: 1, display: "flex" }}>
             <Button
               key="home"
-              onClick={() => navigate('/')}
-              sx={{ my: 2, color: 'white', display: 'block' }}
+              onClick={() => navigate("/")}
+              sx={{ my: 2, color: "white", display: "block" }}
             >
               Home
+            </Button>
+            <Button
+              key="about"
+              onClick={() => navigate('/about')}
+              sx={{ my: 2, color: 'white', display: 'block' }}
+            >
+              About
             </Button>
             {renderNavItems()}
           </Box>

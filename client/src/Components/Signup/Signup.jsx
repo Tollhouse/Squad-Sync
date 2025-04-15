@@ -20,7 +20,7 @@ export default function Signup() {
     password: '',
     first_name: '',
     last_name: '',
-    crew_id: 1,
+    crew_id: 7,
     role: "Not Assigned",
     experience_type: "red"
   });
@@ -45,12 +45,13 @@ export default function Signup() {
     })
       .then(response => response.json())
       .then((response) => {
-
-        alert('you are all signed up'),
-        navigate('/login')
-
+        if (response.id) {
+          alert(response.message);
+          navigate('/login')
+        } else {
+          alert(response.message);
+        }
       })
-
       .catch(err => setError('Signup failed'));
 
   };
