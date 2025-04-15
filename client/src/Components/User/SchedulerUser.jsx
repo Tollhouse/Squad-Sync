@@ -1,5 +1,4 @@
 //Authored by Curtis
-//This is incomplete, need enpoints from the backend for the PATCH
 import React, { useState, useEffect, useMemo } from 'react'
 import './User.css'
 import { useParams } from 'react-router-dom'
@@ -14,11 +13,18 @@ import {
   GridActionsCellItem,
   GridRowEditStopReasons,
 } from '@mui/x-data-grid';
+import { Chip } from "@mui/material"
+import { ConfirmSaveModal, ConfirmDeleteModal } from "../Modals/ConfirmModal";
 
 export default function SchedulerUser () {
   const { id } = useParams()
   const [userInformation, setUserInformation] = useState([])
   const [rowModesModel, setRowModesModel] = useState({})
+  const [search, setSearch] = useState('')
+  const [confirmUserSaveOpen, setConfirmUserSaveOpen] = useState(false);
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
+  const [selectedRow, setSelectedRow] = useState(null); // For saving
+  const [selectedRowId, setSelectedRowId] = useState(null); // For deleting
 
   //HANDLES GETTING USER INFORMATION
   useEffect(() => {
@@ -52,32 +58,46 @@ export default function SchedulerUser () {
         console.error('Error fetching user information:', err);
       }
     };
-    console.log("userInformation:", userInformation)
 
     fetchUserInformation();
-  }, [id]);
+  }, [id, userInformation]);
 
   //HANDLES UPDATING USER INFORMATION
   const updateUserInformation = async (newRow) => {
+    console.log("newRow", newRow)
     try{
+      const originalRow = userInformation.find((row) => row.id === newRow.id)
+
+      if(originalRow.crew_name !== newRow.crew_name){
+        const crewResponse = await fetch('http://localhost:8080/crews')
+        const crewData = await crewResponse.json()
+        const newCrew = crewData.find((crew) => crew.crew_name === newRow.crew_name)
+      if(!newCrew){
+        throw new Error(`Crew name "${newRow.crew_name}" not found`)
+      }
+      newRow.crew_id = newCrew.id
+      }
       const response = await fetch(`http://localhost:8080/users/${newRow.id}`, {
         method: 'PATCH',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(newRow),
       });
+
       if (!response.ok) {
         throw new Error('Failed to update user information');
       }
+
       const updatedRows = await response.json()
       const updatedRow = updatedRows[0]
       setUserInformation((prevRows) =>
         prevRows.map((row) => (row.id === updatedRow.id ? updatedRow : row))
     )
-      window.location.reload()
       return updatedRow
     } catch (error) {
       console.error('Error updating user information:', error);
       throw error
+    }finally{
+      setConfirmUserSaveOpen(false);
     }
   }
 
@@ -103,6 +123,9 @@ export default function SchedulerUser () {
 
   //HANDLES WHEN USER IS DONE EDITING ROW
   const handleRowEditStop = (params, event) => {
+    if(event.key === 'Enter'){
+      event.defaultMuiPrevented = true
+    }
     if (params.reason === GridRowEditStopReasons.rowFocusOut) {
       event.defaultMuiPrevented = true
     }
@@ -115,8 +138,10 @@ export default function SchedulerUser () {
 
   //HANDLES SAVING THE EDIT
   const handleSaveClick = (id) => () => {
-    setRowModesModel({...rowModesModel, [id]: { mode: GridRowModes.View }})
-    window.location.reload()
+    const rowToSave = userInformation.find((row) => row.id === id);
+    console.log("Row to save:", rowToSave); // Debugging
+    setSelectedRow(rowToSave);
+    setConfirmUserSaveOpen(true);
   }
 
   //HANDLES CANCELLING THE EDIT
@@ -125,19 +150,41 @@ export default function SchedulerUser () {
   }
 
   //HANDLES DELETING THE USER
-  const handleDeleteClick = (id) => async () => {
-    try {
-      alert('Are you sure you want to delete this user?')
-      await deleteUserInformation(id); // Call the delete function
-    } catch (error) {
-      console.error('Error deleting user:', error);
-    }
+  const handleDeleteClick = (id) => () => {
+    setSelectedRowId(id);
+    setConfirmDeleteOpen(true);
   };
 
   //HANDLES THE ROW MODES MODEL CHANGE
   const handleRowModesModelChange = (newRowModesModel) => {
     setRowModesModel(newRowModesModel)
   }
+
+  //HANDLES THE EXPERIENCE LEVEL ICON
+   const ExperienceChip = ({ level }) => {
+      const colorMap = {
+        green: { label: "Green", color: "#4caf50" },
+        yellow: { label: "Yellow", color: "#ffeb3b", textColor: "#000" },
+        red: { label: "Red", color: "#f44336" },
+      };
+      return (
+        <Chip
+          label={colorMap[level]?.label || level}
+          size="small"
+          sx={{
+            backgroundColor: colorMap[level]?.color,
+            color: colorMap[level]?.textColor || "#fff",
+            fontWeight: 600,
+          }}
+        />
+      );
+    };
+
+  const experienceOptions = [
+    { label: "Green", value: "green" },
+    { label: "Yellow", value: "yellow" },
+    { label: "Red", value: "red" },
+  ];
 
   //SETS UP THE COLUMNS FOR THE TABLE
   const columns = [
@@ -147,34 +194,32 @@ export default function SchedulerUser () {
     {field: 'last_name', headerName: 'Last Name', width: 125, editable: true},
     {field: 'flight', headerName: 'Assigned Flight', width: 125, editable: true},
     {field: 'crew_name', headerName: 'Crew Name', width: 125, editable: true},
-    {field: 'role', headerName: 'Position', width: 125, editable: true},
-    {field: 'privilege', headerName: 'Privilege', width: 125, editable: true},
-    {field: 'experience_type',
+    {field: 'role', headerName: 'Position', width: 140, editable: true},
+    {field: 'privilege', headerName: 'Privilege', width: 130, editable: true},
+    {
+      field: 'experience_type',
       headerName: 'Experience Level',
       width: 150,
       editable: true,
-      renderCell: (params) => {
-        let backgroundColor = 'white';
-        let textColor = 'black';
-        if(params.value === 'red'){
-          backgroundColor = 'red';
-          textColor = 'white';
-        } else if (params.value === 'yellow'){
-          backgroundColor = 'yellow';
-          textColor = 'black';
-        } else if( params.value === 'green'){
-          backgroundColor = 'green';
-          textColor = 'white';
-        }
+      renderCell: (params) => <ExperienceChip level={params.value} />,
+      renderEditCell: (params) => {
         return (
-          <div style={{backgroundColor,
-          color: textColor,
-          padding: '5px',
-          textAlign: 'center',}}>
-            {params.value}
-          </div>
-        )
-      }},
+        <select
+        value={params.value || ''}
+      onChange={(event) => {
+        const newValue = event.target.value;
+        params.api.setEditCellValue({ id: params.id, field: params.field, value: newValue})
+      }}
+      style={{width:'100%', padding: '4px', borderRadius: '4px', border: '1px solid #ccc'}}
+      >
+        <option value="" disabled>Select Experience</option>
+        {experienceOptions.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+    )}},
     {
       field: 'actions',
       type: 'actions',
@@ -182,55 +227,75 @@ export default function SchedulerUser () {
       width: 100,
       cellClassName: 'actions',
       getActions: ({ id }) => {
-        const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit
+        const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
 
         if (isInEditMode) {
           return [
             <GridActionsCellItem
               icon={<SaveIcon />}
               label="Save"
-              sx={{color: 'primary.main'}}
+              sx={{ color: 'primary.main' }}
               onClick={handleSaveClick(id)}
             />,
             <GridActionsCellItem
               icon={<CancelIcon />}
               label="Cancel"
-              className='textPrimary'
+              className="textPrimary"
               onClick={handleCancelClick(id)}
               color="inherit"
-            />
-          ]
+            />,
+          ];
         }
 
         return [
           <GridActionsCellItem
             icon={<EditIcon />}
             label="Edit"
-            className='textPrimary'
+            className="textPrimary"
             onClick={handleEditClick(id)}
             color="inherit"
           />,
-
           <GridActionsCellItem
-          icon={<DeleteIcon />}
-          label="Delete"
-          className='textPrimary'
-          onClick={handleDeleteClick(id)}
-          color="inherit"
-          />
-        ]
-      }
+            icon={<DeleteIcon />}
+            label="Delete"
+            className="textPrimary"
+            onClick={handleDeleteClick(id)}
+            color="inherit"
+          />,
+        ];
+      },
     }
   ]
+
+  const filteredRows = userInformation.filter((row) =>
+    Object.values(row).some((value) =>
+      String(value).toLowerCase().includes(search.toLowerCase())
+    )
+  );
 
   return (
 
     <div className='user-container'>
+      <div className='search-container'>
+        <input
+          type='text'
+          placeholder='Search for member...'
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          style={{
+            marginTop: '20px',
+            padding: '8px',
+            width: '250px',
+            border: '1px solid #ccc',
+            borderRadius: '4px',
+          }}
+          />
+      </div>
       <Box
         sx={{
           mt: 4,
           textAlign: 'center',
-          width:'90%',
+          width:'100%',
           '& .actions': {
             color: 'text.secondary',
           },
@@ -240,14 +305,14 @@ export default function SchedulerUser () {
         }}
         >
         <DataGrid
-          rows={userInformation}
+          rows={filteredRows}
           columns={columns}
-          getRowId={(row) => `${row.id}-${row.flight}-${row.crew_name}`}
+          getRowId={(row) => row.id}
           editMode='row'
           rowModesModel={rowModesModel}
           onRowModesModelChange={handleRowModesModelChange}
           onRowEditStop={handleRowEditStop}
-          processRowUpdate={(newRow) => updateUserInformation(newRow)}
+          processRowUpdate={(newRow) => {return updateUserInformation(newRow)}}
           onProcessRowUpdateError={(error) => {
             console.error('Error during row update:', error)
           }}
@@ -255,6 +320,41 @@ export default function SchedulerUser () {
           />
           </Box>
 
+           {/* Confirm Modals */}
+
+          <ConfirmSaveModal
+            open={confirmUserSaveOpen}
+            onClose={() => {
+              setConfirmUserSaveOpen(false)
+              document.querySelector('[aria-label="Save"]').focus();
+            }}
+
+            onConfirm={() => {
+              if (selectedRow) {
+                console.log("Saving selectedRow:", selectedRow); // Debugging
+                updateUserInformation(selectedRow)
+                  .then(() => {
+                    setRowModesModel((prevModel) => ({
+                      ...prevModel,
+                      [selectedRow.id]: { mode: GridRowModes.View }, // Switch to view mode
+                    }));
+                    setConfirmUserSaveOpen(false); // Close the modal after saving
+                  })
+                  .catch((error) => {
+                    console.error("Error saving user information:", error);
+                  });
+              }
+            }}
+          />
+          <ConfirmDeleteModal
+            open={confirmDeleteOpen}
+            onClose={() => setConfirmDeleteOpen(false)}
+            onConfirm={() => {
+              if (selectedRowId) {
+                deleteUserInformation(selectedRowId);
+              }
+            }}
+          />
     </div>
   )
 }
