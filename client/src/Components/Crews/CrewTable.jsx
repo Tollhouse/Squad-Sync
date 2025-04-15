@@ -227,6 +227,7 @@ function CrewTable({ schedule, setSchedule }) {
       </TableContainer>
 
       {rosterMode ? <CrewRoster key={rosterId} crew_id={rosterId} /> : null}
+
       <HandleAddRotation
         open={addRotationOpen}
         onClose={() => setAddRotationOpen(false)}

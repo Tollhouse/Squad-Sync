@@ -20,7 +20,7 @@ router.get("/", (req, res) => {
 });
 
 
-router.get("/schedule", async (req, res) => {
+router.get("/user/schedule", async (req, res) => {
     let data = []
 
     try{
@@ -31,14 +31,6 @@ router.get("/schedule", async (req, res) => {
         .select(knex.raw(`'courses' as source`))
         .orderBy('users.id');
 
-        let crewDates = await knex("users")
-        .join('crews', 'users.crew_id', 'crews.id')
-        .join('crew_rotations', 'crews.id', 'crew_rotations.crew_id')
-        .select('users.id as user_id','first_name', 'last_name','crews.id as crew_id', 'crew_name','crew_rotations.id as rotation_id','shift_type',  'date_start', 'date_end')
-        .select(knex.raw(`'crews' as source`))
-        .orderBy('users.id');
-
-        data.push({crewDates})
         data.push({courseDates})
 
         return res.status(200).json(data)
