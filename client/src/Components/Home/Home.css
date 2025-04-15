@@ -15,22 +15,6 @@
   padding: 2rem;
 }
 
-.topSection {
-  display: flex;
-  gap: 2rem;
-  flex-wrap: wrap;
-}
-
-.mission, .vision {
-  flex: 1;
-  min-width: 300px;
-  background-color: #f0f4f8;
-  padding: 1.5rem;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  color: black;
-}
-
 .news {
   background-color: #f0f4f8;
   padding: 1.5rem;
@@ -48,31 +32,58 @@
   list-style-type: none;
 }
 
-.roles {
-  background-color: #f0f4f8;
-  padding: 1.5rem;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  color: black;
-  align-self: stretch;
+.news h3 {
+  font-weight: 800;
 }
 
-
-.roleGrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2rem;
-  margin-top: 1.5rem;
-}
-
-.role {
-  background-color: #ffffff;
-  padding: 1rem;
-  border-radius: 10px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
-}
 
 .footer {
   margin-top: auto;
   background: transparent !important;
+}
+
+
+
+
+.featureSection {
+  background-image: url('/images/pattern-light.svg');
+  background-size: cover;
+  background-position: center;
+  padding: 3rem 2rem;
+  border-radius: 16px;
+}
+
+.featuresGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+}
+
+.featureCard {
+  background-color: #fff;
+  padding: 1.5rem;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease-in-out;
+}
+
+.featureCard:hover {
+  transform: translateY(-5px);
+}
+
+.featureCard img {
+  width: 64px;
+  height: 64px;
+  margin-bottom: 1rem;
+}
+
+.featureCard h4 {
+  margin-bottom: 0.5rem;
+  color: #1976d2;
+}
+
+.featureCard p {
+  font-size: 0.95rem;
+  color: #555;
 }

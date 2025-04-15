@@ -3,6 +3,7 @@
 // styled with MUI by Lorena
 
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Box, Container, Typography } from "@mui/material";
 import './Footer.css';
 
@@ -10,6 +11,7 @@ function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
+
     <Box
       component="footer"
       sx={(theme) => ({
@@ -22,6 +24,11 @@ function Footer() {
       })}
     >
       <Container>
+        <Typography variant="body2">
+          <Link to="/about" style={{ textDecoration: 'underline', color: 'inherit' }}>
+            About
+          </Link>
+        </Typography>
         <Typography variant="body2">
           &copy; {currentYear} Curtis Bonham, Tyson
           Butler-Currier, Harman Gidda, Essence Jackson, Lorena Longoria, Jackie Luu, Landon Spencer,
