@@ -40,30 +40,43 @@ export default function Commander() {
   const [crewRotations, setCrewRotations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [tabIndex, setTabIndex] = useState(0);
+  const [crewNames, setCrewNames] = useState(0);
 
   const theme = useTheme();
+
+  const today = new Date();
+  var dd = today.getDate();
+  var mm = today.getMonth()+1;
+  var yyyy = today.getFullYear();
+  if(dd<10) { dd='0'+dd; }
+  if(mm<10) { mm='0'+mm; }
+  const todaysDate = yyyy + '-' + mm + '-' + dd;
+  // console.log(todaysDate);
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const [usersRes, coursesRes, regRes, crewRes] = await Promise.all([
+        const [usersRes, coursesRes, regRes, crewRes, crewNamesRes] = await Promise.all([
           fetch("http://localhost:8080/users"),
           fetch("http://localhost:8080/courses"),
           fetch("http://localhost:8080/course_registration"),
           fetch("http://localhost:8080/crew_rotations"),
+          fetch("http://localhost:8080/crews"),
         ]);
 
-        const [usersData, coursesData, regData, crewData] = await Promise.all([
+        const [usersData, coursesData, regData, crewData, crewNamesData] = await Promise.all([
           usersRes.json(),
           coursesRes.json(),
           regRes.json(),
           crewRes.json(),
+          crewNamesRes.json()
         ]);
 
         setUsers(usersData);
         setCourses(coursesData);
         setRegistrations(regData);
         setCrewRotations(crewData);
+        setCrewNames(crewNamesData);
         setLoading(false);
       } catch (error) {
         console.error("Error fetching commander data:", error);
@@ -77,9 +90,9 @@ export default function Commander() {
   const certifiedCount = registrations.filter((reg) => reg.cert_earned).length;
   const crewCount = [...new Set(users.map((user) => user.crew_id))].length;
   const experienceStats = {
-    red: users.filter((u) => u.experience_type === "red").length,
-    yellow: users.filter((u) => u.experience_type === "yellow").length,
-    green: users.filter((u) => u.experience_type === "green").length,
+    red: users.filter((u) => u.experience_type === "Red").length,
+    yellow: users.filter((u) => u.experience_type === "Yellow").length,
+    green: users.filter((u) => u.experience_type === "Green").length,
   };
 
   const chartData = {
@@ -132,7 +145,7 @@ export default function Commander() {
 
         {/* Summary Panel */}
         <Grid container spacing={2} justifyContent="center" sx={{ mb: 2 }}>
-          <Grid item>
+          <Grid >
             <Card>
               <CardContent>
                 <Typography variant="h6" align="center">🎓 Certified Users</Typography>
@@ -140,11 +153,11 @@ export default function Commander() {
               </CardContent>
             </Card>
           </Grid>
-          <Grid item>
+          <Grid >
             <Card>
               <CardContent>
                 <Typography variant="h6" align="center">👥 Total Crews</Typography>
-                <Typography variant="h5" align="center">{crewCount}</Typography>
+                <Typography variant="h5" align="center">{crewCount - 1}</Typography>
               </CardContent>
             </Card>
           </Grid>
@@ -156,9 +169,8 @@ export default function Commander() {
             <Tabs
               value={tabIndex}
               onChange={(e, newIndex) => {
-                console.log(newIndex)
                 setTabIndex(newIndex)}}
-              variant="scrollable"
+              // variant="scrollable"
               scrollButtons="auto"
               centered
             >
@@ -173,7 +185,7 @@ export default function Commander() {
               {tabIndex === 0 && (
                 <Grid container spacing={2}>
                   {users.map((user) => (
-                    <Grid item xs={12} sm={6} md={4} key={user.id}>
+                    <Grid key={user.id}>
                       <Chip
                         label={`${user.first_name} ${user.last_name} — ${user.role} (${user.experience_type})`}
                         color="default"
@@ -188,7 +200,8 @@ export default function Commander() {
 
               {tabIndex === 1 && (
                 <Stack spacing={1}>
-                  {courses.map((course) => (
+                  {courses.filter((course) => (course.date_end > todaysDate))
+                  .map((course) => (
                     <Box key={course.id}>
                       <Typography variant="body1">
                         {course.course_name}{" "}
@@ -234,7 +247,7 @@ export default function Commander() {
                   {crewRotations.map((shift) => (
                     <Box key={shift.id}>
                       <Typography variant="body2">
-                        Crew #{shift.crew_id} — <strong>{shift.shift_type}</strong> shift from{" "}
+                        {crewNames[shift.crew_id - 1].crew_name} Crew — <strong>{shift.shift_type}</strong> shift from{" "}
                         {shift.date_start} to {shift.date_end} | Duration: {shift.shift_duration} hrs | Experience:{" "}
                         {shift.experience_type}
                       </Typography>

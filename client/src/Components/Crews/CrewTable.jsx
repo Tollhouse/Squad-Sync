@@ -40,7 +40,7 @@ function CrewTable({ schedule, setSchedule }) {
     setEditingRowId(null); // Exit edit mode
     setEditFormData({}); // Clear the form data
   };
-console.log("schedule", schedule)
+
   const handleSaveClick = () => {
     // Save the changes (you can also send this to the backend)
     fetch(`http://localhost:8080/crew_rotations/${editFormData.crew_id}`, {
@@ -77,6 +77,7 @@ console.log("schedule", schedule)
     }));
   };
 
+
   function handleRosterMode(s) {
     if (rosterMode && rosterId === s.crew_id) {
       setRosterMode(false);
@@ -84,17 +85,17 @@ console.log("schedule", schedule)
     } else {
       setRosterMode(true);
       setRosterId(s.crew_id);
-      console.log("Clicked on crew_id:", s.crew_id);
+      // console.log("Clicked on crew_id:", s.crew_id);
     }
   }
 
   const handleAddCrewRotation = () => {
-    console.log("Clicked on Add Crew Rotation");
+    // console.log("Clicked on Add Crew Rotation");
     setAddRotationOpen(true);
   };
 
   const handleRotationAdded = (newRotation) => {
-    console.log("Rotation added from HandleAddRotation:", newRotation);
+    // console.log("Rotation added from HandleAddRotation:", newRotation);
   };
 
   return (
@@ -224,7 +225,7 @@ console.log("schedule", schedule)
       </TableContainer>
 
       {rosterMode ? <CrewRoster key={rosterId} crew_id={rosterId} /> : null}
-
+ front-end
       <HandleAddRotation
         open={addRotationOpen}
         onClose={() => setAddRotationOpen(false)}

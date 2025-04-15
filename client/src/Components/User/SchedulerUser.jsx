@@ -14,7 +14,9 @@ import {
   GridRowEditStopReasons,
 } from '@mui/x-data-grid';
 import { Chip } from "@mui/material"
+
 import { ConfirmSaveModal, ConfirmDeleteModal } from "../AddOns/ConfirmModal";
+
 
 export default function SchedulerUser () {
   const { id } = useParams()
@@ -165,9 +167,9 @@ export default function SchedulerUser () {
   //HANDLES THE EXPERIENCE LEVEL ICON
    const ExperienceChip = ({ level }) => {
       const colorMap = {
-        green: { label: "Green", color: "#4caf50" },
-        yellow: { label: "Yellow", color: "#ffeb3b", textColor: "#000" },
-        red: { label: "Red", color: "#f44336" },
+        Green: { label: "Green", color: "#4caf50" },
+        Yellow: { label: "Yellow", color: "#ffeb3b", textColor: "#000" },
+        Red: { label: "Red", color: "#f44336" },
       };
       return (
         <Chip
@@ -185,9 +187,9 @@ export default function SchedulerUser () {
   const crewOptions = crews.map((crews) => ({label: crews.crew_name, value: crews.crew_name}))
 
   const experienceOptions = [
-    { label: "Green", value: "green" },
-    { label: "Yellow", value: "yellow" },
-    { label: "Red", value: "red" },
+    { label: "Green", value: "Green" },
+    { label: "Yellow", value: "Yellow" },
+    { label: "Red", value: "Red" },
   ];
 
   const flightOptions = [

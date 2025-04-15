@@ -19,10 +19,6 @@ router.get("/", (req, res) => {
       .catch((err) => res.status(500).json({ error: err.message }));
 });
 
-// router.get('/', async (req, res) => {
-//     res.status(200).json({message:"Working route."})
-// });
-
 
 router.get("/schedule", async (req, res) => {
     let data = []
@@ -213,7 +209,7 @@ router.post("/", async (req, res) => {
                 .first()
                 .then(foundUser => {
                 if (foundUser) {
-                    return res.status(404).json('Username already exists.')
+                    return res.status(404).json({message: 'Username already exists.'})
                 } else {
                     return knex('users')
                         .insert({first_name, last_name, user_name, password: hashedPassword, crew_id, role, experience_type, privilege: 'user', flight: 'DOO'}, ['id', 'privilege'])
@@ -222,7 +218,7 @@ router.post("/", async (req, res) => {
                         })
                         .catch(err => {
                             console.log(err);
-                            return res.status(500).json('Error creating user. Error: ' + err)
+                            return res.status(500).json({message: `Error creating user. Error: ${err}`})
                         })
                 }
                 })
