@@ -1,4 +1,5 @@
 import Footer from "../Footer/Footer.jsx";
+import "./About.css"
 
 export default function About() {
 
