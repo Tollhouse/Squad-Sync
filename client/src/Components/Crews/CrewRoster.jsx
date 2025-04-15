@@ -16,7 +16,7 @@ import {
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { getAvailableUsers } from './getAvailableUsers';
-import ExperienceChip from '../AddOns/ExperinceChip';
+import { ExperienceChip } from '../AddOns/ExperienceChip';
 
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
