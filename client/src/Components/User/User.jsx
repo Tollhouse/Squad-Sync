@@ -18,6 +18,7 @@ import {
   GridRowEditStopReasons,
 } from '@mui/x-data-grid';
 import { Chip } from "@mui/material"
+import PasswordChange from '../Setting/PasswordChange.jsx'
 
 export default function User () {
   const { id } = useParams()
@@ -173,7 +174,7 @@ export default function User () {
       }
     }
   ]
-// console.log("userInformation:", userInformation)
+
   return (
 
     <div className='user-container'>
@@ -197,6 +198,7 @@ export default function User () {
           },
         }}
         >
+          
           {userInformation.length > 0 ? (
         <DataGrid
           rows={userInformation}
@@ -218,7 +220,9 @@ export default function User () {
           </Box>
           <UserCourse />
           <UserCrew />
+          <div>
           <Calendar />
+          </div>
     </div>
   )
 }

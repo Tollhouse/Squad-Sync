@@ -705,13 +705,13 @@ console.log("certificationData", certificationData)
                           <MenuItem value="Operator">Operator</MenuItem>
                         </Select>
                       </TableCell>
-                      <TableCell>
+                      {/* <TableCell>
                         <TextField
                           size="small"
                           value={newUser.first_name}
                           onChange={(e) => handleNewUserChange("first_name", e.target.value)}
                         />
-                      </TableCell>
+                      </TableCell> */}
                       {/* <TableCell>
                         <TextField
                           size="small"
@@ -743,8 +743,8 @@ console.log("certificationData", certificationData)
                     </TableRow>
                   )}
 
-                  {usersByCrew.map((user) => (
-                    <TableRow key={user.id}>
+                  {usersByCrew.map((user, index) => (
+                    <TableRow key={`${user.id}-${index}`}>
                       <TableCell>
                         {editingUserId === user.id ? (
                           <Select
@@ -797,7 +797,7 @@ console.log("certificationData", certificationData)
                           `${user.first_name} ${user.last_name}`
                         )}
                       </TableCell>
-                      {editingUserId === user.id ? (
+                      {/* {editingUserId === user.id ? (
                         <TextField
                           size="small"
                           value={editedUser.first_name || ""}
@@ -805,7 +805,7 @@ console.log("certificationData", certificationData)
                         />
                       ) : (
                         user.first_name
-                      )}
+                      )} */}
                       {/* <TableCell>{user.first_name}</TableCell>
                       <TableCell>{user.last_name}</TableCell> */}
                       {canSeeExperience && (

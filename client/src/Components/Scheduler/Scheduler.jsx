@@ -78,31 +78,18 @@ export default function Scheduler() {
         yellow: "🟡",
         red: "🔴",
       };
-      const emoji = emojiMap[rotation.experience_type] || "⚪";
-      const timeRange = shiftTimeMap[rotation.shift_type] || "N/A";
+
+
+      const emoji = emojiMap[rotation.experience_type?.toLowerCase()] || "⚪";
 
       const startDate = new Date(rotation.date_start);
-      let shiftStart = new Date(startDate);
-      let shiftEnd = new Date(startDate);
-
-      if (rotation.shift_type === "day") {
-        shiftStart.setHours(6, 0, 0);
-        shiftEnd.setHours(14, 0, 0);
-      } else if (rotation.shift_type === "swing") {
-        shiftStart.setHours(14, 0, 0);
-        shiftEnd.setHours(22, 0, 0);
-      } else if (rotation.shift_type === "night") {
-        shiftStart.setHours(22, 0, 0);
-        shiftEnd = new Date(shiftStart);
-        shiftEnd.setDate(shiftEnd.getDate() + 1);
-        shiftEnd.setHours(6, 0, 0);
-      }
-
+      const endDate = new Date(rotation.date_end);
+      console.log("rotation", rotation);
       return {
-        title: `Crew ${rotation.crew_id} - ${rotation.shift_type} (${timeRange}) ${emoji}`,
-        start: shiftStart,
-        end: shiftEnd,
-        allDay: false,
+        title: `${rotation.crew_name} Crew - ${rotation.shift_type} ${emoji}`,
+        start: startDate,
+        end: endDate,
+        allDay: true,
         cert_earned: null,
         experience_type: rotation.experience_type,
         shift_type: rotation.shift_type,
@@ -210,7 +197,7 @@ export default function Scheduler() {
                 .map((r) => courses.find((c) => c.id === r.course_id)?.course_name)
                 .filter(Boolean);
               return earnedCourses.length > 0 ? (
-                <li key={user.id}><strong>{user.first_name} {user.last_name}</strong>: {earnedCourses.join(", ")}</li>
+                <ul key={user.id}><strong>{user.first_name} {user.last_name}</strong>: {earnedCourses.join(", ")}</ul>
               ) : null;
             })}
           </ul>
@@ -275,7 +262,7 @@ export default function Scheduler() {
               };
               const bgColor = event.cert_earned === null
               ? shiftColors[event.shift_type?.toLowerCase()]     // prefer shift_type
-                || shiftColors[event.experience_type?.toLowerCase()] 
+                || shiftColors[event.experience_type?.toLowerCase()]
                 || "#90a4ae" // fallback gray
               : "#1976d2";
               return {

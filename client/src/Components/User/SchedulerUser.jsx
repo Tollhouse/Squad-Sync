@@ -14,7 +14,9 @@ import {
   GridRowEditStopReasons,
 } from '@mui/x-data-grid';
 import { Chip } from "@mui/material"
-//import { ConfirmSaveModal, ConfirmDeleteModal } from "./Modals/ConfirmModal";
+
+import { ConfirmSaveModal, ConfirmDeleteModal } from "../AddOns/ConfirmModal";
+
 
 export default function SchedulerUser () {
   const { id } = useParams()
@@ -23,8 +25,9 @@ export default function SchedulerUser () {
   const [search, setSearch] = useState('')
   const [confirmUserSaveOpen, setConfirmUserSaveOpen] = useState(false);
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
-  const [selectedRow, setSelectedRow] = useState(null); // For saving
-  const [selectedRowId, setSelectedRowId] = useState(null); // For deleting
+  const [selectedRow, setSelectedRow] = useState(null);
+  const [selectedRowId, setSelectedRowId] = useState(null);
+  const [crews, setCrews] = useState([])
 
   //HANDLES GETTING USER INFORMATION
   useEffect(() => {
@@ -35,6 +38,7 @@ export default function SchedulerUser () {
 
         const crewResponse = await fetch('http://localhost:8080/crews');
         const crewData = await crewResponse.json();
+        setCrews(crewData)
 
         const crewMapping = crewData.reduce((acc, crew) => {
           acc[crew.id] = crew.crew_name;
@@ -64,7 +68,7 @@ export default function SchedulerUser () {
 
   //HANDLES UPDATING USER INFORMATION
   const updateUserInformation = async (newRow) => {
-    console.log("newRow", newRow)
+
     try{
       const originalRow = userInformation.find((row) => row.id === newRow.id)
 
@@ -72,6 +76,7 @@ export default function SchedulerUser () {
         const crewResponse = await fetch('http://localhost:8080/crews')
         const crewData = await crewResponse.json()
         const newCrew = crewData.find((crew) => crew.crew_name === newRow.crew_name)
+
       if(!newCrew){
         throw new Error(`Crew name "${newRow.crew_name}" not found`)
       }
@@ -139,7 +144,6 @@ export default function SchedulerUser () {
   //HANDLES SAVING THE EDIT
   const handleSaveClick = (id) => () => {
     const rowToSave = userInformation.find((row) => row.id === id);
-    console.log("Row to save:", rowToSave); // Debugging
     setSelectedRow(rowToSave);
     setConfirmUserSaveOpen(true);
   }
@@ -180,11 +184,34 @@ export default function SchedulerUser () {
       );
     };
 
+  const crewOptions = crews.map((crews) => ({label: crews.crew_name, value: crews.crew_name}))
+
   const experienceOptions = [
     { label: "Green", value: "green" },
     { label: "Yellow", value: "yellow" },
     { label: "Red", value: "red" },
   ];
+
+  const flightOptions = [
+    {label: "DOO", value: "DOO"},
+    {label: "DOU", value: "DOU"},
+    {label: "DOX", value: "DOX"},
+    {label: "DOT", value: "DOT"},
+    {label: "Front Office", value: "Front Office"},
+  ]
+
+  const privilegeOptions = [
+    {label: "Commander", value: "commander"},
+    {label: "Scheduler", value: "scheduler"},
+    {label: "Training Manager", value: "training_manager"},
+    {label: "user", value: "user"},
+  ]
+
+  const positionOptions = [
+    {label: "Crew Commander", value: "crew_commander"},
+    {label: "Crew Chief", value: "crew_chief"},
+    {label: "Operator", value: "operator"},
+  ]
 
   //SETS UP THE COLUMNS FOR THE TABLE
   const columns = [
@@ -192,10 +219,102 @@ export default function SchedulerUser () {
     {field: 'user_name', headerName: 'User Name', width: 125, editable: true},
     {field: 'first_name', headerName: 'First Name', width: 125, editable: true},
     {field: 'last_name', headerName: 'Last Name', width: 125, editable: true},
-    {field: 'flight', headerName: 'Assigned Flight', width: 125, editable: true},
-    {field: 'crew_name', headerName: 'Crew Name', width: 125, editable: true},
-    {field: 'role', headerName: 'Position', width: 140, editable: true},
-    {field: 'privilege', headerName: 'Privilege', width: 130, editable: true},
+    {
+      field: 'flight',
+      headerName: 'Assigned Flight',
+      width: 125,
+      editable: true,
+      renderEditCell: (params) => {
+        return (
+        <select
+          value={params.value || ''}
+          onChange={(event) => {
+            const newValue = event.target.value;
+            params.api.setEditCellValue({ id: params.id, field: params.field, value: newValue})
+          }}
+          style={{width:'100%', padding: '4px', borderRadius: '4px', border: '1px solid #ccc'}}
+        >
+          <option value="" disabled>Select Flight</option>
+          {flightOptions.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+      )},
+    },
+    {
+      field: 'crew_name',
+      headerName: 'Crew Name',
+      width: 125,
+      editable: true,
+      renderEditCell: (params) => {
+      return (
+        <select
+          value={params.value || ''}
+          onChange={(event) => {
+            const newValue = event.target.value;
+            params.api.setEditCellValue({ id: params.id, field: params.field, value: newValue})
+          }}
+          style={{width:'100%', padding: '4px', borderRadius: '4px', border: '1px solid #ccc'}}
+        >
+          <option value="" disabled>Select Crew</option>
+          {crewOptions.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+      )}
+    },
+    {
+      field: 'role',
+      headerName: 'Position',
+      width: 140,
+      editable: true,
+      renderEditCell: (params) => {
+        return (
+        <select
+          value={params.value || ''}
+          onChange={(event) => {
+            const newValue = event.target.value;
+            params.api.setEditCellValue({ id: params.id, field: params.field, value: newValue})
+          }}
+          style={{width:'100%', padding: '4px', borderRadius: '4px', border: '1px solid #ccc'}}
+        >
+          <option value="" disabled>Select Position</option>
+          {positionOptions.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+      )},
+    },
+    {
+      field: 'privilege',
+      headerName: 'Privilege',
+      width: 130,
+      editable: true,
+      renderEditCell: (params) => {
+        return (
+        <select
+          value={params.value || ''}
+          onChange={(event) => {
+            const newValue = event.target.value;
+            params.api.setEditCellValue({ id: params.id, field: params.field, value: newValue})
+          }}
+          style={{width:'100%', padding: '4px', borderRadius: '4px', border: '1px solid #ccc'}}
+        >
+          <option value="" disabled>Select Privilege</option>
+          {privilegeOptions.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+      )},
+    },
     {
       field: 'experience_type',
       headerName: 'Experience Level',
