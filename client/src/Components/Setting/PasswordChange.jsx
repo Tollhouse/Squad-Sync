@@ -5,11 +5,11 @@ import "./PasswordChange.css"
 function PasswordChange(){
         const userId = localStorage.getItem("userId");
         const [changePassword, setChangePassword] = useState(false)
-    
+
         function handleChangePassword(){
             setChangePassword(!changePassword)
         }
-    
+
         async function submitPasswordChange(formData){
             const password = formData.get("password")
             try{
@@ -29,11 +29,9 @@ function PasswordChange(){
                 alert("operation unsuccessful")
                 console.log(err)
             }
-
-    
         }
-    
-    
+
+
 
 
 
@@ -44,14 +42,14 @@ function PasswordChange(){
 
         {changePassword ?
             <form action={submitPasswordChange}>
-                <input name = "password"/>
+                <input data-testid='test-passInput' name = "password"/>
                 {/* <input name = "password_confirm"/> */}
                 <button type = "submit">Confirm</button>
             </form>
             :
             null
         }
-    
+
     </div>
     )
 }
