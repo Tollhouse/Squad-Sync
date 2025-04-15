@@ -23,6 +23,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import ExperienceChip from "../AddOns/ExperinceChip";
 import CrewRoster from "./CrewRoster";
 import HandleAddRotation from "./HandleAddRotation";
+import "./Crews.css"
 
 function CrewTable({ schedule, setSchedule }) {
   const [editingRowId, setEditingRowId] = useState(null);
@@ -99,9 +100,9 @@ function CrewTable({ schedule, setSchedule }) {
   };
 
   return (
-    <>
+    <div className="crewTable">
       <Box sx={{ m: 2 }}>
-        <Typography variant="h4" sx={{ mb: 1 }}>
+        <Typography variant="h4" sx={{ mb: 3 }}>
           Crew Rotations
         </Typography>
         <Button
@@ -230,7 +231,7 @@ function CrewTable({ schedule, setSchedule }) {
         onClose={() => setAddRotationOpen(false)}
         onAddRotation={handleRotationAdded}
       />
-    </>
+    </div>
   );
 }
 
