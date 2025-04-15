@@ -77,6 +77,7 @@ function CrewTable({ schedule, setSchedule }) {
     }));
   };
 
+
   function handleRosterMode(s) {
     if (rosterMode && rosterId === s.crew_id) {
       setRosterMode(false);
@@ -84,17 +85,17 @@ function CrewTable({ schedule, setSchedule }) {
     } else {
       setRosterMode(true);
       setRosterId(s.crew_id);
-      console.log("Clicked on crew_id:", s.crew_id);
+      // console.log("Clicked on crew_id:", s.crew_id);
     }
   }
 
   const handleAddCrewRotation = () => {
-    console.log("Clicked on Add Crew Rotation");
+    // console.log("Clicked on Add Crew Rotation");
     setAddRotationOpen(true);
   };
 
   const handleRotationAdded = (newRotation) => {
-    console.log("Rotation added from HandleAddRotation:", newRotation);
+    // console.log("Rotation added from HandleAddRotation:", newRotation);
   };
 
   return (
@@ -224,7 +225,7 @@ function CrewTable({ schedule, setSchedule }) {
       </TableContainer>
 
       {rosterMode ? <CrewRoster key={rosterId} crew_id={rosterId} /> : null}
-
+ front-end
       <HandleAddRotation
         open={addRotationOpen}
         onClose={() => setAddRotationOpen(false)}

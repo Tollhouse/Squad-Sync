@@ -1,6 +1,6 @@
 import { createTheme } from '@mui/material/styles';
 
-const TableTheme = (outerTheme) =>
+const TableTheme = (outerTheme = createTheme()) =>
   createTheme({
     ...outerTheme,
     components: {

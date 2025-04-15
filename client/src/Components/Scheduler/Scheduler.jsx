@@ -84,7 +84,7 @@ export default function Scheduler() {
 
       const startDate = new Date(rotation.date_start);
       const endDate = new Date(rotation.date_end);
-      console.log("rotation", rotation);
+      // console.log("rotation", rotation);
       return {
         title: `${rotation.crew_name} Crew - ${rotation.shift_type} ${emoji}`,
         start: startDate,
@@ -197,7 +197,7 @@ export default function Scheduler() {
                 .map((r) => courses.find((c) => c.id === r.course_id)?.course_name)
                 .filter(Boolean);
               return earnedCourses.length > 0 ? (
-                <li key={user.id}><strong>{user.first_name} {user.last_name}</strong>: {earnedCourses.join(", ")}</li>
+                <ul key={user.id}><strong>{user.first_name} {user.last_name}</strong>: {earnedCourses.join(", ")}</ul>
               ) : null;
             })}
           </ul>
@@ -220,9 +220,9 @@ export default function Scheduler() {
           Filter by Shift Type:
           <select value={filterShift} onChange={(e) => setFilterShift(e.target.value)}>
             <option value="all">All</option>
-            <option value="day">Day</option>
-            <option value="swing">Swing</option>
-            <option value="night">Night</option>
+            <option value="Day">Day</option>
+            <option value="Swing">Swing</option>
+            <option value="Night">Night</option>
           </select>
         </label>
         <label>
