@@ -399,6 +399,7 @@ export default function SchedulerUser () {
         <input
           type='text'
           placeholder='Search for member...'
+          data-testid='test-userSearchBar'
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           style={{

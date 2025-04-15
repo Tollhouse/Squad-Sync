@@ -24,7 +24,6 @@ import ExperienceChip from "../AddOns/ExperinceChip";
 import CrewRoster from "./CrewRoster";
 import HandleAddRotation from './HandleAddRotation.jsx'
 
-import HandleAddRotation from "./HandleAddRotation";
 
 function CrewTable({ schedule, setSchedule }) {
   const [editingRowId, setEditingRowId] = useState(null);
