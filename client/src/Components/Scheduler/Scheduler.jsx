@@ -17,6 +17,7 @@ export default function Scheduler() {
   const [users, setUsers] = useState([]);
   const [registrations, setRegistrations] = useState([]);
   const [rotations, setRotations] = useState([]);
+  const [crews, setCrews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [calendarEvents, setCalendarEvents] = useState([]);
   const [tabIndex, setTabIndex] = useState(0);
@@ -28,22 +29,25 @@ export default function Scheduler() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const [courseRes, userRes, regRes, rotRes] = await Promise.all([
+        const [courseRes, userRes, regRes, rotRes, crewRes] = await Promise.all([
           fetch("http://localhost:8080/courses"),
           fetch("http://localhost:8080/users"),
           fetch("http://localhost:8080/course_registration"),
           fetch("http://localhost:8080/crew_rotations"),
+          fetch("http://localhost:8080/crews"),
         ]);
 
         const coursesData = await courseRes.json();
         const usersData = await userRes.json();
         const regData = await regRes.json();
         const rotData = await rotRes.json();
+        const crewData = await crewRes.json();
 
         setCourses(coursesData);
         setUsers(usersData);
         setRegistrations(regData);
         setRotations(rotData);
+        setCrews(crewData);
         setLoading(false);
       } catch (err) {
         console.error("Error loading scheduler data:", err);
@@ -54,12 +58,6 @@ export default function Scheduler() {
   }, []);
 
   useEffect(() => {
-    const shiftTimeMap = {
-      day: "6AM–2PM",
-      swing: "2PM–10PM",
-      night: "10PM–6AM"
-    };
-
     const registrationEvents = registrations.map((r) => {
       const user = users.find((u) => u.id === r.user_id);
       const course = courses.find((c) => c.id === r.course_id);
@@ -72,33 +70,66 @@ export default function Scheduler() {
       };
     });
 
-    const crewEvents = rotations.map((rotation) => {
+    const crewEvents = [];
+
+    rotations.forEach((rotation) => {
       const emojiMap = {
         green: "🟢",
         yellow: "🟡",
         red: "🔴",
       };
 
-
       const emoji = emojiMap[rotation.experience_type?.toLowerCase()] || "⚪";
+      const crew = crews.find((c) => c.id === rotation.crew_id);
+      const crewName = crew?.crew_name || "Unknown";
 
-      const startDate = new Date(rotation.date_start);
-      const endDate = new Date(rotation.date_end);
-      console.log("rotation", rotation);
-      return {
-        title: `${rotation.crew_name} Crew - ${rotation.shift_type} ${emoji}`,
-        start: startDate,
-        end: endDate,
-        allDay: true,
-        cert_earned: null,
-        experience_type: rotation.experience_type,
-        shift_type: rotation.shift_type,
-        crew_id: rotation.crew_id,
-      };
+      const current = new Date(rotation.date_start);
+      const end = new Date(rotation.date_end);
+
+      while (current <= end) {
+        const start = new Date(current);
+        const eventStart = new Date(start);
+        const eventEnd = new Date(start);
+
+        switch (rotation.shift_type?.toLowerCase()) {
+          case "day":
+            eventStart.setHours(6, 0, 0);
+            eventEnd.setHours(14, 0, 0);
+            break;
+          case "swing":
+            eventStart.setHours(14, 0, 0);
+            eventEnd.setHours(22, 0, 0);
+            break;
+          case "night":
+            eventStart.setHours(22, 0, 0);
+            eventEnd.setDate(eventEnd.getDate() + 1);
+            eventEnd.setHours(6, 0, 0);
+            break;
+          case "rest":
+            eventStart.setHours(8, 0, 0);
+            eventEnd.setHours(16, 0, 0);
+            break;
+          default:
+            eventStart.setHours(6, 0, 0);
+            eventEnd.setHours(14, 0, 0);
+        }
+
+        crewEvents.push({
+          title: `${crewName} Crew - ${rotation.shift_type} ${emoji}`,
+          start: eventStart,
+          end: eventEnd,
+          cert_earned: null,
+          experience_type: rotation.experience_type,
+          shift_type: rotation.shift_type,
+          crew_id: rotation.crew_id,
+        });
+
+        current.setDate(current.getDate() + 1);
+      }
     });
 
     setCalendarEvents([...registrationEvents, ...crewEvents]);
-  }, [registrations, courses, users, rotations]);
+  }, [registrations, courses, users, rotations, crews]);
 
   if (loading) return <Typography>Loading scheduler data...</Typography>;
 
