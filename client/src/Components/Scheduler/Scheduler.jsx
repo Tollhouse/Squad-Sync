@@ -420,9 +420,9 @@ export default function Scheduler() {
           </select>
         </label>
       </Box>
-
+      <div className="bigCalendar">
       <Box>
-        <div style={{ height: "600px" }}>
+        <div style={{ height: "800px" }}>
           <BigCalendar
             localizer={localizer}
             events={filteredEvents}
@@ -535,6 +535,7 @@ export default function Scheduler() {
           </Box>
         </Box>
       )}
+      </div>
       </div>
     </Box>
     </div>

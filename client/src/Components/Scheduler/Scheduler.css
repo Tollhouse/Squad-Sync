@@ -41,3 +41,7 @@
     max-width: 100%;
     width: 90%;
 }
+
+.bigCalendar > *{
+    height: 800px;
+}
