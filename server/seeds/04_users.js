@@ -6,7 +6,7 @@ async function generateUsers() {
   const numberOfUsers = 30;
   const numberOfNewUsers = 5;
   const roles = ['Crew Commander', 'Crew Chief', 'Operator'];
-  const experience = ['green', 'yellow', 'red'];
+  const experience = ['Green', 'Yellow', 'Red'];
   const userArray = [];
   const hashes = 2;
 
@@ -17,16 +17,16 @@ async function generateUsers() {
     const last_name = faker.person.lastName();
     const user_name = first_name;
     const password = await hash(last_name, hashes);
-    let experience_type = 'green';
+    let experience_type = 'Green';
     if (i % 5 == 0) {
       crew += 1;
       crewRole = roles[0];
     } else if ((i - 1) % 5 == 0) {
       crewRole = roles[1];
     } else if ((i - 3) % 5 == 0) {
-      experience_type = 'yellow';
+      experience_type = 'Yellow';
     } else if ((i - 4) % 5 == 0) {
-      experience_type = 'red';
+      experience_type = 'Red';
     }
 
     const user = {
@@ -56,7 +56,7 @@ async function generateUsers() {
       password,
       crew_id: 7,
       role: 'Training',
-      experience_type: 'red',
+      experience_type: 'Red',
       privilege: 'user',
       flight: 'DOO'
     };
@@ -71,7 +71,7 @@ async function generateUsers() {
       password: await hash('Sally', hashes),
       crew_id: 7,
       role: 'Scheduler',
-      experience_type: 'green',
+      experience_type: 'Green',
       privilege: 'scheduler',
       flight: 'DOU'
     },
@@ -82,7 +82,7 @@ async function generateUsers() {
       password: await hash('Curtis', hashes),
       crew_id: 7,
       role: 'Commander',
-      experience_type: 'yellow',
+      experience_type: 'Yellow',
       privilege: 'commander',
       flight: 'DOU'
     },
@@ -93,7 +93,7 @@ async function generateUsers() {
       password: await hash('Tory', hashes),
       crew_id: 7,
       role: 'Training Manager',
-      experience_type: 'green',
+      experience_type: 'Green',
       privilege: 'training_manager',
       flight: 'DOT'
       }
