@@ -6,10 +6,11 @@ router.get("/", (req, res) => {
   knex("crew_rotations")
   .join("crews", "crew_rotations.crew_id", "crews.id")
   .select(
-      '*',
-      knex.raw(`TO_CHAR(date_start, 'YYYY-MM-DD') AS date_start`),
-      knex.raw(`TO_CHAR(date_end, 'YYYY-MM-DD') AS date_end`)
-    )
+    "crew_rotations.*",
+    "crews.crew_name",
+    knex.raw(`TO_CHAR(crew_rotations.date_start, 'YYYY-MM-DD') AS date_start`),
+    knex.raw(`TO_CHAR(crew_rotations.date_end, 'YYYY-MM-DD') AS date_end`)
+  )
     .then((crewRotation) => res.status(200).json(crewRotation))
     .catch((err) => res.status(500).json({ error: err.message }));
 });
@@ -50,6 +51,7 @@ router.post("/", async (req, res) => {
           const user_input = await knex("crew_rotations")
               .insert({crew_id, date_start, date_end, shift_type, shift_duration, experience_type})
               .returning("id")
+          res.status(201).json(user_input)
           const query = await knex('crew_rotations')
                                     .select(
                                       '*',
@@ -89,8 +91,7 @@ router.patch("/:id", async (req, res) => {
                                         knex.raw(`TO_CHAR(date_end, 'YYYY-MM-DD') AS date_end`)
                                       )
                                       .where('id', updated_crew[0].id)
-          res.status(201).json(query)
-      res.status(201).json(updated_crew)
+      res.status(201).json(query)
   }catch (error){
       return res.status(500).json({ error: 'Internal Server Error' });
   }

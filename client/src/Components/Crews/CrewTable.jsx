@@ -22,7 +22,8 @@ import CancelIcon from "@mui/icons-material/Close";
 import EditIcon from "@mui/icons-material/Edit";
 import ExperienceChip from "../AddOns/ExperinceChip";
 import CrewRoster from "./CrewRoster";
-import HandleAddRotation from "./HandleAddRotation";
+import HandleAddRotation from './HandleAddRotation.jsx'
+
 
 function CrewTable({ schedule, setSchedule }) {
   const [editingRowId, setEditingRowId] = useState(null);
@@ -76,6 +77,7 @@ function CrewTable({ schedule, setSchedule }) {
       [name]: value,
     }));
   };
+
 
   function handleRosterMode(s) {
     if (rosterMode && rosterId === s.crew_id) {
@@ -224,7 +226,7 @@ function CrewTable({ schedule, setSchedule }) {
       </TableContainer>
 
       {rosterMode ? <CrewRoster key={rosterId} crew_id={rosterId} /> : null}
-
+ front-end
       <HandleAddRotation
         open={addRotationOpen}
         onClose={() => setAddRotationOpen(false)}
