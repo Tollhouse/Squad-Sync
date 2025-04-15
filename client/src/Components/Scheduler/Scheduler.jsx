@@ -192,9 +192,12 @@ export default function Scheduler() {
   if (loading) return <Typography>Loading scheduler data...</Typography>;
 
   const registeredUserIds = new Set(registrations.map((r) => r.user_id));
-  const crewedUserIds = new Set(rotations.map((r) => r.user_id));
+  const NOT_ASSIGNED_CREW_ID = 7; // Update if your unassigned ID is different
+
   const availableUsers = users.filter(
-    (user) => !registeredUserIds.has(user.id) && !crewedUserIds.has(user.id)
+    (user) =>
+      !registeredUserIds.has(user.id) &&
+      (user.crew_id === null || user.crew_id === NOT_ASSIGNED_CREW_ID)
   );
 
   const calculateDaysUntilCertification = (certDate) => {
