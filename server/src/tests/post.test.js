@@ -186,7 +186,7 @@ describe('POST testing of /users/login route', () => {
         const res = await request(app).post('/users/login').send(post_body)
         expect(res.status).toBe(200)
         expect(res.body.message).toBe('Login successful')
-        expect(res.body.user.id).toBe(2)
+        expect(res.body.user.id).toBe(37)
         expect(res.body.user.privilege).toBe('commander')
     })
 })
