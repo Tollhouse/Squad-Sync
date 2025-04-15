@@ -185,6 +185,7 @@ export default function User () {
           </div>
         ))}
       </div>
+      <div className = "personalData">
       <Box
         sx={{
           mt: 4,
@@ -218,9 +219,12 @@ export default function User () {
           <p>No user data available</p>
         )}
           </Box>
-          <UserCourse />
-          <UserCrew />
-          <div>
+          </div>
+          <div className="personalSchedule">
+            <UserCourse />
+            <UserCrew />
+          </div>
+          <div className = "calendar">
           <Calendar />
           </div>
     </div>

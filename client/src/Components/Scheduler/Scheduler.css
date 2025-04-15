@@ -1,0 +1,43 @@
+.body{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.body > * {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.tabs{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+
+.tabs > * {
+    min-width: 30%;
+    width: auto;
+    height: 400px;
+
+    padding: 20px;
+    margin: 20px;
+}
+
+.calendar{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.calendar > * {
+    max-width: 100%;
+    width: 90%;
+}

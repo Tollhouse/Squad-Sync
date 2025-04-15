@@ -1,14 +1,15 @@
 // Code written by Essence
 
 import React, { useEffect, useState } from "react";
-import Crews from '../Crews/Crews';
+import Crews from "../Crews/Crews";
 import { Box, Typography, Paper, Divider, Tabs, Tab } from "@mui/material";
-import GroupIcon from '@mui/icons-material/Group';
-import HourglassTopIcon from '@mui/icons-material/HourglassTop';
-import WorkspacePremiumIcon from '@mui/icons-material/WorkspacePremium';
-import { Calendar as BigCalendar, momentLocalizer } from 'react-big-calendar';
-import moment from 'moment';
-import 'react-big-calendar/lib/css/react-big-calendar.css';
+import GroupIcon from "@mui/icons-material/Group";
+import HourglassTopIcon from "@mui/icons-material/HourglassTop";
+import WorkspacePremiumIcon from "@mui/icons-material/WorkspacePremium";
+import { Calendar as BigCalendar, momentLocalizer } from "react-big-calendar";
+import moment from "moment";
+import "react-big-calendar/lib/css/react-big-calendar.css";
+import "./Scheduler.css";
 
 const localizer = momentLocalizer(moment);
 
@@ -57,7 +58,7 @@ export default function Scheduler() {
     const shiftTimeMap = {
       day: "6AM–2PM",
       swing: "2PM–10PM",
-      night: "10PM–6AM"
+      night: "10PM–6AM",
     };
 
     const registrationEvents = registrations.map((r) => {
@@ -78,7 +79,6 @@ export default function Scheduler() {
         yellow: "🟡",
         red: "🔴",
       };
-
 
       const emoji = emojiMap[rotation.experience_type?.toLowerCase()] || "⚪";
 
@@ -121,19 +121,30 @@ export default function Scheduler() {
     .map((r) => {
       const user = users.find((u) => u.id === r.user_id);
       const course = courses.find((c) => c.id === r.course_id);
-      return { user, course, daysLeft: calculateDaysUntilCertification(course.date_end) };
+      return {
+        user,
+        course,
+        daysLeft: calculateDaysUntilCertification(course.date_end),
+      };
     })
     .sort((a, b) => a.daysLeft - b.daysLeft);
 
   const filteredEvents = calendarEvents.filter((event) => {
-    const matchCrew = filterCrew === "all" || event.crew_id === Number(filterCrew);
-    const matchShift = filterShift === "all" || event.shift_type === filterShift;
+    const matchCrew =
+      filterCrew === "all" || event.crew_id === Number(filterCrew);
+    const matchShift =
+      filterShift === "all" || event.shift_type === filterShift;
     return matchCrew && matchShift;
   });
 
   return (
+  <div className="body">
     <Box p={4}>
-      <Typography variant="h4" gutterBottom sx={{ textAlign: "center", fontWeight: 700 }}>
+      <Typography
+        variant="h4"
+        gutterBottom
+        sx={{ textAlign: "center", fontWeight: 700 }}
+      >
         🗓️ Scheduler Dashboard
       </Typography>
 
@@ -144,81 +155,116 @@ export default function Scheduler() {
         {/* <Tab label="Crews" /> */}
       </Tabs>
 
-      {tabIndex === 0 && (
-        <Paper elevation={3} sx={{ p: 2, mt: 2 }}>
-          <Typography variant="h6"><GroupIcon sx={{ mr: 1 }} />Available for Course/Crew</Typography>
-          <Typography variant="body2" sx={{ mb: 1, fontStyle: 'italic', color: 'gray' }}>
-            ✅ Users listed here are not enrolled in any course AND not assigned to a crew.
-          </Typography>
-          <Divider sx={{ my: 1 }} />
-          <Box sx={{ maxHeight: 300, overflowY: 'auto', pr: 1 }}>
-  <ul style={{ margin: 0, padding: 0, listStyle: 'none' }}>
-    {availableUsers.map((user) => (
-      <li key={user.id}>
-        {user.first_name} {user.last_name} — {user.role}
-      </li>
-    ))}
-  </ul>
-</Box>
-        </Paper>
-      )}
+      <div className="tabs">
+        {tabIndex === 0 && (
+          <Paper elevation={3} sx={{ p: 2, mt: 2 }}>
+            <Typography variant="h6">
+              <GroupIcon sx={{ mr: 1 }} />
+              Available for Course/Crew
+            </Typography>
+            <Typography
+              variant="body2"
+              sx={{ mb: 1, fontStyle: "italic", color: "gray" }}
+            >
+              ✅ Users listed here are not enrolled in any course AND not
+              assigned to a crew.
+            </Typography>
+            <Divider sx={{ my: 1 }} />
+            <Box sx={{ maxHeight: 300, overflowY: "auto", pr: 1 }}>
+              <ul style={{ margin: 0, padding: 0, listStyle: "none" }}>
+                {availableUsers.map((user) => (
+                  <li key={user.id}>
+                    {user.first_name} {user.last_name} — {user.role}
+                  </li>
+                ))}
+              </ul>
+            </Box>
+          </Paper>
+        )}
 
-      {tabIndex === 1 && (
-        <Paper elevation={3} sx={{ p: 2, mt: 2 }}>
-          <Typography variant="h6"><HourglassTopIcon sx={{ mr: 1 }} />Soon to be Certified</Typography>
-          <Divider sx={{ my: 1 }} />
-          <Box sx={{ maxHeight: 300, overflowY: 'auto', pr: 1 }}>
-  <ul style={{ margin: 0, padding: 0, listStyle: 'none' }}>
-    {upcomingCertifications.map(({ user, course, daysLeft }, index) => {
-      let urgencyColor = 'inherit';
-      if (daysLeft <= 7) urgencyColor = 'red';
-      else if (daysLeft <= 10) urgencyColor = 'orange';
-      return (
-        <li key={index} style={{ color: urgencyColor }}>
-          {user.first_name} {user.last_name} — {course.course_name} by{" "}
-          {new Date(course.date_end).toLocaleDateString()}
-          {daysLeft <= 7 && <strong> ⚠️ Urgent!</strong>}
-        </li>
-      );
-    })}
-  </ul>
-</Box>
-        </Paper>
-      )}
+        {tabIndex === 1 && (
+          <Paper elevation={3} sx={{ p: 2, mt: 2 }}>
+            <Typography variant="h6">
+              <HourglassTopIcon sx={{ mr: 1 }} />
+              Soon to be Certified
+            </Typography>
+            <Divider sx={{ my: 1 }} />
+            <Box sx={{ maxHeight: 300, overflowY: "auto", pr: 1 }}>
+              <ul style={{ margin: 0, padding: 0, listStyle: "none" }}>
+                {upcomingCertifications.map(
+                  ({ user, course, daysLeft }, index) => {
+                    let urgencyColor = "inherit";
+                    if (daysLeft <= 7) urgencyColor = "red";
+                    else if (daysLeft <= 10) urgencyColor = "orange";
+                    return (
+                      <li key={index} style={{ color: urgencyColor }}>
+                        {user.first_name} {user.last_name} —{" "}
+                        {course.course_name} by{" "}
+                        {new Date(course.date_end).toLocaleDateString()}
+                        {daysLeft <= 7 && <strong> ⚠️ Urgent!</strong>}
+                      </li>
+                    );
+                  }
+                )}
+              </ul>
+            </Box>
+          </Paper>
+        )}
 
-      {tabIndex === 2 && (
-        <Paper elevation={3} sx={{ p: 2, mt: 2 }}>
-          <Typography variant="h6"><WorkspacePremiumIcon sx={{ mr: 1 }} />Certified Members & Their Certifications</Typography>
-          <Divider sx={{ my: 1 }} />
-          <ul>
-            {users.map((user) => {
-              const earnedCourses = registrations
-                .filter((r) => r.user_id === user.id && r.cert_earned)
-                .map((r) => courses.find((c) => c.id === r.course_id)?.course_name)
-                .filter(Boolean);
-              return earnedCourses.length > 0 ? (
-                <ul key={user.id}><strong>{user.first_name} {user.last_name}</strong>: {earnedCourses.join(", ")}</ul>
-              ) : null;
-            })}
-          </ul>
-        </Paper>
-      )}
+        {tabIndex === 2 && (
+          <Paper elevation={3} sx={{ p: 2, mt: 2 }}>
+            <Typography variant="h6">
+              <WorkspacePremiumIcon sx={{ mr: 1 }} />
+              Certified Members & Their Certifications
+            </Typography>
+            <Divider sx={{ my: 1 }} />
+            <ul>
+              {users.map((user) => {
+                const earnedCourses = registrations
+                  .filter((r) => r.user_id === user.id && r.cert_earned)
+                  .map(
+                    (r) =>
+                      courses.find((c) => c.id === r.course_id)?.course_name
+                  )
+                  .filter(Boolean);
+                return earnedCourses.length > 0 ? (
+                  <ul key={user.id}>
+                    <strong>
+                      {user.first_name} {user.last_name}
+                    </strong>
+                    : {earnedCourses.join(", ")}
+                  </ul>
+                ) : null;
+              })}
+            </ul>
+          </Paper>
+        )}
+      </div>
+      <div className="calendar">
 
       {tabIndex === 3 && <Crews />}
 
-      <Box sx={{ display: 'flex', gap: 2, mt: 4, mb: 2 }}>
+      <Box sx={{ display: "flex", gap: 2, mt: 4, mb: 2 }}>
         <label>
           Filter by Crew:
-          <select value={filterCrew} onChange={(e) => setFilterCrew(e.target.value)}>
+          <select
+            value={filterCrew}
+            onChange={(e) => setFilterCrew(e.target.value)}
+          >
             <option value="all">All</option>
-            {[...new Set(rotations.map(r => r.crew_id))].map(id => (
-              <option key={id} value={id}>Crew {id}</option>
+            {[...new Set(rotations.map((r) => r.crew_id))].map((id) => (
+              <option key={id} value={id}>
+                Crew {id}
+              </option>
             ))}
           </select>
         </label>
         <label>
           Filter by Shift Type:
-          <select value={filterShift} onChange={(e) => setFilterShift(e.target.value)}>
+          <select
+            value={filterShift}
+            onChange={(e) => setFilterShift(e.target.value)}
+          >
             <option value="all">All</option>
             <option value="day">Day</option>
             <option value="swing">Swing</option>
@@ -227,7 +273,10 @@ export default function Scheduler() {
         </label>
         <label>
           View:
-          <select value={currentView} onChange={(e) => setCurrentView(e.target.value)}>
+          <select
+            value={currentView}
+            onChange={(e) => setCurrentView(e.target.value)}
+          >
             <option value="month">Month</option>
             <option value="week">Week</option>
             <option value="day">Day</option>
@@ -236,17 +285,17 @@ export default function Scheduler() {
       </Box>
 
       <Box>
-        <div style={{ height: '600px' }}>
+        <div style={{ height: "800px" }}>
           <BigCalendar
             localizer={localizer}
             events={filteredEvents}
             startAccessor="start"
             endAccessor="end"
-            views={['month', 'week', 'day']}
+            views={["month", "week", "day"]}
             view={currentView}
             onView={(view) => setCurrentView(view)}
             popup
-            style={{ height: '100%' }}
+            style={{ height: "100%" }}
             onSelectEvent={(event) => setSelectedEvent(event)}
             min={new Date(2025, 0, 1, 6, 0)}
             max={new Date(2025, 0, 1, 23, 59)}
@@ -258,13 +307,14 @@ export default function Scheduler() {
                 day: "#81c784",
                 swing: "#ffb74d",
                 night: "#9575cd",
-                rest: "#4dd0e1"
+                rest: "#4dd0e1",
               };
-              const bgColor = event.cert_earned === null
-              ? shiftColors[event.shift_type?.toLowerCase()]     // prefer shift_type
-                || shiftColors[event.experience_type?.toLowerCase()]
-                || "#90a4ae" // fallback gray
-              : "#1976d2";
+              const bgColor =
+                event.cert_earned === null
+                  ? shiftColors[event.shift_type?.toLowerCase()] || // prefer shift_type
+                    shiftColors[event.experience_type?.toLowerCase()] ||
+                    "#90a4ae" // fallback gray
+                  : "#1976d2";
               return {
                 style: {
                   backgroundColor: bgColor,
@@ -276,7 +326,7 @@ export default function Scheduler() {
                   border: "1px solid #e0e0e0",
                   whiteSpace: "normal",
                   textAlign: "center",
-                }
+                },
               };
             }}
           />
@@ -284,26 +334,37 @@ export default function Scheduler() {
       </Box>
 
       {selectedEvent && (
-        <Box sx={{
-          position: 'fixed',
-          top: '20%',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          zIndex: 2000,
-          backgroundColor: "#1e1e1e",
-          color: "white",
-          borderRadius: 2,
-          padding: 3,
-          minWidth: 300,
-          boxShadow: 24
-        }}>
-          <Typography variant="h6" gutterBottom>📋 Event Details</Typography>
-          <Typography><strong>Title:</strong> {selectedEvent.title}</Typography>
-          <Typography><strong>Start:</strong> {selectedEvent.start.toString()}</Typography>
-          <Typography><strong>End:</strong> {selectedEvent.end.toString()}</Typography>
+        <Box
+          sx={{
+            position: "fixed",
+            top: "20%",
+            left: "50%",
+            transform: "translateX(-50%)",
+            zIndex: 2000,
+            backgroundColor: "#1e1e1e",
+            color: "white",
+            borderRadius: 2,
+            padding: 3,
+            minWidth: 300,
+            boxShadow: 24,
+          }}
+        >
+          <Typography variant="h6" gutterBottom>
+            📋 Event Details
+          </Typography>
+          <Typography>
+            <strong>Title:</strong> {selectedEvent.title}
+          </Typography>
+          <Typography>
+            <strong>Start:</strong> {selectedEvent.start.toString()}
+          </Typography>
+          <Typography>
+            <strong>End:</strong> {selectedEvent.end.toString()}
+          </Typography>
           {selectedEvent.cert_earned !== null && (
             <Typography>
-              <strong>Certification Earned:</strong> {selectedEvent.cert_earned ? "✅ Yes" : "❌ No"}
+              <strong>Certification Earned:</strong>{" "}
+              {selectedEvent.cert_earned ? "✅ Yes" : "❌ No"}
             </Typography>
           )}
           <Box mt={2}>
@@ -314,7 +375,7 @@ export default function Scheduler() {
                 color: "white",
                 border: "none",
                 borderRadius: "4px",
-                cursor: "pointer"
+                cursor: "pointer",
               }}
               onClick={() => setSelectedEvent(null)}
             >
@@ -323,6 +384,8 @@ export default function Scheduler() {
           </Box>
         </Box>
       )}
+      </div>
     </Box>
+    </div>
   );
 }
