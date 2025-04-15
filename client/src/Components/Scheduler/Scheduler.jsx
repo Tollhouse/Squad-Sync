@@ -104,7 +104,6 @@ export default function Scheduler() {
     });
 
     const crewEvents = [];
-    const crewExperienceMap = {};
     const shiftMap = {};
 
     rotations.forEach((rotation) => {
