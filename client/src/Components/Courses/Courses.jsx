@@ -1,3 +1,4 @@
+// src/Components/Courses/Courses.jsx
 import React, { useEffect, useState } from "react";
 import {
   Container,
@@ -13,13 +14,16 @@ import {
   useTheme,
   Button,
   IconButton,
+  TextField,
 } from "@mui/material";
-import CoursePersonnel from "./CoursePersonnel";
-import HandleAddCourse from "./HandleAddCourse";
-import HandleEditCourse from "./HandleEditCourse";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
-// import DeleteIcon from "@mui/icons-material/Delete";
+import SaveIcon from "@mui/icons-material/Save";
+import CancelIcon from "@mui/icons-material/Cancel";
+import CoursePersonnel from "./CoursePersonnel";
+import HandleAddCourse from "./HandleAddCourse";
+import { saveInlineEdits, cancelInlineEdits } from "./HandleEditCourse";
+import { ConfirmSaveModal } from "../AddOns/confirmmodal";
 
 export default function Courses() {
   const theme = useTheme();
@@ -29,8 +33,10 @@ export default function Courses() {
   const [selectedCourseId, setSelectedCourseId] = useState(null);
   const [addCourseOpen, setAddCourseOpen] = useState(false);
   // inline editing
-  const [editCourseOpen, setEditCourseOpen] = useState(false);
-  const [courseToEdit, setCourseToEdit] = useState(null);
+  const [editCourseId, setEditCourseId] = useState(null);
+  const [editedCourse, setEditedCourse] = useState({});
+  // ConfirmSaveModal
+  const [saveConfirmOpen, setSaveConfirmOpen] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -64,15 +70,35 @@ export default function Courses() {
     setCourses((prevCourses) => [...prevCourses, newCourse]);
   };
 
-  const handleEditCourse = (editedCourse) => {
-    setCourses((prev) =>
-      prev.map((course) =>
-        course.id === editedCourse.id ? editedCourse : course
-      )
-    );
+  const handleSaveEdits = () => {
+    saveInlineEdits(editedCourse)
+      .then((data) => {
+        setCourses((prevCourses) =>
+          prevCourses.map((course) => (course.id === data.id ? data : course))
+        );
+        setEditCourseId(null);
+        setEditedCourse({});
+      })
+      .catch((error) => {
+        console.error("Error updating course:", error);
+      });
   };
 
-  const selectedCourse = courses.find((course) => course.id === selectedCourseId);
+  const handleCancelEdits = () => {
+    cancelInlineEdits();
+    setEditCourseId(null);
+    setEditedCourse({});
+  };
+
+  // load  course data into the edit form
+  const startEditing = (course) => {
+    setEditCourseId(course.id);
+    setEditedCourse({ ...course });
+  };
+
+  const selectedCourse = courses.find(
+    (course) => course.id === selectedCourseId
+  );
 
   const registeredUsers = registrations
     .filter((reg) => reg.course_id === selectedCourseId)
@@ -85,107 +111,222 @@ export default function Courses() {
       };
     });
 
-  return (
-    <Container maxWidth="lg">
-      {/* Header with Add Course Button */}
-      <Box sx={{ m: 2 }}>
-        <Typography variant="h4" sx={{ mb: 1 }}>
-          Courses
-        </Typography>
-        <Button
-          color="primary"
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={() => setAddCourseOpen(true)}
-        >
-          Add Course
-        </Button>
-      </Box>
+    return (
+      <Container maxWidth="lg">
+        {/* Header with Add Course Button */}
+        <Box sx={{ m: 2 }}>
+          <Typography variant="h4" sx={{ mb: 1 }}>
+            Courses
+          </Typography>
+          <Button
+            color="primary"
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => setAddCourseOpen(true)}
+          >
+            Add Course
+          </Button>
+        </Box>
 
-      {/* Courses Table */}
-      <TableContainer component={Paper} sx={{ mt: 2 }}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>ID</TableCell>
-              <TableCell>Name</TableCell>
-              <TableCell>Start Date</TableCell>
-              <TableCell>End Date</TableCell>
-              <TableCell>Seats</TableCell>
-              <TableCell>Cert Granted</TableCell>
-              <TableCell>Actions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {courses.map((course) => (
-              <TableRow
-                key={course.id}
-                data-testid="test-courseRow"
-                onClick={() =>
-                  setSelectedCourseId((prevId) =>
-                    prevId === course.id ? null : course.id
-                  )
-                }
-                sx={{
-                  cursor: "pointer",
-                  transition: "background-color 0.2s",
-                  "&:hover": {
-                    backgroundColor:
-                      theme.palette.mode === "light"
-                        ? "rgba(0, 0, 0, 0.04)"
-                        : "rgba(255, 255, 255, 0.08)",
-                  },
-                }}
-              >
-                <TableCell>{course.id}</TableCell>
-                <TableCell>{course.course_name}</TableCell>
-                <TableCell>{course.date_start}</TableCell>
-                <TableCell>{course.date_end}</TableCell>
-                <TableCell>{course.seats}</TableCell>
-                <TableCell>{course.cert_granted}</TableCell>
-                <TableCell>
-                  {/* Edit Button */}
-                  <IconButton
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setCourseToEdit(course);
-                      setEditCourseOpen(true);
-                    }}
-                  >
-                    <EditIcon />
-                  </IconButton>
-                  {/* Delete button could be added here */}
-                </TableCell>
+        {/* Courses Table with Inline Editing */}
+        <TableContainer component={Paper} sx={{ mt: 2 }}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>ID</TableCell>
+                <TableCell>Name</TableCell>
+                <TableCell>Start Date</TableCell>
+                <TableCell>End Date</TableCell>
+                <TableCell>Seats</TableCell>
+                <TableCell>Cert Granted</TableCell>
+                <TableCell>Actions</TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+            </TableHead>
+            <TableBody>
+              {courses.map((course) => (
+                <TableRow
+                  key={course.id}
+                  data-testid="test-courseRow"
+                  onClick={() =>
+                    setSelectedCourseId((prevId) =>
+                      prevId === course.id ? null : course.id
+                    )
+                  }
+                  sx={{
+                    cursor: "pointer",
+                    transition: "background-color 0.2s",
+                    "&:hover": {
+                      backgroundColor:
+                        theme.palette.mode === "light"
+                          ? "rgba(0, 0, 0, 0.04)"
+                          : "rgba(255, 255, 255, 0.08)",
+                    },
+                  }}
+                >
+                  {/* ID cell – not editable */}
+                  <TableCell>{course.id}</TableCell>
 
-      {/* Render registered personnel table only when a course is selected */}
-      {selectedCourse && (
-        <CoursePersonnel
-          course={selectedCourse}
-          registeredUsers={registeredUsers}
+                  {/* Name cell */}
+                  <TableCell>
+                    {editCourseId === course.id ? (
+                      <TextField
+                        value={editedCourse.course_name}
+                        onChange={(e) =>
+                          setEditedCourse((prev) => ({
+                            ...prev,
+                            course_name: e.target.value,
+                          }))
+                        }
+                        fullWidth
+                      />
+                    ) : (
+                      course.course_name
+                    )}
+                  </TableCell>
+
+                  {/* Start Date cell */}
+                  <TableCell>
+                    {editCourseId === course.id ? (
+                      <TextField
+                        type="date"
+                        InputLabelProps={{ shrink: true }}
+                        value={editedCourse.date_start}
+                        onChange={(e) =>
+                          setEditedCourse((prev) => ({
+                            ...prev,
+                            date_start: e.target.value,
+                          }))
+                        }
+                        fullWidth
+                      />
+                    ) : (
+                      course.date_start
+                    )}
+                  </TableCell>
+
+                  {/* End Date cell */}
+                  <TableCell>
+                    {editCourseId === course.id ? (
+                      <TextField
+                        type="date"
+                        InputLabelProps={{ shrink: true }}
+                        value={editedCourse.date_end}
+                        onChange={(e) =>
+                          setEditedCourse((prev) => ({
+                            ...prev,
+                            date_end: e.target.value,
+                          }))
+                        }
+                        fullWidth
+                      />
+                    ) : (
+                      course.date_end
+                    )}
+                  </TableCell>
+
+                  {/* Seats cell */}
+                  <TableCell>
+                    {editCourseId === course.id ? (
+                      <TextField
+                        type="number"
+                        value={editedCourse.seats}
+                        onChange={(e) =>
+                          setEditedCourse((prev) => ({
+                            ...prev,
+                            seats: e.target.value,
+                          }))
+                        }
+                        fullWidth
+                      />
+                    ) : (
+                      course.seats
+                    )}
+                  </TableCell>
+
+                  {/* Cert Granted cell */}
+                  <TableCell>
+                    {editCourseId === course.id ? (
+                      <TextField
+                        value={editedCourse.cert_granted}
+                        onChange={(e) =>
+                          setEditedCourse((prev) => ({
+                            ...prev,
+                            cert_granted: e.target.value,
+                          }))
+                        }
+                        fullWidth
+                      />
+                    ) : (
+                      course.cert_granted
+                    )}
+                  </TableCell>
+
+                  {/* Actions cell */}
+                  <TableCell>
+                    {editCourseId === course.id ? (
+                      // In edit mode, show Save and Cancel buttons
+                      <>
+                        <IconButton
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            // open confirmation modal
+                            setSaveConfirmOpen(true);
+                          }}
+                        >
+                          <SaveIcon />
+                        </IconButton>
+                        <IconButton
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleCancelEdits();
+                          }}
+                        >
+                          <CancelIcon />
+                        </IconButton>
+                      </>
+                    ) : (
+                      // Not in edit mode, show Edit button
+                      <IconButton
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          startEditing(course);
+                        }}
+                      >
+                        <EditIcon />
+                      </IconButton>
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+
+        {/* Render registered personnel table only when a course is selected */}
+        {selectedCourse && (
+          <CoursePersonnel
+            course={selectedCourse}
+            registeredUsers={registeredUsers}
+          />
+        )}
+
+        {/* Add Course Modal */}
+        <HandleAddCourse
+          open={addCourseOpen}
+          onClose={() => setAddCourseOpen(false)}
+          onAddCourse={handleAddCourse}
         />
-      )}
 
-      {/* Add Course Modal */}
-      <HandleAddCourse
-        open={addCourseOpen}
-        onClose={() => setAddCourseOpen(false)}
-        onAddCourse={handleAddCourse}
-      />
-
-      {/* Edit Course Modal */}
-      {courseToEdit && (
-        <HandleEditCourse
-          open={editCourseOpen}
-          onClose={() => setEditCourseOpen(false)}
-          course={courseToEdit}
-          onEditCourse={handleEditCourse}
+        {/* Confirm Save Modal for inline editing */}
+        <ConfirmSaveModal
+          open={saveConfirmOpen}
+          onClose={() => setSaveConfirmOpen(false)}
+          onConfirm={() => {
+            handleSaveEdits();
+            setSaveConfirmOpen(false);
+          }}
+          message="Are you sure you want to save your changes?"
         />
-      )}
-    </Container>
-  );
-}
+      </Container>
+    );
+  }
