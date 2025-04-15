@@ -20,6 +20,7 @@ import TrainingManager from './Components/TrainingManager/TrainingManager.jsx';
 import SchedulerUser from './Components/User/SchedulerUser.jsx';
 import NotFound from './Components/NotFound/NotFound.jsx'
 import Crews from './Components/Crews/Crews.jsx';
+import Setting from './Components/Setting/Setting.jsx'
 import {Paper, Switch} from '@mui/material'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -65,6 +66,7 @@ export default function App() {
       <Route path='/crews' element={<Crews />}/>
       <Route path='/course_registrations' element={<CourseReg />}/>
       <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/setting" element={<Setting />} />
       <Route path="/scheduler" element={<Scheduler />} />
       <Route path="/training-manager" element={<TrainingManager />} />
       <Route path="/user/scheduler" element={<SchedulerUser />} />
