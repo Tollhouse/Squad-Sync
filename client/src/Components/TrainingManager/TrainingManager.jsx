@@ -21,6 +21,8 @@ export default function Courses() {
   const [isAdding, setIsAdding] = useState(false);
   const [newCourse, setNewCourse] = useState({
     course_name: "",
+    description: "",
+    seats: 0,
     date_start: "",
     date_end: "",
     cert_granted: "",
@@ -121,6 +123,8 @@ export default function Courses() {
     setIsAdding(false);
     setNewCourse({
       course_name: "",
+      description: "",
+      seats: 0,
       date_start: "",
       date_end: "",
       cert_granted: "",
@@ -186,6 +190,22 @@ export default function Courses() {
           <div>
             <input
               type="text"
+              placeholder="Description"
+              value={newCourse.description}
+              onChange={(e) => handleAddInputChange(e, "description")}
+            />
+          </div>
+          <div>
+            <input
+              type="text"
+              placeholder="Seats"
+              value={newCourse.seats}
+              onChange={(e) => handleAddInputChange(e, "seats")}
+            />
+          </div>
+          <div>
+            <input
+              type="text"
               placeholder="Certificate Granted"
               value={newCourse.cert_granted}
               onChange={(e) => handleAddInputChange(e, "cert_granted")}
@@ -199,13 +219,15 @@ export default function Courses() {
       )}
 
       <TableContainer component={Paper} sx={{ mt: 2 }}>
-        <Table>
+        <Table sx={{ tableLayout: "fixed" }}>
           <TableHead>
             <TableRow>
               <TableCell>ID</TableCell>
               <TableCell>Name</TableCell>
               <TableCell>Start Date</TableCell>
               <TableCell>End Date</TableCell>
+              <TableCell>Description</TableCell>
+              <TableCell>Seats Offered</TableCell>
               <TableCell>Cert Granted</TableCell>
               <TableCell>Actions</TableCell>
             </TableRow>
@@ -232,6 +254,12 @@ export default function Courses() {
                       type="text"
                       value={editedData.course_name}
                       onChange={(e) => handleInputChange(e, "course_name")}
+                      style={{
+                        width: "100%",
+                        boxSizing: "border-box",
+                        padding: "1px", // Adds space inside the input
+                        margin: "1px 0", // Adds space between inputs
+                      }}
                     />
                   ) : (
                     course.course_name
@@ -243,6 +271,12 @@ export default function Courses() {
                       type="date"
                       value={editedData.date_start}
                       onChange={(e) => handleInputChange(e, "date_start")}
+                      style={{
+                        width: "100%",
+                        boxSizing: "border-box",
+                        padding: "1px", // Adds space inside the input
+                        margin: "1px 0", // Adds space between inputs
+                      }}
                     />
                   ) : (
                     course.date_start
@@ -254,6 +288,12 @@ export default function Courses() {
                       type="date"
                       value={editedData.date_end}
                       onChange={(e) => handleInputChange(e, "date_end")}
+                      style={{
+                        width: "100%",
+                        boxSizing: "border-box",
+                        padding: "1px", // Adds space inside the input
+                        margin: "1px 0", // Adds space between inputs
+                      }}
                     />
                   ) : (
                     course.date_end
@@ -263,8 +303,48 @@ export default function Courses() {
                   {editingRowId === course.id ? (
                     <input
                       type="text"
+                      value={editedData.description}
+                      onChange={(e) => handleInputChange(e, "description")}
+                      style={{
+                        width: "100%",
+                        boxSizing: "border-box",
+                        padding: "1px", // Adds space inside the input
+                        margin: "1px 0", // Adds space between inputs
+                      }}
+                    />
+                  ) : (
+                    course.description
+                  )}
+                </TableCell>
+                <TableCell>
+                  {editingRowId === course.id ? (
+                    <input
+                      type="number"
+                      value={editedData.seats}
+                      onChange={(e) => handleInputChange(e, "seats")}
+                      style={{
+                        width: "100%",
+                        boxSizing: "border-box",
+                        padding: "1px", // Adds space inside the input
+                        margin: "1px 0", // Adds space between inputs
+                      }}
+                    />
+                  ) : (
+                    course.seats
+                  )}
+                </TableCell>
+                <TableCell>
+                  {editingRowId === course.id ? (
+                    <input
+                      type="text"
                       value={editedData.cert_granted}
                       onChange={(e) => handleInputChange(e, "cert_granted")}
+                      style={{
+                        width: "100%",
+                        boxSizing: "border-box",
+                        padding: "1px", // Adds space inside the input
+                        margin: "1px 0", // Adds space between inputs
+                      }}
                     />
                   ) : (
                     course.cert_granted
