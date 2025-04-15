@@ -124,6 +124,7 @@ function CrewTable({ schedule, setSchedule }) {
               <TableCell>End Date</TableCell>
               <TableCell>Shift Type</TableCell>
               <TableCell>Crew Experience</TableCell>
+              <TableCell>Edit</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
