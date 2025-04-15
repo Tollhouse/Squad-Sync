@@ -2,14 +2,22 @@
 
 import React, { useEffect, useState } from "react";
 import Crews from "../Crews/Crews";
-import { Box, Typography, Paper, Divider, Tabs, Tab } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Paper,
+  Divider,
+  Tabs,
+  Tab,
+  Tooltip,
+} from "@mui/material";
 import GroupIcon from "@mui/icons-material/Group";
 import HourglassTopIcon from "@mui/icons-material/HourglassTop";
 import WorkspacePremiumIcon from "@mui/icons-material/WorkspacePremium";
 import { Calendar as BigCalendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
-import "./Scheduler.css";
+import "./Scheduler.css"
 
 const localizer = momentLocalizer(moment);
 
@@ -32,13 +40,15 @@ export default function Scheduler() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const [courseRes, userRes, regRes, rotRes, crewRes] = await Promise.all([
-          fetch("http://localhost:8080/courses"),
-          fetch("http://localhost:8080/users"),
-          fetch("http://localhost:8080/course_registration"),
-          fetch("http://localhost:8080/crew_rotations"),
-          fetch("http://localhost:8080/crews"),
-        ]);
+        const [courseRes, userRes, regRes, rotRes, crewRes] = await Promise.all(
+          [
+            fetch("http://localhost:8080/courses"),
+            fetch("http://localhost:8080/users"),
+            fetch("http://localhost:8080/course_registration"),
+            fetch("http://localhost:8080/crew_rotations"),
+            fetch("http://localhost:8080/crews"),
+          ]
+        );
 
         const coursesData = await courseRes.json();
         const usersData = await userRes.json();
@@ -53,14 +63,17 @@ export default function Scheduler() {
         setCrews(crewData);
         setLoading(false);
         const crewExperience = {};
-        usersData.forEach(user => {
-          if (!crewExperience[user.crew_id]) crewExperience[user.crew_id] = new Set();
+        usersData.forEach((user) => {
+          if (!crewExperience[user.crew_id])
+            crewExperience[user.crew_id] = new Set();
           crewExperience[user.crew_id].add(user.experience_type?.toLowerCase());
         });
 
-        const onlyRedCrews = crewData.filter(crew => {
+        const onlyRedCrews = crewData.filter((crew) => {
           const experiences = crewExperience[crew.id];
-          return experiences && experiences.size === 1 && experiences.has("red");
+          return (
+            experiences && experiences.size === 1 && experiences.has("red")
+          );
         });
 
         setCrewsWithOnlyRed(onlyRedCrews);
@@ -73,12 +86,6 @@ export default function Scheduler() {
   }, []);
 
   useEffect(() => {
-    const shiftTimeMap = {
-      day: "6AM–2PM",
-      swing: "2PM–10PM",
-      night: "10PM–6AM",
-    };
-
     const registrationEvents = registrations.map((r) => {
       const user = users.find((u) => u.id === r.user_id);
       const course = courses.find((c) => c.id === r.course_id);
@@ -88,7 +95,11 @@ export default function Scheduler() {
         end: new Date(course?.date_end),
         allDay: true,
         cert_earned: r.cert_earned,
-        tooltip: `${user?.first_name} ${user?.last_name}\n${course?.course_name}\n${moment(course?.date_start).format("h:mm A")} – ${moment(course?.date_end).format("h:mm A")}`
+        tooltip: `${user?.first_name} ${user?.last_name}\n${
+          course?.course_name
+        }\n${moment(course?.date_start).format("h:mm A")} – ${moment(
+          course?.date_end
+        ).format("h:mm A")}`,
       };
     });
 
@@ -146,7 +157,11 @@ export default function Scheduler() {
           experience_type: rotation.experience_type,
           shift_type: rotation.shift_type,
           crew_id: rotation.crew_id,
-          tooltip: `${crewName} Crew\n${rotation.shift_type} Shift ${emoji}\n${moment(eventStart).format("h:mm A")} – ${moment(eventEnd).format("h:mm A")}`
+          tooltip: `${crewName} Crew\n${
+            rotation.shift_type
+          } Shift ${emoji}\n${moment(eventStart).format("h:mm A")} – ${moment(
+            eventEnd
+          ).format("h:mm A")}`,
         };
 
         // Check for overlaps
@@ -155,9 +170,13 @@ export default function Scheduler() {
         for (let e of shiftMap[key]) {
           if (
             (eventStart < e.end && eventEnd > e.start) ||
-            (eventStart.getTime() === e.start.getTime() && eventEnd.getTime() === e.end.getTime())
+            (eventStart.getTime() === e.start.getTime() &&
+              eventEnd.getTime() === e.end.getTime())
           ) {
-            setOverlapWarnings(prev => [...prev, `${crewName} Crew has overlapping shifts on ${eventStart.toDateString()}`]);
+            setOverlapWarnings((prev) => [
+              ...prev,
+              `${crewName} Crew has overlapping shifts on ${eventStart.toDateString()}`,
+            ]);
             break;
           }
         }
@@ -166,7 +185,7 @@ export default function Scheduler() {
         current.setDate(current.getDate() + 1);
       }
     });
-    
+
     setCalendarEvents([...registrationEvents, ...crewEvents]);
   }, [registrations, courses, users, rotations, crews]);
 
@@ -208,7 +227,7 @@ export default function Scheduler() {
   });
 
   return (
-  <div className="body">
+    <div className="body">
     <Box p={4}>
       <Typography
         variant="h4"
@@ -225,70 +244,117 @@ export default function Scheduler() {
         {/* <Tab label="Crews" /> */}
       </Tabs>
 
+      {crewsWithOnlyRed.length > 0 && (
+        <Paper
+          sx={{
+            mt: 3,
+            p: 2,
+            backgroundColor: "#801313",
+            color: "white",
+            textAlign: "center",
+          }}
+        >
+          <Typography variant="h6">
+            ⚠️ Urgent: Crews With No Experience
+          </Typography>
+          <Typography variant="body2">
+            These crews only have members with no experience (🔴 Red):
+          </Typography>
+          {crewsWithOnlyRed.map((crew, i) => (
+            <Typography key={i} variant="subtitle1" sx={{ fontWeight: "bold" }}>
+              {crew.crew_name}
+            </Typography>
+          ))}
+        </Paper>
+      )}
+
+      {overlapWarnings.length > 0 && (
+        <Paper
+          elevation={3}
+          sx={{
+            p: 2,
+            my: 2,
+            borderLeft: "5px solid orange",
+            backgroundColor: "#332000",
+          }}
+        >
+          <Typography variant="h6" color="warning.main">
+            ⚠️ Shift Overlap Warning
+          </Typography>
+          <ul
+            style={{ margin: 0, padding: 0, listStyle: "none", color: "white" }}
+          >
+            {overlapWarnings.map((warning, index) => (
+              <li key={index}>{warning}</li>
+            ))}
+          </ul>
+        </Paper>
+      )}
       <div className="tabs">
-        {tabIndex === 0 && (
-          <Paper elevation={3} sx={{ p: 2, mt: 2 }}>
-            <Typography variant="h6">
-              <GroupIcon sx={{ mr: 1 }} />
-              Available for Course/Crew
-            </Typography>
-            <Typography
-              variant="body2"
-              sx={{ mb: 1, fontStyle: "italic", color: "gray" }}
-            >
-              ✅ Users listed here are not enrolled in any course AND not
-              assigned to a crew.
-            </Typography>
-            <Divider sx={{ my: 1 }} />
-            <Box sx={{ maxHeight: 300, overflowY: "auto", pr: 1 }}>
-              <ul style={{ margin: 0, padding: 0, listStyle: "none" }}>
-                {availableUsers.map((user) => (
-                  <li key={user.id}>
-                    {user.first_name} {user.last_name} — {user.role}
-                  </li>
-                ))}
-              </ul>
-            </Box>
-          </Paper>
-        )}
 
-        {tabIndex === 1 && (
-          <Paper elevation={3} sx={{ p: 2, mt: 2 }}>
-            <Typography variant="h6">
-              <HourglassTopIcon sx={{ mr: 1 }} />
-              Soon to be Certified
-            </Typography>
-            <Divider sx={{ my: 1 }} />
-            <Box sx={{ maxHeight: 300, overflowY: "auto", pr: 1 }}>
-              <ul style={{ margin: 0, padding: 0, listStyle: "none" }}>
-                {upcomingCertifications.map(
-                  ({ user, course, daysLeft }, index) => {
-                    let urgencyColor = "inherit";
-                    if (daysLeft <= 7) urgencyColor = "red";
-                    else if (daysLeft <= 10) urgencyColor = "orange";
-                    return (
-                      <li key={index} style={{ color: urgencyColor }}>
-                        {user.first_name} {user.last_name} —{" "}
-                        {course.course_name} by{" "}
-                        {new Date(course.date_end).toLocaleDateString()}
-                        {daysLeft <= 7 && <strong> ⚠️ Urgent!</strong>}
-                      </li>
-                    );
-                  }
-                )}
-              </ul>
-            </Box>
-          </Paper>
-        )}
+      {tabIndex === 0 && (
+        <Paper elevation={3} sx={{ p: 2, mt: 2 }}>
+          <Typography variant="h6">
+            <GroupIcon sx={{ mr: 1 }} />
+            Available for Course/Crew
+          </Typography>
+          <Typography
+            variant="body2"
+            sx={{ mb: 1, fontStyle: "italic", color: "gray" }}
+          >
+            ✅ Users listed here are not enrolled in any course AND not assigned
+            to a crew.
+          </Typography>
+          <Divider sx={{ my: 1 }} />
+          <Box sx={{ maxHeight: 300, overflowY: "auto", pr: 1 }}>
+            <ul style={{ margin: 0, padding: 0, listStyle: "none" }}>
+              {availableUsers.map((user) => (
+                <li key={user.id}>
+                  {user.first_name} {user.last_name} — {user.role}
+                </li>
+              ))}
+            </ul>
+          </Box>
+        </Paper>
+      )}
 
-        {tabIndex === 2 && (
-          <Paper elevation={3} sx={{ p: 2, mt: 2 }}>
-            <Typography variant="h6">
-              <WorkspacePremiumIcon sx={{ mr: 1 }} />
-              Certified Members & Their Certifications
-            </Typography>
-            <Divider sx={{ my: 1 }} />
-            <ul>
+      {tabIndex === 1 && (
+        <Paper elevation={3} sx={{ p: 2, mt: 2 }}>
+          <Typography variant="h6">
+            <HourglassTopIcon sx={{ mr: 1 }} />
+            Soon to be Certified
+          </Typography>
+          <Divider sx={{ my: 1 }} />
+          <Box sx={{ maxHeight: 300, overflowY: "auto", pr: 1 }}>
+            <ul style={{ margin: 0, padding: 0, listStyle: "none" }}>
+              {upcomingCertifications.map(
+                ({ user, course, daysLeft }, index) => {
+                  let urgencyColor = "inherit";
+                  if (daysLeft <= 7) urgencyColor = "red";
+                  else if (daysLeft <= 10) urgencyColor = "orange";
+                  return (
+                    <li key={index} style={{ color: urgencyColor }}>
+                      {user.first_name} {user.last_name} — {course.course_name}{" "}
+                      by {new Date(course.date_end).toLocaleDateString()}
+                      {daysLeft <= 7 && <strong> ⚠️ Urgent!</strong>}
+                    </li>
+                  );
+                }
+              )}
+            </ul>
+          </Box>
+        </Paper>
+      )}
+
+      {tabIndex === 2 && (
+        <Paper elevation={3} sx={{ p: 2, mt: 2 }}>
+          <Typography variant="h6">
+            <WorkspacePremiumIcon sx={{ mr: 1 }} />
+            Certified Members & Their Certifications
+          </Typography>
+          <Divider sx={{ my: 1 }} />
+          <Box sx={{ maxHeight: 300, overflowY: "auto", pr: 1 }}>
+            <ul style={{ margin: 0, padding: 0, listStyle: "none" }}>
               {users.map((user) => {
                 const earnedCourses = registrations
                   .filter((r) => r.user_id === user.id && r.cert_earned)
@@ -298,17 +364,18 @@ export default function Scheduler() {
                   )
                   .filter(Boolean);
                 return earnedCourses.length > 0 ? (
-                  <ul key={user.id}>
+                  <li key={user.id}>
                     <strong>
                       {user.first_name} {user.last_name}
                     </strong>
                     : {earnedCourses.join(", ")}
-                  </ul>
+                  </li>
                 ) : null;
               })}
             </ul>
-          </Paper>
-        )}
+          </Box>
+        </Paper>
+      )}
       </div>
       <div className="calendar">
 
@@ -355,7 +422,7 @@ export default function Scheduler() {
       </Box>
 
       <Box>
-        <div style={{ height: "800px" }}>
+        <div style={{ height: "600px" }}>
           <BigCalendar
             localizer={localizer}
             events={filteredEvents}
@@ -401,17 +468,17 @@ export default function Scheduler() {
             }}
             components={{
               event: ({ event }) => (
-                <Tooltip title={<span style={{ whiteSpace: 'pre-line' }}>{event.tooltip}</span>} arrow>
+                <Tooltip
+                  title={
+                    <span style={{ whiteSpace: "pre-line" }}>
+                      {event.tooltip}
+                    </span>
+                  }
+                  arrow
+                >
                   <div>{event.title}</div>
                 </Tooltip>
-              )
-            }}
-            components={{
-              event: ({ event }) => (
-                <Tooltip title={<span style={{ whiteSpace: 'pre-line' }}>{event.tooltip}</span>} arrow>
-                  <div>{event.title}</div>
-                </Tooltip>
-              )
+              ),
             }}
           />
         </div>
