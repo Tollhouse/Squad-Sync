@@ -79,6 +79,7 @@ function CrewRoster({ crew_id }) {
           setRoster(mergedRoster);
         }
 
+
         const availableUsersByRole = {};
         for (const member of mergedRoster) {
           const available = await getAvailableUsers(crew_id, member.role);
@@ -131,7 +132,7 @@ function CrewRoster({ crew_id }) {
   const handleSaveMember = async (index) => {
     const row = roster[index];
     const updatedUserId = row.pendingUserId === "" ? null : row.pendingUserId;
-    const oldUserId = row.user_id; 
+    const oldUserId = row.user_id;
 
     try {
 
@@ -195,7 +196,7 @@ function CrewRoster({ crew_id }) {
               <TableCell>Role</TableCell>
               <TableCell>Name</TableCell>
               <TableCell>Experience</TableCell>
-              <TableCell>Action</TableCell>
+              <TableCell>Edit</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>

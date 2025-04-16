@@ -85,7 +85,7 @@ export default function User () {
   //HANDLES SAVING THE EDIT
   const handleSaveClick = (id) => () => {
     setRowModesModel({...rowModesModel, [id]: { mode: GridRowModes.View }})
-    window.location.reload()
+    // window.location.reload()
   }
 
   //HANDLES CANCELLING THE EDIT
@@ -130,7 +130,7 @@ export default function User () {
       field: 'experience_type',
       headerName: 'Experience Level',
       width: 150,
-      editable: true,
+      editable: false,
       renderCell: (params) => <ExperienceChip level={params.value} />,
     },
     {
@@ -149,14 +149,14 @@ export default function User () {
               label="Save"
               sx={{color: 'primary.main'}}
               onClick={handleSaveClick(id)}
+              color="primary"
             />,
             <GridActionsCellItem
               icon={<CancelIcon />}
               label="Cancel"
               className='textPrimary'
               onClick={handleCancelClick(id)}
-              color="inherit"
-            />
+              color="primary"            />
           ]
         }
 
@@ -166,8 +166,7 @@ export default function User () {
             label="Edit"
             className='textPrimary'
             onClick={handleEditClick(id)}
-            color="inherit"
-          />
+            color="primary"          />
         ]
       }
     }
