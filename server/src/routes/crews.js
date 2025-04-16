@@ -61,7 +61,7 @@ router.get("/roster/:id", async (req, res) => {
   try{
       let crewSchedule = await knex("users")
       .join('crews', 'users.crew_id', 'crews.id')
-      .select('users.id as user_id','first_name', 'last_name', 'role', 'users.experience_type as user_experience',
+      .select('users.id as user_id','first_name', 'last_name', 'role', 'users.experience_type as user_experience', 'crew_name',
         'crews.id as crew_id')
       .where('crews.id', id)
 

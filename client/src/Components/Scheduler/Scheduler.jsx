@@ -487,55 +487,89 @@ export default function Scheduler() {
       </Box>
 
       {selectedEvent && (
+        <>
+        {/* Backdrop */}
         <Box
           sx={{
             position: "fixed",
-            top: "20%",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            zIndex: 1500,
+          }}
+          onClick={() => setSelectedEvent(null)}
+        />
+    
+        {/* Modal */}
+        <Box
+          sx={{
+            position: "fixed",
+            top: "50%",
             left: "50%",
-            transform: "translateX(-50%)",
-            zIndex: 2000,
-            backgroundColor: "#1e1e1e",
-            color: "white",
-            borderRadius: 2,
-            padding: 3,
-            minWidth: 300,
-            boxShadow: 24,
+            transform: "translate(-50%, -50%)",
+            zIndex: 1600,
+            backgroundColor: "#fefefe",
+            color: "#333",
+            borderRadius: "12px",
+            padding: "24px",
+            width: "90%",
+            maxWidth: "380px",
+            boxShadow: "0 10px 30px rgba(0,0,0,0.3)",
+            fontSize: "0.9rem",
+            transition: "all 0.3s ease-in-out",
+            animation: "fadeIn 0.3s ease-in-out",
+            maxHeight: "90vh",
+            height: "auto",
           }}
         >
-          <Typography variant="h6" gutterBottom>
+          <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
             📋 Event Details
           </Typography>
-          <Typography>
+          <Divider sx={{ mb: 2 }} />
+          <Typography variant="body2" sx={{ mb: 1 }}>
             <strong>Title:</strong> {selectedEvent.title}
           </Typography>
-          <Typography>
-            <strong>Start:</strong> {selectedEvent.start.toString()}
+          <Typography variant="body2" sx={{ mb: 1 }}>
+            <strong>Start:</strong>{" "}
+            {new Date(selectedEvent.start).toLocaleString("en-US", {
+              timeZoneName: "short",
+            })}
           </Typography>
-          <Typography>
-            <strong>End:</strong> {selectedEvent.end.toString()}
+          <Typography variant="body2" sx={{ mb: 1 }}>
+            <strong>End:</strong>{" "}
+            {new Date(selectedEvent.end).toLocaleString("en-US", {
+              timeZoneName: "short",
+            })}
           </Typography>
           {selectedEvent.cert_earned !== null && (
-            <Typography>
+            <Typography variant="body2" sx={{ mb: 1 }}>
               <strong>Certification Earned:</strong>{" "}
               {selectedEvent.cert_earned ? "✅ Yes" : "❌ No"}
             </Typography>
           )}
-          <Box mt={2}>
+          <Box mt={3} display="flex" justifyContent="flex-end">
             <button
               style={{
-                padding: "6px 12px",
-                backgroundColor: "#444",
+                backgroundColor: "#333",
                 color: "white",
+                padding: "6px 16px",
                 border: "none",
-                borderRadius: "4px",
+                borderRadius: "6px",
                 cursor: "pointer",
+                fontSize: "0.85rem",
+                transition: "background-color 0.2s",
               }}
               onClick={() => setSelectedEvent(null)}
+              onMouseOver={(e) => (e.target.style.backgroundColor = "#555")}
+              onMouseOut={(e) => (e.target.style.backgroundColor = "#333")}
             >
               Close
             </button>
           </Box>
         </Box>
+        </>
       )}
       </div>
       </div>
