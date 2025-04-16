@@ -85,7 +85,7 @@ export default function CourseTable({
               <TableCell>End Date</TableCell>
               <TableCell>Seats</TableCell>
               <TableCell>Cert Granted</TableCell>
-              <TableCell>Actions</TableCell>
+              <TableCell>Edit</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -201,6 +201,8 @@ export default function CourseTable({
                   {editCourseId === course.id ? (
                     <>
                       <IconButton
+                        color="primary"
+                        size="small"
                         onClick={(e) => {
                           e.stopPropagation();
                           setSaveConfirmOpen(true);
@@ -209,6 +211,8 @@ export default function CourseTable({
                         <SaveIcon />
                       </IconButton>
                       <IconButton
+                        color="error"
+                        size="small"
                         onClick={(e) => {
                           e.stopPropagation();
                           handleCancelEdits();
@@ -220,6 +224,8 @@ export default function CourseTable({
                   ) : (
                     <>
                       <IconButton
+                        color="primary"
+                        size="small"
                         onClick={(e) => {
                           e.stopPropagation();
                           startEditing(course);
@@ -227,8 +233,11 @@ export default function CourseTable({
                       >
                         <EditIcon />
                       </IconButton>
-                      <IconButton onClick={(e) => handleDeleteCourse(course.id, e)}>
-                        <DeleteIcon color="error" />
+                      <IconButton
+                        color="error"
+                        size="small"
+                        onClick={(e) => handleDeleteCourse(course.id, e)}>
+                        <DeleteIcon />
                       </IconButton>
                     </>
                   )}

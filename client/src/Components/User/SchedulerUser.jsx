@@ -5,7 +5,7 @@ import { useParams } from "react-router-dom";
 import Box from "@mui/material/Box";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
-import CancelIcon from "@mui/icons-material/Close";
+import CancelIcon from "@mui/icons-material/Cancel";
 import DeleteIcon from "@mui/icons-material/Delete";
 import {
   GridRowModes,
@@ -437,7 +437,7 @@ export default function SchedulerUser () {
               label="Cancel"
               className="textPrimary"
               onClick={handleCancelClick(id)}
-              color="primary"            />,
+              color="error"            />,
           ];
         }
 
@@ -455,7 +455,7 @@ export default function SchedulerUser () {
             data-testid='test-deleteIcon'
             className="textPrimary"
             onClick={handleDeleteClick(id)}
-            color="primary"          />,
+            color="error"          />,
         ];
       },
     },
