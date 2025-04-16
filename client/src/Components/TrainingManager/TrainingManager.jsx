@@ -353,13 +353,13 @@ export default function Courses() {
                 <TableCell>
                   {editingRowId === course.id ? (
                     <>
-                      <button onClick={handleSaveClick}>Save</button>
-                      <button onClick={handleCancelClick}>Cancel</button>
+                      <button data-testid='test-saveButton' onClick={handleSaveClick}>Save</button>
+                      <button data-testid='test-cancelButton' onClick={handleCancelClick}>Cancel</button>
                     </>
                   ) : (
                     <>
-                      <button onClick={() => handleEditClick(course)}>Edit</button>
-                      <button onClick={() => handleDeleteCourse(course)}>Delete</button>
+                      <button data-testid='test-editButton' onClick={() => handleEditClick(course)}>Edit</button>
+                      <button data-testid='test-deleteButton' onClick={() => handleDeleteCourse(course)}>Delete</button>
                     </>
                   )}
                 </TableCell>

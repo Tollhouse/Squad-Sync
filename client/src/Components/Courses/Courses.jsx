@@ -1,27 +1,16 @@
-// code by lorena - styled with MUI
-
 import React, { useEffect, useState } from "react";
-import {
-  Container,
-  Box,
-  Typography,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  Chip,
-  useTheme,
-} from "@mui/material";
+import { Container, Box, Typography, Button } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
+import CourseTable from "./CourseTable";
+import CoursePersonnel from "./CoursePersonnel";
+import HandleAddCourse from "./HandleAddCourse";
 
 export default function Courses() {
-  const theme = useTheme();
   const [courses, setCourses] = useState([]);
   const [registrations, setRegistrations] = useState([]);
   const [users, setUsers] = useState([]);
   const [selectedCourseId, setSelectedCourseId] = useState(null);
+  const [addCourseOpen, setAddCourseOpen] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -40,6 +29,8 @@ export default function Courses() {
         const registrationData = await regRes.json();
         const userData = await userRes.json();
 
+        courseData.sort((a, b) => a.id - b.id);
+
         setCourses(courseData);
         setRegistrations(registrationData);
         setUsers(userData);
@@ -51,8 +42,18 @@ export default function Courses() {
     fetchData();
   }, []);
 
-  const selectedCourse = courses.find((course) => course.id === selectedCourseId);
+  const handleAddCourse = (newCourse) => {
+    setCourses((prev) => [...prev, newCourse]);
+    window.location.reload();
+  };
 
+  const handleUpdateCourse = (updatedCourse) => {
+    setCourses((prev) =>
+      prev.map((course) => (course.id === updatedCourse.id ? updatedCourse : course))
+    );
+  };
+
+  const selectedCourse = courses.find((course) => course.id === selectedCourseId);
   const registeredUsers = registrations
     .filter((reg) => reg.course_id === selectedCourseId)
     .map((reg) => {
@@ -64,108 +65,44 @@ export default function Courses() {
       };
     });
 
-  // Chip color component for cert_earned
-  const CertChip = ({ earned }) => {
-    return (
-      <Chip
-        label={earned ? "Yes" : "No"}
-        size="small"
-        sx={{
-          backgroundColor: earned ? "#4caf50" : "#f44336",
-          color: "#fff",
-          fontWeight: 600,
-        }}
-      />
-    );
-  };
-
   return (
     <Container maxWidth="lg">
-      {/* Courses Table */}
-      <Box sx={{ mt: 4, textAlign: "center" }}>
-        <Typography variant="h4" gutterBottom>
+      <Box sx={{ m: 2 }}>
+        <Typography variant="h4" sx={{ mb: 1 }}>
           Courses
         </Typography>
+        <Button
+          color="primary"
+          variant="contained"
+          startIcon={<AddIcon />}
+          onClick={() => setAddCourseOpen(true)}
+        >
+          Add Course
+        </Button>
       </Box>
 
-      <TableContainer component={Paper} sx={{ mt: 2 }}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>ID</TableCell>
-              <TableCell>Name</TableCell>
-              <TableCell>Start Date</TableCell>
-              <TableCell>End Date</TableCell>
-              <TableCell>Cert Granted</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {courses.map((course) => (
-              <TableRow
-                key={course.id}
-                data-testid='test-courseRow'
-                onClick={() =>
-                  setSelectedCourseId((prevId) =>
-                    prevId === course.id ? null : course.id
-                  )
-                }
-                sx={{
-                  cursor: "pointer",
-                  transition: "background-color 0.2s",
-                  "&:hover": {
-                    backgroundColor:
-                      theme.palette.mode === "light"
-                        ? "rgba(0, 0, 0, 0.04)"
-                        : "rgba(255, 255, 255, 0.08)",
-                  },
-                }}
-              >
-                <TableCell>{course.id}</TableCell>
-                <TableCell>{course.course_name}</TableCell>
-                <TableCell>{course.date_start}</TableCell>
-                <TableCell>{course.date_end}</TableCell>
-                <TableCell>{course.cert_granted}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+      {/* Render the courses table w/ inline editing */}
+      <CourseTable
+        courses={courses}
+        selectedCourseId={selectedCourseId}
+        onSelectCourse={setSelectedCourseId}
+        onUpdateCourse={handleUpdateCourse}
+      />
 
-      {/* Conditional: Registered Users Table */}
+      {/* Render registered personnel table */}
       {selectedCourse && (
-        <>
-          <Box sx={{ mt: 6, textAlign: "center" }}>
-            <Typography variant="h4" gutterBottom>
-              {selectedCourse.course_name} - Registered Personnel
-            </Typography>
-          </Box>
-
-          <TableContainer component={Paper} sx={{ mt: 2 }}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>First Name</TableCell>
-                  <TableCell>Last Name</TableCell>
-                  <TableCell>In Progress</TableCell>
-                  <TableCell>Cert Earned</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {registeredUsers.map((user) => (
-                  <TableRow key={`${user.user_id}-${user.course_id}`}>
-                    <TableCell>{user.first_name}</TableCell>
-                    <TableCell>{user.last_name}</TableCell>
-                    <TableCell>{user.in_progress}</TableCell>
-                    <TableCell>
-                      <CertChip earned={user.cert_earned} />
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </>
+        <CoursePersonnel
+          course={selectedCourse}
+          registeredUsers={registeredUsers}
+        />
       )}
+
+      {/* Add Course Modal */}
+      <HandleAddCourse
+        open={addCourseOpen}
+        onClose={() => setAddCourseOpen(false)}
+        onAddCourse={handleAddCourse}
+      />
     </Container>
   );
 }
