@@ -13,6 +13,8 @@ import {
   useTheme,
 } from "@mui/material";
 
+import './TrainingManager.css'
+
 export default function Courses() {
   const theme = useTheme();
   const [courses, setCourses] = useState([]);
@@ -254,12 +256,7 @@ export default function Courses() {
                       type="text"
                       value={editedData.course_name}
                       onChange={(e) => handleInputChange(e, "course_name")}
-                      style={{
-                        width: "100%",
-                        boxSizing: "border-box",
-                        padding: "1px", // Adds space inside the input
-                        margin: "1px 0", // Adds space between inputs
-                      }}
+                      className="edit-style"
                     />
                   ) : (
                     course.course_name
@@ -271,12 +268,7 @@ export default function Courses() {
                       type="date"
                       value={editedData.date_start}
                       onChange={(e) => handleInputChange(e, "date_start")}
-                      style={{
-                        width: "100%",
-                        boxSizing: "border-box",
-                        padding: "1px", // Adds space inside the input
-                        margin: "1px 0", // Adds space between inputs
-                      }}
+                      className="edit-style"
                     />
                   ) : (
                     course.date_start
@@ -288,12 +280,7 @@ export default function Courses() {
                       type="date"
                       value={editedData.date_end}
                       onChange={(e) => handleInputChange(e, "date_end")}
-                      style={{
-                        width: "100%",
-                        boxSizing: "border-box",
-                        padding: "1px", // Adds space inside the input
-                        margin: "1px 0", // Adds space between inputs
-                      }}
+                      className="edit-style"
                     />
                   ) : (
                     course.date_end
@@ -305,12 +292,7 @@ export default function Courses() {
                       type="text"
                       value={editedData.description}
                       onChange={(e) => handleInputChange(e, "description")}
-                      style={{
-                        width: "100%",
-                        boxSizing: "border-box",
-                        padding: "1px", // Adds space inside the input
-                        margin: "1px 0", // Adds space between inputs
-                      }}
+                      className="edit-style"
                     />
                   ) : (
                     course.description
@@ -322,12 +304,7 @@ export default function Courses() {
                       type="number"
                       value={editedData.seats}
                       onChange={(e) => handleInputChange(e, "seats")}
-                      style={{
-                        width: "100%",
-                        boxSizing: "border-box",
-                        padding: "1px", // Adds space inside the input
-                        margin: "1px 0", // Adds space between inputs
-                      }}
+                      className="edit-style"
                     />
                   ) : (
                     course.seats
@@ -339,12 +316,7 @@ export default function Courses() {
                       type="text"
                       value={editedData.cert_granted}
                       onChange={(e) => handleInputChange(e, "cert_granted")}
-                      style={{
-                        width: "100%",
-                        boxSizing: "border-box",
-                        padding: "1px", // Adds space inside the input
-                        margin: "1px 0", // Adds space between inputs
-                      }}
+                      className="edit-style"
                     />
                   ) : (
                     course.cert_granted
