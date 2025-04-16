@@ -163,13 +163,20 @@ console.log("availableUsers", availableUsers)
           <TableBody>
 
           {roster.map((s, index) => {
+              const availableUsersForRole = availableUsers[s.role] || [];
+
               const assignedUser =
-              availableUsers[s.role]?.find((user) => user.id === s.user_id) || null;
-              //  s.pendingUserId || s.user_id;
-              const availableUsersForRole = availableUsers[s.role] || []
+                s.user_id !== null
+                  ? {
+                      user_id: s.user_id,
+                      first_name: s.first_name || "Assigned",
+                      last_name: s.last_name || "User",
+                    }
+                  : null;
+              
               const dropdownOptions = assignedUser
-              ? [assignedUser, ...availableUsersForRole.filter((user) => user.id !== s.user_id)]
-              : availableUsersForRole;
+                ? [assignedUser, ...availableUsersForRole.filter((user) => user.user_id !== s.user_id)]
+                : availableUsersForRole;
 
               return (
                 <TableRow key={s.user_id || index}>
@@ -179,18 +186,17 @@ console.log("availableUsers", availableUsers)
                   <TableCell>
                     <Select
 
-                      value={s.user_id || ""}
-                      onChange={(e) => handleDropdownChange(index, e.target.value)}
+                      value={s.user_id !== null ? s.user_id : ""}
+                      onChange={(e) => handleDropdownChange(index, Number(e.target.value))}
                       displayEmpty
                       size="small"
                       fullWidth
                       disabled={!s.isEditing}
-
                     >
                       <MenuItem value="" disabled>
                         Select User
                       </MenuItem>
-      <MenuItem value={null}>-Unassigned-</MenuItem>
+                      <MenuItem value={null}>-Unassigned-</MenuItem>
                       {dropdownOptions.map((user) => (
                         <MenuItem key={user.user_id} value={user.user_id}>
                           {user.first_name} {user.last_name}
