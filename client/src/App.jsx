@@ -14,7 +14,6 @@ import User from './Components/User/User.jsx'
 import Commander from "./Components/Commander/Commander.jsx";
 import Scheduler from './Components/Scheduler/Scheduler';
 import Courses from "./Components/Courses/Courses.jsx";
-import CourseReg from './Components/Courses/CourseRegistrations.jsx';
 import Dashboard from './Components/Dashboard/Dashboard.jsx';
 import TrainingManager from './Components/TrainingManager/TrainingManager.jsx';
 import SchedulerUser from './Components/User/SchedulerUser.jsx';
@@ -65,7 +64,6 @@ export default function App() {
       <Route path='/commander' element={<Commander />}/>
       <Route path='/courses' element={<Courses />}/>
       <Route path='/crews' element={<Crews />}/>
-      <Route path='/course_registrations' element={<CourseReg />}/>
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/setting" element={<Setting />} />
       <Route path="/scheduler" element={<Scheduler />} />

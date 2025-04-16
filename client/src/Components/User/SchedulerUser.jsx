@@ -428,7 +428,8 @@ export default function SchedulerUser () {
             <GridActionsCellItem
               icon={<SaveIcon />}
               label="Save"
-              sx={{ color: "primary.main" }}
+              data-testid='test-saveIcon'
+              sx={{ color: 'primary.main' }}
               onClick={handleSaveClick(id)}
             />,
             <GridActionsCellItem
@@ -444,12 +445,14 @@ export default function SchedulerUser () {
           <GridActionsCellItem
             icon={<EditIcon />}
             label="Edit"
+            data-testid='test-editIcon'
             className="textPrimary"
             onClick={handleEditClick(id)}
             color="primary"          />,
           <GridActionsCellItem
             icon={<DeleteIcon />}
             label="Delete"
+            data-testid='test-deleteIcon'
             className="textPrimary"
             onClick={handleDeleteClick(id)}
             color="primary"          />,
@@ -468,8 +471,9 @@ export default function SchedulerUser () {
     <div className="user-container">
       <div className="search-container">
         <input
-          type="text"
-          placeholder="Search for member..."
+          type='text'
+          placeholder='Search for member...'
+          data-testid='test-userSearchBar'
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           style={{

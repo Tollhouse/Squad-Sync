@@ -20,7 +20,7 @@ import AddIcon from "@mui/icons-material/Add";
 import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Close";
 import EditIcon from "@mui/icons-material/Edit";
-import ExperienceChip from "../AddOns/ExperinceChip";
+import {ExperienceChip} from "../AddOns/ExperienceChip";
 import CrewRoster from "./CrewRoster";
 import HandleAddRotation from "./HandleAddRotation";
 import "./Crews.css"
@@ -38,8 +38,8 @@ function CrewTable({ schedule, setSchedule }) {
   };
 
   const handleCancelClick = () => {
-    setEditingRowId(null); // Exit edit mode
-    setEditFormData({}); // Clear the form data
+    setEditingRowId(null);
+    setEditFormData({});
   };
 
   const handleSaveClick = () => {
@@ -86,12 +86,10 @@ function CrewTable({ schedule, setSchedule }) {
     } else {
       setRosterMode(true);
       setRosterId(s.crew_id);
-      // console.log("Clicked on crew_id:", s.crew_id);
     }
   }
 
   const handleAddCrewRotation = () => {
-    // console.log("Clicked on Add Crew Rotation");
     setAddRotationOpen(true);
   };
 
@@ -108,6 +106,7 @@ function CrewTable({ schedule, setSchedule }) {
         <Button
           color="primary"
           variant="contained"
+          data-testid='test-addCrewRotation'
           startIcon={<AddIcon />}
           onClick={handleAddCrewRotation}
         >
@@ -130,7 +129,7 @@ function CrewTable({ schedule, setSchedule }) {
           <TableBody>
 
             {schedule.map((row) => (
-              <TableRow key={row.crew_id} onClick={() => handleRosterMode(row)}>
+              <TableRow data-testid='test-rotationRow' key={row.crew_id} onClick={() => handleRosterMode(row)}>
                 <TableCell>{row.crew_id}</TableCell>
                 <TableCell>
                   {editingRowId === row.crew_id ? (
@@ -196,6 +195,7 @@ function CrewTable({ schedule, setSchedule }) {
                       <IconButton
                         color="primary"
                         size="small"
+                        data-testid='test-crewRotationSave'
                         onClick={handleSaveClick}
                       >
                         <SaveIcon />
@@ -212,6 +212,7 @@ function CrewTable({ schedule, setSchedule }) {
                     <IconButton
                       color="primary"
                       size="small"
+                      data-testid='test-crewRotationEdit'
                       onClick={() => handleEditClick(row)}
                     >
                       <EditIcon />
