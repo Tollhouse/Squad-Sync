@@ -64,20 +64,30 @@ function CrewRoster({ crew_id }) {
         });
 
 
-        const mergedRoster = [...mergedNonOperators, ...mergedOperators];
+        const mergedRoster = [...mergedNonOperators, ...mergedOperators].map((member) => ({
+          ...member,
+          isEditing: false,
+        }));
 
         if (rosterData.length === 0) {
-          console.log('No members assigned to this Crew')
-          setRoster([...nonOperatorDefaults, ...operatorDefaults]);
+          console.log("No members assigned to this Crew");
+          setRoster([...nonOperatorDefaults, ...operatorDefaults].map((member) => ({
+            ...member,
+            isEditing: false,
+          })));
         } else {
-          //const initializedRoster = mergedRoster.map((member) => ({ ...member, isEditing: false }));
-          setRoster(mergedRoster)
+          setRoster(mergedRoster);
         }
-        
+
         const availableUsersByRole = {};
         for (const member of mergedRoster) {
           const available = await getAvailableUsers(crew_id, member.role);
-          availableUsersByRole[member.role] = available;
+          const transformedAvailable = available.map((user) => ({
+            ...user,
+            user_id: user.id
+          }))
+
+          availableUsersByRole[member.role] = transformedAvailable;
         }
 
         setAvailableUsers(availableUsersByRole);
@@ -88,44 +98,63 @@ function CrewRoster({ crew_id }) {
 
     fetchData();
   }, [crew_id]);
-console.log("availableUsers", availableUsers)
 
   const handleEditClick = (index) => {
     const updatedRoster = [...roster];
-    updatedRoster[index].isEditing = true;
-    updatedRoster[index].pendingUserId = updatedRoster[index].user_id;
+    updatedRoster[index] = {
+      ...updatedRoster[index],
+      isEditing: true,
+      pendingUserId: updatedRoster[index].user_id,
+    }
     setRoster(updatedRoster);
   };
 
   const handleCancelEdit = (index) => {
     const updatedRoster = [...roster];
-    updatedRoster[index].isEditing = false;
-    updatedRoster[index].pendingUserId = updatedRoster[index].user_id;
+    updatedRoster[index] = {
+      ...updatedRoster[index],
+      isEditing: false,
+      pendingUserId: undefined
+    }
     setRoster(updatedRoster);
   };
 
   const handleDropdownChange = (index, newUserId) => {
     const updatedRoster = [...roster];
-    updatedRoster[index].pendingUserId = newUserId;
+    updatedRoster[index] = {
+      ...updatedRoster[index],
+      pendingUserId: newUserId,
+    }
     setRoster(updatedRoster);
   };
 
   const handleSaveMember = (index) => {
     const row = roster[index];
+    const updatedUserId = row.pendingUserId === "" ? null : row.pendingUserId;
 
-    fetch(`http://localhost:8080/crew_rotations/${crew_id}`, {
+    const payload = {
+      user_id: updatedUserId,
+      crew_id: row.crew_id,
+      role: row.role,
+      first_name: row.first_name,
+      last_name: row.last_name,
+      user_experience: row.user_experience,
+      crew_name: row.crew_name
+    };
+
+    fetch(`http://localhost:8080/crews/roster/${crew_id}`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json'
       },
-      body: JSON.stringify({ user_id: row.pendingUserId }),
+      body: JSON.stringify(payload),
     })
       .then((response) => {
         if (response.ok) {
-          alert(`Crew member for role "${row.role}" updated successfully! `);
+          alert(`Crew member for role "${row.role}" updated successfully!`);
           const updatedRoster = [...roster];
-          updatedRoster[index].user_id = row.pendingUserId;
+          updatedRoster[index].user_id = updatedUserId;
           updatedRoster[index].isEditing = false;
           setRoster(updatedRoster);
         } else {
@@ -137,10 +166,8 @@ console.log("availableUsers", availableUsers)
         alert('Error updating crew roster.');
       });
   };
-  console.log("roster", roster)
 
   const crewName = roster.length > 0 ? roster[0].crew_name || "Unknown Crew" : "Unknown Crew";
-
 
   return (
     <>
@@ -161,36 +188,35 @@ console.log("availableUsers", availableUsers)
             </TableRow>
           </TableHead>
           <TableBody>
-
           {roster.map((s, index) => {
-              const assignedUser =
-              availableUsers[s.role]?.find((user) => user.id === s.user_id) || null;
-              //  s.pendingUserId || s.user_id;
-              const availableUsersForRole = availableUsers[s.role] || []
-              const dropdownOptions = assignedUser
-              ? [assignedUser, ...availableUsersForRole.filter((user) => user.id !== s.user_id)]
-              : availableUsersForRole;
+              const selectedValue = s.isEditing ? (s.pendingUserId ?? "") : (s.user_id ?? "");
+              const availableUsersForRole = availableUsers[s.role] || [];
+              let dropdownOptions = availableUsersForRole.slice();
+              if (selectedValue && !dropdownOptions.some(user => user.user_id === selectedValue)) {
+                dropdownOptions.unshift({
+                  user_id: s.user_id,
+                  first_name: s.first_name,
+                  last_name: s.last_name,
+                });
+              }
 
               return (
                 <TableRow key={s.user_id || index}>
-
                   <TableCell>{s.crew_id}</TableCell>
                   <TableCell>{s.role}</TableCell>
                   <TableCell>
                     <Select
-
-                      value={s.user_id || ""}
+                      value={s.isEditing ? s.pendingUserId || "" : s.user_id || ""}
                       onChange={(e) => handleDropdownChange(index, e.target.value)}
                       displayEmpty
                       size="small"
                       fullWidth
                       disabled={!s.isEditing}
-
                     >
                       <MenuItem value="" disabled>
                         Select User
                       </MenuItem>
-      <MenuItem value={null}>-Unassigned-</MenuItem>
+                      <MenuItem value={null}>-Unassigned-</MenuItem>
                       {dropdownOptions.map((user) => (
                         <MenuItem key={user.user_id} value={user.user_id}>
                           {user.first_name} {user.last_name}

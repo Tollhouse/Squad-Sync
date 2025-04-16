@@ -38,8 +38,8 @@ function CrewTable({ schedule, setSchedule }) {
   };
 
   const handleCancelClick = () => {
-    setEditingRowId(null); // Exit edit mode
-    setEditFormData({}); // Clear the form data
+    setEditingRowId(null);
+    setEditFormData({});
   };
 
   const handleSaveClick = () => {
@@ -86,12 +86,10 @@ function CrewTable({ schedule, setSchedule }) {
     } else {
       setRosterMode(true);
       setRosterId(s.crew_id);
-      // console.log("Clicked on crew_id:", s.crew_id);
     }
   }
 
   const handleAddCrewRotation = () => {
-    // console.log("Clicked on Add Crew Rotation");
     setAddRotationOpen(true);
   };
 

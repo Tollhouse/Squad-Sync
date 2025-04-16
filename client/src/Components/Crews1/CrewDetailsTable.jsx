@@ -71,7 +71,7 @@ export default function CrewDetailsTable({ crews, selectedCrewId }) {
       yellow: { label: "Yellow", color: "#ffeb3b", textColor: "#000" },
       red: { label: "Red", color: "#f44336" },
     };
-    
+
   const handleNewUserChange = (field, value) => {
     setNewUser((prev) => ({ ...prev, [field]: value }));
   };
