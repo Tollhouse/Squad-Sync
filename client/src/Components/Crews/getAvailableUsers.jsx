@@ -1,53 +1,68 @@
-export async function getAvailableUsers(crew_id) {
-  try {
-    const [rotationsRes, schedulesRes, usersRes] = await Promise.all([
+export async function getAvailableUsers(crew_id, role) {
+
+try{
+    const [rotationsRes, schedulesRes, usersRes, certRes] = await Promise.all([
       fetch("http://localhost:8080/crew_rotations"),
       fetch("http://localhost:8080/users/schedule"),
-      fetch("http://localhost:8080/users")
+      fetch("http://localhost:8080/users"),
+      fetch("http://localhost:8080/users/user/schedule"),
+
     ]);
 
-    const [rotations, schedules, users] = await Promise.all([
+    const [rotations, schedules, users, certs] = await Promise.all([
       rotationsRes.json(),
       schedulesRes.json(),
-      usersRes.json()
+      usersRes.json(),
+
+      certRes.json()
     ]);
 
-    // Get crew rotation dates
     const rotation = rotations.find((r) => r.crew_id === crew_id);
-    if (!rotation) return [];
+      if (!rotation) {
+        console.log(`No rotation found for crew_id: ${crew_id}`);
+        return [];
+      }
 
-    const rotationStart = new Date(rotation.date_start);
-    const rotationEnd = new Date(rotation.date_end);
+      const rotationStart = new Date(rotation.date_start);
+      const rotationEnd = new Date(rotation.date_end);
 
-    const certifiedUsers = users.filter((user) => {
-      const userSchedule = schedules.find((schedule) => schedule.user_id === user.id);
-      const courseCerts = userSchedule?.courseDates?.map((user) => {
-      const courseDatesData = user.courseDates?.map((u) => u.cert_granted) || [];
-      const flattenedCourseData = [...courseCerts].flat();
-      return flattenedCourseData.includes(user.role);
+
+    const flattenedSchedules = schedules.flatMap((schedule) => schedule)
+
+    const availableUsers = users.filter((user) => {
+
+      const userSchedule = flattenedSchedules.find(
+        (schedule) => schedule.user_id === user.id)
+
+      if (!userSchedule || !userSchedule.dates) {
+        return true;
+      }
+
+      const hasConflict = userSchedule.dates.some((event) => {
+        const eventStart = new Date(event.date_start)
+        const eventEnd = new Date(event.date_end)
+        return eventEnd >= rotationStart && eventStart <= rotationEnd
       })
+      return !hasConflict
     })
 
-    const availableUserIds = schedules
-      .filter((userSchedule) => {
-        const dates = userSchedule.dates || [];
-        return dates.every((event) => {
-          const eventStart = new Date(event.date_start);
-          const eventEnd = new Date(event.date_end);
-          return eventEnd < rotationStart || eventStart > rotationEnd;
-        });
-      })
-      .map((userSchedule) => userSchedule.user_id);
+    const flattenedCerts = certs.flatMap((cert) => cert.courseDates?.map((course) => ({
+      user_id: course.user_id,
+      cert_granted: course.cert_granted
+    })) || [])
 
-    return certifiedUsers.filter((user) => availableUserIds.includes(user.user_id))
-      .map((user) => ({
-        id: user.user_id,
-        name: `${user.first_name} ${user.last_name}`,
-        role: user.role,
-        certifications: user.cert_granted
-      }));
+    const certifiedRoles = ["Crew Commander", "Crew Chief", "Operator"]
+    const certifiedUsers = availableUsers.filter((user)=>{
+      return flattenedCerts.some((cert) =>
+        cert.user_id === user.id && cert.cert_granted === role
+    )
+    })
+
+    return certifiedUsers
+
   } catch (err) {
-    console.error("Error finding available crew members:", err);
-    return [];
+    console.error("Error finding available crew members:", err)
+    return []
   }
+
 }

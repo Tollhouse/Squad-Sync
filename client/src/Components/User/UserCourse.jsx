@@ -45,8 +45,8 @@ export default function UserCourse () {
 
 return (
 <Container maxWidth="md">
-      <Box sx={{ mt: 4, textAlign: "center"}}>
-        <Typography variant="h4" gutterBottom>
+      <Box sx={{ mt: 1, textAlign: "center"}}>
+        <Typography variant="h5" gutterBottom>
           Your Courses
         </Typography>
       </Box>
