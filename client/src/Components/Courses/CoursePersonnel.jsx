@@ -47,7 +47,7 @@ export default function CoursePersonnel({ course, registeredUsers, onRosterChang
       isEditing: false,
       pendingUserId: user.user_id,
     } : {
-      id: index,
+      id: `unassigned-${index}`,
       user_id: null,
       role: "Unassigned",
       isEditing: true,
@@ -114,11 +114,10 @@ export default function CoursePersonnel({ course, registeredUsers, onRosterChang
       const row = courses[index];
       const updatedUserId = row.pendingUserId === "" ? null : row.pendingUserId;
       const oldUserId = row.user_id;
+      let newRegistration = null;
+      let userObj = registeredUsers.find(u => u.user_id === updatedUserId);
 
       try {
-        let newRegistration = null;
-        let userObj = registeredUsers.find(u => u.user_id === updatedUserId);
-
         if (oldUserId && oldUserId !== updatedUserId && row.id && typeof row.id === "number") {
           await fetch(`http://localhost:8080/course_registration/${row.id}`, {
             method: "PATCH",
@@ -131,7 +130,7 @@ export default function CoursePersonnel({ course, registeredUsers, onRosterChang
         }
 
         if (updatedUserId) {
-          if (row.id && typeof row.id === "number") {
+          if (typeof row.id === "number" && row.user_id !== null) {
           await fetch(`http://localhost:8080/course_registration/${row.id}`, {
             method: "PATCH",
             headers: {
@@ -148,13 +147,14 @@ export default function CoursePersonnel({ course, registeredUsers, onRosterChang
               Accept: "application/json",
             },
             body: JSON.stringify({
-              course_id: course.id,
-              user_id: updatedUserId,
+              course_id: Number(course.id),
+              user_id: Number(updatedUserId),
               in_progress: "scheduled",
               cert_earned: false,
             }),
           })
-          newRegistration = await response.json()
+          const registrationArr = await response.json();
+          newRegistration = Array.isArray(registrationArr) ? registrationArr[0] : registrationArr;
           if (!userObj) {
             userObj = availableUsers.find(u => u.id === updatedUserId);
           }
