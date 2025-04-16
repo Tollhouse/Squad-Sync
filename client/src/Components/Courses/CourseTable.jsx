@@ -15,7 +15,7 @@ import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Cancel";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { ConfirmSaveModal, ConfirmDeleteModal } from "../AddOns/ConfirmModal";
-import { saveInlineEdits, cancelInlineEdits } from "./HandleEditCourse";
+import { saveCourseEdits, cancelCourseEdits } from "./HandleEditCourse";
 import { deleteCourse } from "./HandleDeleteCourse";
 
 export default function CourseTable({
@@ -24,7 +24,7 @@ export default function CourseTable({
   onSelectCourse,
   onUpdateCourse,
 }) {
-  // inline editing
+  // Course editing state
   const [editCourseId, setEditCourseId] = useState(null);
   const [editedCourse, setEditedCourse] = useState({});
   const [saveConfirmOpen, setSaveConfirmOpen] = useState(false);
@@ -37,7 +37,7 @@ export default function CourseTable({
   };
 
   const handleSaveEdits = () => {
-    saveInlineEdits(editedCourse)
+    saveCourseEdits(editedCourse)
       .then((data) => {
         onUpdateCourse(data);
         setEditCourseId(null);
@@ -50,7 +50,7 @@ export default function CourseTable({
   };
 
   const handleCancelEdits = () => {
-    cancelInlineEdits();
+    cancelCourseEdits();
     setEditCourseId(null);
     setEditedCourse({});
   };
@@ -112,7 +112,7 @@ export default function CourseTable({
                           course_name: e.target.value,
                         }))
                       }
-                      fullWidth
+                      // fullWidth
                     />
                   ) : (
                     course.course_name
@@ -131,7 +131,7 @@ export default function CourseTable({
                           date_start: e.target.value,
                         }))
                       }
-                      fullWidth
+                      // fullWidth
                       InputLabelProps={{ shrink: true }}
                     />
                   ) : (
@@ -151,7 +151,7 @@ export default function CourseTable({
                           date_end: e.target.value,
                         }))
                       }
-                      fullWidth
+                      // fullWidth
                       InputLabelProps={{ shrink: true }}
                     />
                   ) : (
@@ -171,7 +171,7 @@ export default function CourseTable({
                           seats: e.target.value,
                         }))
                       }
-                      fullWidth
+                      // fullWidth
                     />
                   ) : (
                     course.seats
@@ -189,7 +189,7 @@ export default function CourseTable({
                           cert_granted: e.target.value,
                         }))
                       }
-                      fullWidth
+                      // fullWidth
                     />
                   ) : (
                     course.cert_granted

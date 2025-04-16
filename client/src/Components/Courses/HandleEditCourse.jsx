@@ -1,6 +1,6 @@
 import React from "react";
 
-export const saveInlineEdits = (editedCourse) => {
+export const saveCourseEdits = (editedCourse) => {
   return fetch(`http://localhost:8080/courses/${editedCourse.id}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
@@ -13,7 +13,7 @@ export const saveInlineEdits = (editedCourse) => {
   });
 };
 
-export const cancelInlineEdits = () => {
+export const cancelCourseEdits = () => {
   return null;
 };
 
