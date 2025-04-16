@@ -25,18 +25,18 @@ export default function CoursePersonnel({ course, registeredUsers }) {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>First Name</TableCell>
-              <TableCell>Last Name</TableCell>
-              <TableCell>In Progress</TableCell>
+              <TableCell>Course Name</TableCell>
+              <TableCell>Student Name</TableCell>
+              <TableCell>Status</TableCell>
               <TableCell>Cert Earned</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {registeredUsers.map((user) => (
               <TableRow key={`${user.user_id}-${user.course_id}`}>
-                <TableCell>{user.first_name}</TableCell>
-                <TableCell>{user.last_name}</TableCell>
-                <TableCell>{user.in_progress ? "Yes" : "No"}</TableCell>
+                <TableCell>{course.course_name}</TableCell>
+                <TableCell>{user.last_name}, {user.first_name}</TableCell>
+                <TableCell>{user.in_progress}</TableCell>
                 <TableCell>
                   <CertChip earned={user.cert_earned} />
                 </TableCell>
