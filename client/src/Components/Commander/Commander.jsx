@@ -27,6 +27,7 @@ import {
 } from "chart.js";
 import { useTheme } from "@mui/material/styles";
 import { useLocation } from "react-router-dom";
+import { todaysDate } from '../AddOns/helperFunctions.js';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
@@ -43,15 +44,6 @@ export default function Commander() {
   const [crewNames, setCrewNames] = useState(0);
 
   const theme = useTheme();
-
-  const today = new Date();
-  var dd = today.getDate();
-  var mm = today.getMonth()+1;
-  var yyyy = today.getFullYear();
-  if(dd<10) { dd='0'+dd; }
-  if(mm<10) { mm='0'+mm; }
-  const todaysDate = yyyy + '-' + mm + '-' + dd;
-  // console.log(todaysDate);
 
   useEffect(() => {
     async function fetchData() {
@@ -200,7 +192,7 @@ export default function Commander() {
 
               {tabIndex === 1 && (
                 <Stack spacing={1}>
-                  {courses.filter((course) => (course.date_end > todaysDate))
+                  {courses.filter((course) => (course.date_end > todaysDate()))
                   .map((course) => (
                     <Box key={course.id}>
                       <Typography variant="body1">

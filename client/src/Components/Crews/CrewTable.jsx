@@ -22,8 +22,8 @@ import CancelIcon from "@mui/icons-material/Close";
 import EditIcon from "@mui/icons-material/Edit";
 import ExperienceChip from "../AddOns/ExperinceChip";
 import CrewRoster from "./CrewRoster";
-import HandleAddRotation from './HandleAddRotation.jsx'
-
+import HandleAddRotation from "./HandleAddRotation";
+import "./Crews.css"
 
 function CrewTable({ schedule, setSchedule }) {
   const [editingRowId, setEditingRowId] = useState(null);
@@ -100,9 +100,9 @@ function CrewTable({ schedule, setSchedule }) {
   };
 
   return (
-    <>
+    <div className="crewTable">
       <Box sx={{ m: 2 }}>
-        <Typography variant="h4" sx={{ mb: 1 }}>
+        <Typography variant="h4" sx={{ mb: 3 }}>
           Crew Rotations
         </Typography>
         <Button
@@ -124,6 +124,7 @@ function CrewTable({ schedule, setSchedule }) {
               <TableCell>End Date</TableCell>
               <TableCell>Shift Type</TableCell>
               <TableCell>Crew Experience</TableCell>
+              <TableCell>Edit</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -226,13 +227,13 @@ function CrewTable({ schedule, setSchedule }) {
       </TableContainer>
 
       {rosterMode ? <CrewRoster key={rosterId} crew_id={rosterId} /> : null}
- front-end
+
       <HandleAddRotation
         open={addRotationOpen}
         onClose={() => setAddRotationOpen(false)}
         onAddRotation={handleRotationAdded}
       />
-    </>
+    </div>
   );
 }
 
