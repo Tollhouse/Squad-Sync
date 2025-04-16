@@ -44,9 +44,12 @@ describe('Testing Setting component ("/setting" route)', () => {
         const confirm = await screen.findByText('Confirm')
         expect(confirm).toBeInTheDocument()
         const pass_input = await screen.findByTestId('test-passInput')
+        const pass_input2 = await screen.findByTestId('test-passInput2')
         expect(pass_input).toBeInTheDocument()
+        expect(pass_input2).toBeInTheDocument()
 
         await userEvent.type(pass_input, 'password')
+        await userEvent.type(pass_input2, 'password')
 
         userEvent.click(confirm)
         await waitFor(() => {

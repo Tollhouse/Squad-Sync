@@ -20,88 +20,90 @@ describe('Testing Crews component ("/Crews" route)', () => {
           );
     };
 
-    it('renders Crew Rotations text', () => {
+    it('renders Crew Rotations text', async () => {
         renderCrews()
-        // expect(screen.getByText(/Crew Rotations/)).toBeInTheDocument();
-        expect(1).toEqual(1)
+        const crew_rotations = await screen.getByText(/Crew Rotations/)
+        expect(crew_rotations).toBeInTheDocument();
     });
 
-    // it('renders Add new rotations button', () => {
-    //     renderCrews()
-    //     expect(screen.getByText(/Add Crew Rotation/)).toBeInTheDocument();
-    // });
+    it('renders Add new rotations button', () => {
+        renderCrews()
+        expect(screen.getByText(/Add Crew Rotation/)).toBeInTheDocument();
+    });
 
     // // TODO add check for privilege to see other headers (once its not hardcoded)
-    // it('renders the cell headers', () => {
-    //     renderCrews()
-    //     expect(screen.getByText(/ID/)).toBeInTheDocument();
-    //     expect(screen.getByText(/Crew Name/)).toBeInTheDocument();
-    //     expect(screen.getByText(/Start Date/)).toBeInTheDocument();
-    //     expect(screen.getByText(/End Date/)).toBeInTheDocument();
-    //     expect(screen.getByText(/Shift Type/)).toBeInTheDocument();
-    //     // expect(screen.getByText(/Duration/)).toBeInTheDocument();
-    // });
+    it('renders the cell headers', () => {
+        renderCrews()
+        expect(screen.getByText(/ID/)).toBeInTheDocument();
+        expect(screen.getByText(/Crew Name/)).toBeInTheDocument();
+        expect(screen.getByText(/Start Date/)).toBeInTheDocument();
+        expect(screen.getByText(/End Date/)).toBeInTheDocument();
+        expect(screen.getByText(/Shift Type/)).toBeInTheDocument();
+        expect(screen.getByText(/Crew Experience/)).toBeInTheDocument();
+        expect(screen.getByText(/Edit/)).toBeInTheDocument();
+    });
 
-    // it('clicking on new rotation button adds row to table', async () => {
-    //     renderCrews()
-    //     expect(screen.getByText(/Add New Rotation/)).toBeInTheDocument();
-    //     const new_rotation_button = await screen.findByRole('button', {
-    //         name: /add new rotation/i,
-    //     });
+    it('clicking on new rotation button brings up modal', async () => {
+        renderCrews()
+        expect(screen.getByText(/Add Crew Rotation/)).toBeInTheDocument();
+        const new_rotation_button = await screen.findByTestId('test-addCrewRotation')
 
-    //     await userEvent.click(new_rotation_button)
+        await userEvent.click(new_rotation_button)
 
-    //     expect(screen.getByText('New')).toBeInTheDocument()
-    // });
+        expect(screen.getByText('Add Rotation')).toBeInTheDocument()
+    });
 
-    // it('delete button is rendered for crew rotations entries', async () => {
-    //     renderCrews();
-    //     await screen.findByText("Not Assigned");
-    //     await waitFor(() => {
-    //         expect(screen.getAllByTestId("test-deleteButton").length).toBeGreaterThan(0);
-    //       });
-    // });
+    it('clicking on rotation row button brings up crew roster', async () => {
+        renderCrews()
+        expect(screen.getByText(/Add Crew Rotation/)).toBeInTheDocument();
+        const rotation_row = await screen.findAllByTestId('test-rotationRow')
 
-    // it('edit button is rendered for crew rotations entries', async () => {
-    //     renderCrews();
-    //     await screen.findByText("Not Assigned");
-    //     await waitFor(() => {
-    //         expect(screen.getAllByTestId("test-editButton").length).toBeGreaterThan(0);
-    //       });
-    // });
+        await userEvent.click(rotation_row[0])
 
-    // it('delete button is rendered for crew rotations entries', async () => {
-    //     renderCrews();
-    //     await screen.findByText("Not Assigned");
-    //     const deleteButtons = screen.getAllByTestId("test-deleteButton");
-    //     await userEvent.click(deleteButtons[0]);
-    //     const na = await screen.findAllByText("N/A");
-    //     expect(na.length).toBeGreaterThan(0)
-    // });
+        expect(screen.getByText('Crew Roster')).toBeInTheDocument()
+    });
 
-    // it('save icon is rendered after edit is clicked for crew rotations entries', async () => {
-    //     renderCrews();
-    //     await screen.findByText("Not Assigned");
-    //     const editButtons = screen.getAllByTestId("test-editButton");
-    //     await userEvent.click(editButtons[0]);
-    //     const save = await screen.getAllByTestId("test-saveIcon");
-    //     expect(save.length).toBeGreaterThan(0)
-    // });
+    it('edit button is rendered for crew rotations entries', async () => {
+        renderCrews();
+        await screen.findByText("Not Assigned");
+        const edit_button = await screen.findAllByTestId('test-crewRotationEdit')
+        expect(edit_button.length).toBeGreaterThan(0)
+    });
 
-    // it('renders Not assigned crew when edit is clicked', async () => {
-    //     renderCrews()
-    //     await screen.findByText("Not Assigned");
-    //     const editButtons = screen.getAllByTestId("test-editButton");
-    //     await userEvent.click(editButtons[0]);
-    //     expect(screen.getByText(/Not Assigned Crew/i)).toBeInTheDocument();
-    // });
+    it('save icon is rendered after edit is clicked for crew rotations entries', async () => {
+        renderCrews();
+        await screen.findByText("Not Assigned");
+        const editButtons = await screen.findAllByTestId('test-crewRotationEdit');
+        await userEvent.click(editButtons[0]);
+        const save = await screen.findAllByTestId("test-crewRotationSave");
+        expect(save.length).toBeGreaterThan(0)
+    });
 
-    // it('renders Add crew member button when edit is clicked', async () => {
-    //     renderCrews()
-    //     await screen.findByText("Not Assigned");
-    //     const editButtons = screen.getAllByTestId("test-editButton");
-    //     await userEvent.click(editButtons[0]);
-    //     expect(screen.getByText(/add crew member/i)).toBeInTheDocument();
-    // });
+    it('renders edit icon for crew roster', async () => {
+        renderCrews()
+        expect(screen.getByText(/Add Crew Rotation/)).toBeInTheDocument();
+        const rotation_row = await screen.findAllByTestId('test-rotationRow')
+
+        await userEvent.click(rotation_row[0])
+
+        expect(screen.getByText('Crew Roster')).toBeInTheDocument()
+        const edit = await screen.findAllByTestId('test-crewRosterEdit')
+        expect(edit.length).toBeGreaterThan(0)
+    })
+
+    it('clicking edit icon for crew roster renders save', async () => {
+        renderCrews()
+        expect(screen.getByText(/Add Crew Rotation/)).toBeInTheDocument();
+        const rotation_row = await screen.findAllByTestId('test-rotationRow')
+
+        await userEvent.click(rotation_row[0])
+
+        expect(screen.getByText('Crew Roster')).toBeInTheDocument()
+        const edit = await screen.findAllByTestId('test-crewRosterEdit')
+        expect(edit.length).toBeGreaterThan(0)
+        userEvent.click(edit[0])
+        const save = await screen.findAllByTestId('test-crewRosterSave')
+        expect(edit.length).toBeGreaterThan(0)
+    })
 
 });
