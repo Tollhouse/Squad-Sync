@@ -79,6 +79,7 @@ function PasswordChange() {
               label="New Password"
               type="password"
               variant="outlined"
+              data-testid='test-passInput'
               name="password"
               value={formData.password}
               onChange={handleChange}
@@ -88,6 +89,7 @@ function PasswordChange() {
               label="Re-Type Password"
               type="password"
               variant="outlined"
+              data-testid='test-passInput2'
               name="secondPassword"
               value={formData.secondPassword}
               onChange={handleChange}
