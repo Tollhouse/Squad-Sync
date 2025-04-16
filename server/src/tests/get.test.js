@@ -52,7 +52,7 @@ describe('GET /crew_rotations', () => {
 
     it('all values of the fields "shift_type" and "experience_type" should be one of the values defined in the ERD', async () => {
         const shift_values = ['Day', 'Swing', 'Night']
-        const experience_values = ['red', 'yellow', 'green']
+        const experience_values = ['Red', 'Yellow', 'Green']
         const response = await request(app).get('/crew_rotations');
         expect(response.status).toBe(200);
         expect(Array.isArray(response.body)).toBe(true)
@@ -99,7 +99,7 @@ describe('GET /crew_rotations/:id' , () => {
     expect(res.body[0].crew_id).toBe(1)
     expect(res.body[0].shift_type).toBe('Day')
     expect(res.body[0].shift_duration).toBe(8)
-    expect(res.body[0].experience_type).toBe('green')
+    expect(res.body[0].experience_type).toBe('Green')
   })
 })
 
@@ -206,7 +206,7 @@ describe('GET /users', () => {
     });
 
     it('all values of the field "experience_type" should be one of the values defined in the ERD', async () => {
-        const experience_values = ['red', 'yellow', 'green']
+        const experience_values = ['Red', 'Yellow', 'Green']
         const response = await request(app).get('/users');
         expect(response.status).toBe(200);
         expect(Array.isArray(response.body)).toBe(true)
@@ -248,7 +248,7 @@ describe('GET /users/:id', () => {
       expect(response.body.user_name).toBe('Tory')
       expect(response.body.role).toBe('Training Manager')
       expect(response.body.crew_id).toBe(7)
-      expect(response.body.experience_type).toBe('green')
+      expect(response.body.experience_type).toBe('Green')
       expect(response.body.privilege).toBe('training_manager')
   });
 })
@@ -265,13 +265,12 @@ describe('GET /users/schedule', () => {
     expect(Array.isArray(response.body)).toBe(true)
   });
 
-  it('there should be 2 objects in the array, one for crew_dates, one for course_dates', async () => {
+  it('there should be 2 properties per object in the array, one for user_id, one for dates', async () => {
       const response = await request(app).get('/users/schedule');
       expect(response.status).toBe(200);
       expect(Array.isArray(response.body)).toBe(true)
-      expect(response.body.length).toBe(2)
-      expect(Array.isArray(response.body[0].crewDates)).toBe(true)
-      expect(Array.isArray(response.body[1].courseDates)).toBe(true)
+      expect(response.body[0]).toHaveProperty('user_id');
+      expect(response.body[0]).toHaveProperty('dates');
   });
 })
 

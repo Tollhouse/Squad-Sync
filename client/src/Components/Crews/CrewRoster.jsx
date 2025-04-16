@@ -16,7 +16,7 @@ import {
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { getAvailableUsers } from './getAvailableUsers';
-import ExperienceChip from '../AddOns/ExperinceChip';
+import { ExperienceChip } from '../AddOns/ExperienceChip';
 
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
@@ -231,7 +231,7 @@ function CrewRoster({ crew_id }) {
                   <TableCell>
                     {s.isEditing ? (
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <IconButton onClick={() => handleSaveMember(index)} aria-label="save">
+                        <IconButton data-testid='test-crewRosterSave' onClick={() => handleSaveMember(index)} aria-label="save">
                           <SaveIcon />
                         </IconButton>
                         <IconButton onClick={() => handleCancelEdit(index)} aria-label="cancel">
@@ -239,7 +239,7 @@ function CrewRoster({ crew_id }) {
                         </IconButton>
                       </Box>
                     ) : (
-                      <IconButton onClick={() => handleEditClick(index)} aria-label="edit">
+                      <IconButton data-testid='test-crewRosterEdit' onClick={() => handleEditClick(index)} aria-label="edit">
                         <EditIcon />
                       </IconButton>
                     )}

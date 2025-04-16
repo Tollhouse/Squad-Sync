@@ -49,8 +49,8 @@ describe('Testing Courses component ("/courses" route)', () => {
             expect(screen.getByText(/End Date/i)).toBeInTheDocument();
             expect(screen.getByText(/Cert Granted/i)).toBeInTheDocument();
         });
-        await waitFor(() => {
-            expect(screen.getAllByText(/Systems Engineer/i)).toHaveLength(4);
+        await waitFor(async () => {
+            expect(await screen.findAllByText(/Systems Engineer/i)).toHaveLength(4);
             expect(screen.getByText(/2025-02-01/i)).toBeInTheDocument();
             expect(screen.getByText(/2025-02-28/i)).toBeInTheDocument();
         });

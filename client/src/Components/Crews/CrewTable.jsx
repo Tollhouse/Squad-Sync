@@ -20,7 +20,7 @@ import AddIcon from "@mui/icons-material/Add";
 import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Close";
 import EditIcon from "@mui/icons-material/Edit";
-import ExperienceChip from "../AddOns/ExperinceChip";
+import {ExperienceChip} from "../AddOns/ExperienceChip";
 import CrewRoster from "./CrewRoster";
 import HandleAddRotation from "./HandleAddRotation";
 import "./Crews.css"
@@ -106,6 +106,7 @@ function CrewTable({ schedule, setSchedule }) {
         <Button
           color="primary"
           variant="contained"
+          data-testid='test-addCrewRotation'
           startIcon={<AddIcon />}
           onClick={handleAddCrewRotation}
         >
@@ -128,7 +129,7 @@ function CrewTable({ schedule, setSchedule }) {
           <TableBody>
 
             {schedule.map((row) => (
-              <TableRow key={row.crew_id} onClick={() => handleRosterMode(row)}>
+              <TableRow data-testid='test-rotationRow' key={row.crew_id} onClick={() => handleRosterMode(row)}>
                 <TableCell>{row.crew_id}</TableCell>
                 <TableCell>
                   {editingRowId === row.crew_id ? (
@@ -194,6 +195,7 @@ function CrewTable({ schedule, setSchedule }) {
                       <IconButton
                         color="primary"
                         size="small"
+                        data-testid='test-crewRotationSave'
                         onClick={handleSaveClick}
                       >
                         <SaveIcon />
@@ -210,6 +212,7 @@ function CrewTable({ schedule, setSchedule }) {
                     <IconButton
                       color="primary"
                       size="small"
+                      data-testid='test-crewRotationEdit'
                       onClick={() => handleEditClick(row)}
                     >
                       <EditIcon />
