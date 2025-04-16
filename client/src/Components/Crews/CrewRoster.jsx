@@ -73,7 +73,7 @@ function CrewRoster({ crew_id }) {
           //const initializedRoster = mergedRoster.map((member) => ({ ...member, isEditing: false }));
           setRoster(mergedRoster)
         }
-        
+
         const availableUsersByRole = {};
         for (const member of mergedRoster) {
           const available = await getAvailableUsers(crew_id, member.role);
@@ -205,7 +205,7 @@ console.log("availableUsers", availableUsers)
                   <TableCell>
                     {s.isEditing ? (
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <IconButton onClick={() => handleSaveMember(index)} aria-label="save">
+                        <IconButton data-testid='test-crewRosterSave' onClick={() => handleSaveMember(index)} aria-label="save">
                           <SaveIcon />
                         </IconButton>
                         <IconButton onClick={() => handleCancelEdit(index)} aria-label="cancel">
@@ -213,7 +213,7 @@ console.log("availableUsers", availableUsers)
                         </IconButton>
                       </Box>
                     ) : (
-                      <IconButton onClick={() => handleEditClick(index)} aria-label="edit">
+                      <IconButton data-testid='test-crewRosterEdit' onClick={() => handleEditClick(index)} aria-label="edit">
                         <EditIcon />
                       </IconButton>
                     )}

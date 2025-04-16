@@ -45,8 +45,8 @@ function PasswordChange() {
 
       {changePassword ? (
         <form action={submitPasswordChange}>
-          <input name="password" placeholder="Enter your new password" type="password" />
-          <input name="password2" placeholder="Confirm your new password" type="password" />
+          <input name="password" data-testid='test-passInput' placeholder="Enter your new password" type="password" />
+          <input name="password2" data-testid='test-passInput2' placeholder="Confirm your new password" type="password" />
           <button type="submit">Confirm</button>
         </form>
       ) : null}

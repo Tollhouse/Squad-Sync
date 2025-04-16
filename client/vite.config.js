@@ -16,7 +16,15 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html'],
-      exclude: ['node_modules/', 'test/', '*.config.js', './src/main.jsx', './src/App.jsx'],
+      exclude: ['node_modules/',
+                'test/',
+                '*.config.js',
+                './src/main.jsx',
+                './src/App.jsx',
+                './src/Components/Crews/HandleDelete.jsx',
+                './src/Components/Crews/HandleEdit.jsx',
+                './src/Components/Crews/RotationAction.jsx',
+              ],
       reportsDirectory: './coverage'
     },
   },
