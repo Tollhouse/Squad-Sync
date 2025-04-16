@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import CrewTable from "./CrewTable";
 import { ThemeProvider } from '@mui/material/styles';
 import TableTheme from '../AddOns/TableTheme';
+import "./Crews.css"
 
 function Crews() {
   const [schedule, setSchedule] = useState([]);
@@ -23,7 +24,7 @@ function Crews() {
 
   return (
     <ThemeProvider theme={TableTheme}>
-      <CrewTable schedule={schedule} />
+        <CrewTable schedule={schedule} />
     </ThemeProvider>
 
   );
