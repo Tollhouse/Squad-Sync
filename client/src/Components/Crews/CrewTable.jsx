@@ -18,7 +18,7 @@ import {
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import SaveIcon from "@mui/icons-material/Save";
-import CancelIcon from "@mui/icons-material/Close";
+import CancelIcon from "@mui/icons-material/Cancel";
 import EditIcon from "@mui/icons-material/Edit";
 import {ExperienceChip} from "../AddOns/ExperienceChip";
 import CrewRoster from "./CrewRoster";
@@ -201,7 +201,7 @@ function CrewTable({ schedule, setSchedule }) {
                         <SaveIcon />
                       </IconButton>
                       <IconButton
-                        color="secondary"
+                        color="error"
                         size="small"
                         onClick={handleCancelClick}
                       >
