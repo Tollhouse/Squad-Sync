@@ -65,14 +65,14 @@ describe('Testing Crews component ("/Crews" route)', () => {
 
     it('edit button is rendered for crew rotations entries', async () => {
         renderCrews();
-        await screen.findByText("Not Assigned");
+        await screen.findByText("Alpha");
         const edit_button = await screen.findAllByTestId('test-crewRotationEdit')
         expect(edit_button.length).toBeGreaterThan(0)
     });
 
     it('save icon is rendered after edit is clicked for crew rotations entries', async () => {
         renderCrews();
-        await screen.findByText("Not Assigned");
+        await screen.findByText("Alpha");
         const editButtons = await screen.findAllByTestId('test-crewRotationEdit');
         await userEvent.click(editButtons[0]);
         const save = await screen.findAllByTestId("test-crewRotationSave");

@@ -244,6 +244,8 @@ describe('POST testing of /courses route', () => {
 
     const post_body = {
         course_name: "Test Course",
+        description: 'Test Description',
+        seats: 20,
         date_start: '08-29-2025',
         date_end: '09-29-2025',
         cert_granted: 'Test Cert'
@@ -268,5 +270,7 @@ describe('POST testing of /courses route', () => {
         expect(res.body[res.body.length - 1].date_start).toBe("2025-08-29")
         expect(res.body[res.body.length - 1].date_end).toBe("2025-09-29")
         expect(res.body[res.body.length - 1].cert_granted).toBe("Test Cert")
+        expect(res.body[res.body.length - 1].description).toBe("Test Description")
+        expect(res.body[res.body.length - 1].seats).toBe(20)
     })
 })
