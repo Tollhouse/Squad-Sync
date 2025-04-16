@@ -13,8 +13,8 @@ function Crews() {
       try {
         const res = await fetch("http://localhost:8080/crews/schedule");
         const scheduleData = await res.json();
-        setSchedule(scheduleData);
-        
+        setSchedule(scheduleData.slice(0, -1));
+
       } catch (err) {
         console.error("Failed to fetch 8080/crews/schedule", err);
       }
@@ -24,7 +24,7 @@ function Crews() {
 
   return (
     <ThemeProvider theme={TableTheme}>
-        <CrewTable schedule={schedule} />
+        <CrewTable schedule={schedule} setSchedule={setSchedule}/>
     </ThemeProvider>
 
   );
