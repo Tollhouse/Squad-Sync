@@ -128,43 +128,54 @@ function CrewRoster({ crew_id }) {
     setRoster(updatedRoster);
   };
 
-  const handleSaveMember = (index) => {
+  const handleSaveMember = async (index) => {
     const row = roster[index];
     const updatedUserId = row.pendingUserId === "" ? null : row.pendingUserId;
+    const oldUserId = row.user_id; 
 
-    const payload = {
-      user_id: updatedUserId,
-      crew_id: row.crew_id,
-      role: row.role,
-      first_name: row.first_name,
-      last_name: row.last_name,
-      user_experience: row.user_experience,
-      crew_name: row.crew_name
-    };
+    try {
 
-    fetch(`http://localhost:8080/crews/roster/${crew_id}`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json'
-      },
-      body: JSON.stringify(payload),
-    })
-      .then((response) => {
-        if (response.ok) {
-          alert(`Crew member for role "${row.role}" updated successfully!`);
-          const updatedRoster = [...roster];
-          updatedRoster[index].user_id = updatedUserId;
-          updatedRoster[index].isEditing = false;
-          setRoster(updatedRoster);
-        } else {
-          alert('Failed to update crew roster.');
-        }
-      })
-      .catch((error) => {
-        console.error('Error updating crew roster:', error);
-        alert('Error updating crew roster.');
+      if (oldUserId && oldUserId !== updatedUserId) {
+        const oldUserPayload = {
+          crew_id: 7,
+        };
+
+        await fetch(`http://localhost:8080/users/${oldUserId}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+          },
+          body: JSON.stringify(oldUserPayload),
+        });
+      }
+
+      const newUserPayload = {
+        crew_id: row.crew_id,
+      };
+
+      const response = await fetch(`http://localhost:8080/users/${updatedUserId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify(newUserPayload),
       });
+
+      if (response.ok) {
+        alert(`Crew member for role "${row.role}" updated successfully!`);
+        const updatedRoster = [...roster];
+        updatedRoster[index].user_id = updatedUserId;
+        updatedRoster[index].isEditing = false;
+        setRoster(updatedRoster);
+      } else {
+        alert('Failed to update crew roster.');
+      }
+    } catch (error) {
+      console.error('Error updating crew roster:', error);
+      alert('Error updating crew roster.');
+    }
   };
 
   const crewName = roster.length > 0 ? roster[0].crew_name || "Unknown Crew" : "Unknown Crew";
