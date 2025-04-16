@@ -5,7 +5,7 @@ import { useParams } from "react-router-dom";
 import Box from "@mui/material/Box";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
-import CancelIcon from "@mui/icons-material/Close";
+import CancelIcon from "@mui/icons-material/Cancel";
 import DeleteIcon from "@mui/icons-material/Delete";
 import {
   GridRowModes,
@@ -428,7 +428,8 @@ export default function SchedulerUser () {
             <GridActionsCellItem
               icon={<SaveIcon />}
               label="Save"
-              sx={{ color: "primary.main" }}
+              data-testid='test-saveIcon'
+              sx={{ color: 'primary.main' }}
               onClick={handleSaveClick(id)}
             />,
             <GridActionsCellItem
@@ -436,8 +437,7 @@ export default function SchedulerUser () {
               label="Cancel"
               className="textPrimary"
               onClick={handleCancelClick(id)}
-              color="inherit"
-            />,
+              color="error"            />,
           ];
         }
 
@@ -445,17 +445,17 @@ export default function SchedulerUser () {
           <GridActionsCellItem
             icon={<EditIcon />}
             label="Edit"
+            data-testid='test-editIcon'
             className="textPrimary"
             onClick={handleEditClick(id)}
-            color="inherit"
-          />,
+            color="primary"          />,
           <GridActionsCellItem
             icon={<DeleteIcon />}
             label="Delete"
+            data-testid='test-deleteIcon'
             className="textPrimary"
             onClick={handleDeleteClick(id)}
-            color="inherit"
-          />,
+            color="error"          />,
         ];
       },
     },
@@ -471,8 +471,9 @@ export default function SchedulerUser () {
     <div className="user-container">
       <div className="search-container">
         <input
-          type="text"
-          placeholder="Search for member..."
+          type='text'
+          placeholder='Search for member...'
+          data-testid='test-userSearchBar'
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           style={{

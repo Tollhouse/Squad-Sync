@@ -20,20 +20,29 @@ describe('Testing Home component ("/" route)', () => {
         expect(screen.getByText(/Welcome to Squad Sync/i)).toBeInTheDocument();
     });
 
-    it('renders description text', () => {
+    it('renders news box', () => {
         renderHome()
-        expect(screen.getByText(/Our app strives to provide a one stop, scalable solution that/i)).toBeInTheDocument();
+        expect(screen.getByText(/News/i)).toBeInTheDocument();
+        expect(screen.getByText(/new courses available/i)).toBeInTheDocument();
     });
 
-    it('should render "Guest" when not signed in', () => {
+    it('should render "Welcome to Squad Sync" when not signed in', () => {
         renderHome()
-        expect(screen.getByText("Guest")).toBeInTheDocument();
+        expect(screen.getByText("Welcome to Squad Sync!")).toBeInTheDocument();
     });
 
-    it('should render "Alicia" when Alicia is signed in', () => {
+    it('should render "Welcome to Squad Sync" when signed in', () => {
         localStorage.setItem('username', 'Alicia');
 
         renderHome()
-        expect(screen.getByText('Welcome, Alicia!')).toBeInTheDocument();
+        expect(screen.getByText('Welcome to Squad Sync!')).toBeInTheDocument();
+    });
+
+    it('should render features when signed in', () => {
+        renderHome()
+        expect(screen.getByText('Features')).toBeInTheDocument();
+        expect(screen.getByText(/Commander's Dashboard/)).toBeInTheDocument();
+        expect(screen.getByText(/Crew Schedules/)).toBeInTheDocument();
+        expect(screen.getByText(/Training Calendar/)).toBeInTheDocument();
     });
 });

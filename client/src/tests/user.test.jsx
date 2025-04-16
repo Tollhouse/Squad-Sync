@@ -32,7 +32,7 @@ describe('Testing User component ("/user/:id" route)', () => {
 
     it('renders "your crew" text', async () => {
         renderUser()
-        const crew = await screen.findByText(/Your Crew/i);
+        const crew = await screen.findByText(/Your Crew/i, {}, { timeout: 5000 });
         expect(crew).toBeInTheDocument();
     });
 

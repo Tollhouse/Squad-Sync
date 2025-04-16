@@ -97,7 +97,7 @@ To run this app on your own machine you will need to create your own database us
 
 ---
 
-## 💻 Runnign with Node.js
+## 💻 Running with Node.js
 
 1. Set up the Environment
    To run the app using a node environment you will need to create a file called `.env` in the server folder. In this folder you will create a variable called `DB_CONNECTION_STRING` that will contain the environment variable of your database. An example of our variable is:
@@ -195,7 +195,7 @@ This will create all of the table in your database and if you want some sample d
 ## 🧪 TESTING
 
 - To run tests of the API endpoints from our back-end server:
-  1. Ensure both containers are running. You can use the docker-compose command from the installation instructions.
+  1. Ensure the database and server are running. You can use the docker-compose command from the installation instructions.
   2. Access the Server container:
   ```bash
     docker exec -it server_cont /bin/bash
@@ -204,6 +204,30 @@ This will create all of the table in your database and if you want some sample d
   ```bash
     npm test
   ```
+  4. Checkout the coverage of these tests by running:
+  ```bash
+    npm run coverage
+  ```
+- To run tests of or React Client:
+  1. Ensure the database, server, and client are all running. You can use the docker-compose command from the installation instructions.
+  2. Navigate to the /client directory. From the root directory you can run:
+  ```bash
+    cd client
+  ```
+  3. To run the test suite, you can run either of the following two commands:
+  ```bash
+    npm run test
+  ```
+  ```bash
+    npm run test:ui
+  ```
+  4. Checkout the coverage of these tests by running:
+  ```bash
+    npm run coverage:open
+  ```
+
+#### Test Troubleshooting
+1. Ensure that both client and server tests are not running at the same time as this can cause test timeout and async issues on the client side tests due to tests often reseeding the database.
 
 ---
 

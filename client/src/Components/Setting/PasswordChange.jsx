@@ -1,19 +1,31 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Button, TextField, Box, Container, Stack } from "@mui/material";
 import "./PasswordChange.css";
 
 function PasswordChange() {
   const userId = localStorage.getItem("userId");
   const [changePassword, setChangePassword] = useState(false);
+  const [formData, setFormData] = useState({
+    password: '',
+    secondPassword: ''
+  });
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
+
 
   function handleChangePassword() {
     setChangePassword(!changePassword);
   }
 
-  async function submitPasswordChange(formData) {
-    const password = formData.get("password");
-    const password2 = formData.get("password2");
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setFormData(prevState => ({ ...prevState, [name]: value }));
+  };
 
-    if (password == password2) {
+  async function handleSubmit(event) {
+    event.preventDefault();
+    if (formData.password == formData.secondPassword) {
       try {
         let response = await fetch(
           `http://localhost:8080/users/password/${userId}`,
@@ -23,32 +35,76 @@ function PasswordChange() {
               "Content-Type": "application/json",
               Accept: "application/json",
             },
-            body: JSON.stringify({ password }),
+            body: JSON.stringify({password: formData.password}),
           }
         );
 
         response = await response.json();
-        alert("password successfully changed");
+        alert("Password successfully changed");
+        navigate("/");
       } catch (err) {
-        alert("operation unsuccessful");
+        alert("Operation Unsuccessful");
         console.log(err);
       }
     }
     else{
-        alert("passwords do not match")
+        alert("Passwords must match")
     }
   }
 
   return (
     <div className="body">
-      <button onClick={handleChangePassword}>Change Password</button>
+      <Button
+        color="primary"
+        variant="contained"
+        onClick={handleChangePassword}
+      >
+        Change Password
+      </Button>
 
       {changePassword ? (
-        <form action={submitPasswordChange}>
-          <input name="password" placeholder="Enter your new password" type="password" />
-          <input name="password2" placeholder="Confirm your new password" type="password" />
-          <button type="submit">Confirm</button>
-        </form>
+        <Container maxWidth="sm">
+          <Box
+            component="form"
+            onSubmit={handleSubmit}
+            sx={{ mt: 2 }}
+          >
+          {error && (
+          <Typography variant="body1" color="error" sx={{ mb: 2 }}>
+            {error}
+          </Typography>
+          )}
+          <Stack spacing={2}>
+            <TextField
+              label="New Password"
+              type="password"
+              variant="outlined"
+              data-testid='test-passInput'
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              fullWidth
+            />
+            <TextField
+              label="Re-Type Password"
+              type="password"
+              variant="outlined"
+              data-testid='test-passInput2'
+              name="secondPassword"
+              value={formData.secondPassword}
+              onChange={handleChange}
+              fullWidth
+            />
+            <Button
+              color="primary"
+              variant="contained"
+              type="submit"
+              >
+              Confirm
+            </Button>
+          </Stack>
+        </Box>
+      </Container>
       ) : null}
     </div>
   );

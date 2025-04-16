@@ -13,8 +13,10 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Cancel";
-import { ConfirmSaveModal } from "../AddOns/ConfirmModal";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { ConfirmSaveModal, ConfirmDeleteModal } from "../AddOns/ConfirmModal";
 import { saveInlineEdits, cancelInlineEdits } from "./HandleEditCourse";
+import { deleteCourse } from "./HandleDeleteCourse";
 
 export default function CourseTable({
   courses,
@@ -26,6 +28,8 @@ export default function CourseTable({
   const [editCourseId, setEditCourseId] = useState(null);
   const [editedCourse, setEditedCourse] = useState({});
   const [saveConfirmOpen, setSaveConfirmOpen] = useState(false);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [courseToDelete, setCourseToDelete] = useState(null);
 
   const startEditing = (course) => {
     setEditCourseId(course.id);
@@ -51,6 +55,24 @@ export default function CourseTable({
     setEditedCourse({});
   };
 
+  const handleDeleteCourse = (courseId, e) => {
+    e.stopPropagation();
+    setCourseToDelete(courseId);
+    setDeleteConfirmOpen(true);
+  };
+
+  const confirmDeleteCourse = () => {
+    if (courseToDelete) {
+      deleteCourse(courseToDelete)
+        .then(() => {
+          window.location.reload();
+        })
+        .catch((error) => {
+          console.error("Error deleting course:", error);
+        });
+    }
+  };
+
   return (
     <>
       <TableContainer component={Paper}>
@@ -63,13 +85,14 @@ export default function CourseTable({
               <TableCell>End Date</TableCell>
               <TableCell>Seats</TableCell>
               <TableCell>Cert Granted</TableCell>
-              <TableCell>Actions</TableCell>
+              <TableCell>Edit</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {courses.map((course) => (
               <TableRow
                 key={course.id}
+                data-testid='test-courseRow'
                 onClick={() =>
                   onSelectCourse(course.id === selectedCourseId ? null : course.id)
                 }
@@ -178,6 +201,8 @@ export default function CourseTable({
                   {editCourseId === course.id ? (
                     <>
                       <IconButton
+                        color="primary"
+                        size="small"
                         onClick={(e) => {
                           e.stopPropagation();
                           setSaveConfirmOpen(true);
@@ -186,6 +211,8 @@ export default function CourseTable({
                         <SaveIcon />
                       </IconButton>
                       <IconButton
+                        color="error"
+                        size="small"
                         onClick={(e) => {
                           e.stopPropagation();
                           handleCancelEdits();
@@ -195,14 +222,24 @@ export default function CourseTable({
                       </IconButton>
                     </>
                   ) : (
-                    <IconButton
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        startEditing(course);
-                      }}
-                    >
-                      <EditIcon />
-                    </IconButton>
+                    <>
+                      <IconButton
+                        color="primary"
+                        size="small"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          startEditing(course);
+                        }}
+                      >
+                        <EditIcon />
+                      </IconButton>
+                      <IconButton
+                        color="error"
+                        size="small"
+                        onClick={(e) => handleDeleteCourse(course.id, e)}>
+                        <DeleteIcon />
+                      </IconButton>
+                    </>
                   )}
                 </TableCell>
               </TableRow>
@@ -220,6 +257,15 @@ export default function CourseTable({
           setSaveConfirmOpen(false);
         }}
         message="Are you sure you want to save your changes?"
+      />
+      <ConfirmDeleteModal
+        open={deleteConfirmOpen}
+        onClose={() => setDeleteConfirmOpen(false)}
+        onConfirm={() => {
+          confirmDeleteCourse();
+          setDeleteConfirmOpen(false);
+        }}
+        message="Are you sure you want to delete this course? This action cannot be undone."
       />
     </>
   );
