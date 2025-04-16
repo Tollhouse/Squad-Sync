@@ -13,8 +13,10 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Cancel";
-import { ConfirmSaveModal } from "../AddOns/ConfirmModal";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { ConfirmSaveModal, ConfirmDeleteModal } from "../AddOns/ConfirmModal";
 import { saveInlineEdits, cancelInlineEdits } from "./HandleEditCourse";
+import { deleteCourse } from "./HandleDeleteCourse";
 
 export default function CourseTable({
   courses,
@@ -26,6 +28,8 @@ export default function CourseTable({
   const [editCourseId, setEditCourseId] = useState(null);
   const [editedCourse, setEditedCourse] = useState({});
   const [saveConfirmOpen, setSaveConfirmOpen] = useState(false);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [courseToDelete, setCourseToDelete] = useState(null);
 
   const startEditing = (course) => {
     setEditCourseId(course.id);
@@ -49,6 +53,24 @@ export default function CourseTable({
     cancelInlineEdits();
     setEditCourseId(null);
     setEditedCourse({});
+  };
+
+  const handleDeleteCourse = (courseId, e) => {
+    e.stopPropagation();
+    setCourseToDelete(courseId);
+    setDeleteConfirmOpen(true);
+  };
+
+  const confirmDeleteCourse = () => {
+    if (courseToDelete) {
+      deleteCourse(courseToDelete)
+        .then(() => {
+          window.location.reload();
+        })
+        .catch((error) => {
+          console.error("Error deleting course:", error);
+        });
+    }
   };
 
   return (
@@ -195,14 +217,19 @@ export default function CourseTable({
                       </IconButton>
                     </>
                   ) : (
-                    <IconButton
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        startEditing(course);
-                      }}
-                    >
-                      <EditIcon />
-                    </IconButton>
+                    <>
+                      <IconButton
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          startEditing(course);
+                        }}
+                      >
+                        <EditIcon />
+                      </IconButton>
+                      <IconButton onClick={(e) => handleDeleteCourse(course.id, e)}>
+                        <DeleteIcon color="error" />
+                      </IconButton>
+                    </>
                   )}
                 </TableCell>
               </TableRow>
@@ -220,6 +247,15 @@ export default function CourseTable({
           setSaveConfirmOpen(false);
         }}
         message="Are you sure you want to save your changes?"
+      />
+      <ConfirmDeleteModal
+        open={deleteConfirmOpen}
+        onClose={() => setDeleteConfirmOpen(false)}
+        onConfirm={() => {
+          confirmDeleteCourse();
+          setDeleteConfirmOpen(false);
+        }}
+        message="Are you sure you want to delete this course? This action cannot be undone."
       />
     </>
   );
