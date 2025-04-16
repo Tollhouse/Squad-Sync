@@ -436,8 +436,7 @@ export default function SchedulerUser () {
               label="Cancel"
               className="textPrimary"
               onClick={handleCancelClick(id)}
-              color="inherit"
-            />,
+              color="primary"            />,
           ];
         }
 
@@ -447,15 +446,13 @@ export default function SchedulerUser () {
             label="Edit"
             className="textPrimary"
             onClick={handleEditClick(id)}
-            color="inherit"
-          />,
+            color="primary"          />,
           <GridActionsCellItem
             icon={<DeleteIcon />}
             label="Delete"
             className="textPrimary"
             onClick={handleDeleteClick(id)}
-            color="inherit"
-          />,
+            color="primary"          />,
         ];
       },
     },

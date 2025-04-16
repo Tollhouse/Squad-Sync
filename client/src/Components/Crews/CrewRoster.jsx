@@ -73,7 +73,7 @@ function CrewRoster({ crew_id }) {
           //const initializedRoster = mergedRoster.map((member) => ({ ...member, isEditing: false }));
           setRoster(mergedRoster)
         }
-        
+
         const availableUsersByRole = {};
         for (const member of mergedRoster) {
           const available = await getAvailableUsers(crew_id, member.role);
@@ -154,7 +154,7 @@ console.log("roster", roster)
               <TableCell>Role</TableCell>
               <TableCell>Name</TableCell>
               <TableCell>Experience</TableCell>
-              <TableCell>Action</TableCell>
+              <TableCell>Edit</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -210,7 +210,7 @@ console.log("roster", roster)
                         </IconButton>
                       </Box>
                     ) : (
-                      <IconButton onClick={() => handleEditClick(index)} aria-label="edit">
+                      <IconButton color="primary" onClick={() => handleEditClick(index)} aria-label="edit">
                         <EditIcon />
                       </IconButton>
                     )}

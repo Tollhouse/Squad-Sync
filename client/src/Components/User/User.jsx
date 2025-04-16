@@ -149,14 +149,14 @@ export default function User () {
               label="Save"
               sx={{color: 'primary.main'}}
               onClick={handleSaveClick(id)}
+              color="primary"
             />,
             <GridActionsCellItem
               icon={<CancelIcon />}
               label="Cancel"
               className='textPrimary'
               onClick={handleCancelClick(id)}
-              color="inherit"
-            />
+              color="primary"            />
           ]
         }
 
@@ -166,8 +166,7 @@ export default function User () {
             label="Edit"
             className='textPrimary'
             onClick={handleEditClick(id)}
-            color="inherit"
-          />
+            color="primary"          />
         ]
       }
     }

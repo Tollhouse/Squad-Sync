@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Button } from "@mui/material";
 import "./PasswordChange.css";
 
 function PasswordChange() {
@@ -41,13 +42,25 @@ function PasswordChange() {
 
   return (
     <div className="body">
-      <button onClick={handleChangePassword}>Change Password</button>
+      <Button
+        color="primary"
+        variant="contained"
+        onClick={handleChangePassword}
+      >
+        Change Password
+      </Button>
 
       {changePassword ? (
         <form action={submitPasswordChange}>
           <input name="password" placeholder="Enter your new password" type="password" />
           <input name="password2" placeholder="Confirm your new password" type="password" />
-          <button type="submit">Confirm</button>
+          <Button
+            color="primary"
+            variant="contained"
+            type="submit"
+            >
+            Confirm
+          </Button>
         </form>
       ) : null}
     </div>
