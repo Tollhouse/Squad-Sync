@@ -60,7 +60,7 @@ describe('Testing Crews component ("/Crews" route)', () => {
 
         await userEvent.click(rotation_row[0])
 
-        expect(screen.getByText('Crew Roster')).toBeInTheDocument()
+        expect(await screen.findByText('Alpha Crew Roster')).toBeInTheDocument()
     });
 
     it('edit button is rendered for crew rotations entries', async () => {
@@ -86,7 +86,7 @@ describe('Testing Crews component ("/Crews" route)', () => {
 
         await userEvent.click(rotation_row[0])
 
-        expect(screen.getByText('Crew Roster')).toBeInTheDocument()
+        expect(await screen.findByText('Alpha Crew Roster')).toBeInTheDocument()
         const edit = await screen.findAllByTestId('test-crewRosterEdit')
         expect(edit.length).toBeGreaterThan(0)
     })
@@ -98,7 +98,7 @@ describe('Testing Crews component ("/Crews" route)', () => {
 
         await userEvent.click(rotation_row[0])
 
-        expect(screen.getByText('Crew Roster')).toBeInTheDocument()
+        expect(await screen.findByText('Alpha Crew Roster')).toBeInTheDocument()
         const edit = await screen.findAllByTestId('test-crewRosterEdit')
         expect(edit.length).toBeGreaterThan(0)
         userEvent.click(edit[0])
