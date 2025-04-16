@@ -471,8 +471,9 @@ export default function SchedulerUser () {
     <div className="user-container">
       <div className="search-container">
         <input
-          type="text"
-          placeholder="Search for member..."
+          type='text'
+          placeholder='Search for member...'
+          data-testid='test-userSearchBar'
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           style={{

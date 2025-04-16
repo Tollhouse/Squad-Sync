@@ -15,7 +15,7 @@ describe('Testing SchdedulerUser component ("/user/scheduler" route)', () => {
         );
     };
 
-    it('should render table with user info headers', async () => {
+    it('should render table with user info headers', () => {
         renderSchdedulerUser()
         expect(screen.getByText('ID')).toBeInTheDocument()
         expect(screen.getByText('User Name')).toBeInTheDocument()
@@ -27,5 +27,10 @@ describe('Testing SchdedulerUser component ("/user/scheduler" route)', () => {
         expect(screen.getByText('Privilege')).toBeInTheDocument()
         expect(screen.getByText('Experience Level')).toBeInTheDocument()
         expect(screen.getByText('Edit')).toBeInTheDocument()
+    })
+
+    it('should render user search bar', () => {
+        renderSchdedulerUser()
+        expect(screen.getByTestId('test-userSearchBar')).toBeInTheDocument()
     })
 });
