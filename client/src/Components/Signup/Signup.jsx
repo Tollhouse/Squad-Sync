@@ -22,7 +22,7 @@ export default function Signup() {
     last_name: '',
     crew_id: 7,
     role: "Not Assigned",
-    experience_type: "red"
+    experience_type: "Red"
   });
   const [error, setError] = useState('');
   const navigate = useNavigate();
@@ -34,25 +34,28 @@ export default function Signup() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-
-    fetch('http://localhost:8080/users', {
-      method: 'POST',
-      mode: 'cors',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json' },
-      body: JSON.stringify(formData),
-    })
-      .then(response => response.json())
-      .then((response) => {
-        if (response.id) {
-          alert(response.message);
-          navigate('/login')
-        } else {
-          alert(response.message);
-        }
+    if (formData.password == formData.secondPassword) {
+      fetch('http://localhost:8080/users', {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
       })
-      .catch(err => setError('Signup failed'));
+        .then(response => response.json())
+        .then((response) => {
+          if (response.id) {
+            alert(response.message);
+            navigate('/login')
+          } else {
+            alert(response.message);
+          }
+        })
+        .catch(err => setError('Signup failed'));
+    } else {
+      alert('Passwords must match');
+    }
 
   };
 
@@ -99,6 +102,15 @@ export default function Signup() {
             variant="outlined"
             name="password"
             value={formData.password}
+            onChange={handleChange}
+            fullWidth
+          />
+          <TextField
+            label="Re-Type Password"
+            type="password"
+            variant="outlined"
+            name="secondPassword"
+            value={formData.secondPassword}
             onChange={handleChange}
             fullWidth
           />
