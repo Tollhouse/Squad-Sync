@@ -8,13 +8,11 @@ import {
   TableHead,
   TableRow,
   Box,
-  Button,
   Typography,
   Select,
   MenuItem,
   IconButton,
 } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
 import { getAvailableUsers } from './getAvailableUsers';
 import { ExperienceChip } from '../AddOns/ExperienceChip';
 
@@ -131,7 +129,7 @@ function CrewRoster({ crew_id }) {
   const handleSaveMember = async (index) => {
     const row = roster[index];
     const updatedUserId = row.pendingUserId === "" ? null : row.pendingUserId;
-    const oldUserId = row.user_id; 
+    const oldUserId = row.user_id;
 
     try {
 
