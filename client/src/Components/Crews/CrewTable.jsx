@@ -33,7 +33,7 @@ function CrewTable({ schedule, setSchedule }) {
   const [addRotationOpen, setAddRotationOpen] = useState(false);
 
   const handleEditClick = (row) => {
-    setEditingRowId(row.crew_id);
+    setEditingRowId(row.rotation_id);
     setEditFormData({ ...row });
   };
 
@@ -56,7 +56,7 @@ function CrewTable({ schedule, setSchedule }) {
         if (response.ok) {
           setSchedule((prevSchedule) =>
             prevSchedule.map((row) =>
-              row.crew_id === editFormData.crew_id ? editFormData : row
+              row.rotation_id === editFormData.rotation_id ? editFormData : row
             )
           );
           setEditingRowId(null); // Exit edit mode
@@ -135,7 +135,7 @@ function CrewTable({ schedule, setSchedule }) {
                   {row.crew_name}
                 </TableCell>
                 <TableCell>
-                  {editingRowId === row.crew_id ? (
+                  {editingRowId === row.rotation_id? (
                     <TextField
                       name="date_start"
                       type="date"
@@ -148,7 +148,7 @@ function CrewTable({ schedule, setSchedule }) {
                   )}
                 </TableCell>
                 <TableCell>
-                  {editingRowId === row.crew_id ? (
+                  {editingRowId === row.rotation_id ? (
                     <TextField
                       name="date_end"
                       type="date"
@@ -161,7 +161,7 @@ function CrewTable({ schedule, setSchedule }) {
                   )}
                 </TableCell>
                 <TableCell>
-                  {editingRowId === row.crew_id ? (
+                  {editingRowId === row.rotation_id ? (
                     <Select
                       name="shift_type"
                       value={editFormData.shift_type || ""}
@@ -181,7 +181,7 @@ function CrewTable({ schedule, setSchedule }) {
                   <ExperienceChip level={row.crew_experience} />
                 </TableCell>
                 <TableCell>
-                  {editingRowId === row.crew_id ? (
+                  {editingRowId === row.rotation_id ? (
                     <>
                       <IconButton
                         color="primary"
