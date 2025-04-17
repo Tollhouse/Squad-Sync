@@ -194,7 +194,6 @@ export default function CoursePersonnel({ course, registeredUsers, onRosterChang
           {course.course_name} - Registered Personnel
         </Typography>
       </Box>
-
       <TableContainer component={Paper} sx={{ mt: 2 }}>
         <Table>
           <TableHead>
