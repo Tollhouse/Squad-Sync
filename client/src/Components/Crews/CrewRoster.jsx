@@ -23,6 +23,8 @@ import CancelIcon from '@mui/icons-material/Cancel';
 function CrewRoster({ crew_id }) {
   const [roster, setRoster] = useState([]);
   const [availableUsers, setAvailableUsers] = useState({});
+  const [crewName, setCrewName] = useState("Not Assigned");
+  const [crewId, setCrewId] = useState(crew_id);
 
   useEffect(() => {
     async function fetchData() {
@@ -31,6 +33,13 @@ function CrewRoster({ crew_id }) {
         let rosterData = await fetch(`http://localhost:8080/crews/roster/${crew_id}`);
         rosterData = await rosterData.json();
 
+        if (rosterData.length > 0) {
+          setCrewName(rosterData[0].crew_name || "Not Assigned");
+          setCrewId(rosterData[0].crew_id || crew_id);
+        } else {
+          setCrewName("Not Assigned");
+          setCrewId(crew_id);
+        }
 
         if (!Array.isArray(rosterData)) {
           rosterData = []
@@ -40,14 +49,14 @@ function CrewRoster({ crew_id }) {
         const nonOperators = rosterData.filter((member) => member.role !== "Operator");
 
         const operatorDefaults = [
-          { role: "Operator", crew_id, user_id: null, user_experience: null },
-          { role: "Operator", crew_id, user_id: null, user_experience: null },
-          { role: "Operator", crew_id, user_id: null, user_experience: null },
+          { role: "Operator", crew_id, user_id: null, user_experience: null, crew_name: crewName },
+          { role: "Operator", crew_id, user_id: null, user_experience: null, crew_name: crewName },
+          { role: "Operator", crew_id, user_id: null, user_experience: null, crew_name: crewName },
         ];
 
         const nonOperatorDefaults = [
-          { role: "Crew Commander", crew_id, user_id: null, user_experience: null },
-          { role: "Crew Chief", crew_id, user_id: null, user_experience: null },
+          { role: "Crew Commander", crew_id, user_id: null, user_experience: null, crew_name: crewName },
+          { role: "Crew Chief", crew_id, user_id: null, user_experience: null, crew_name: crewName },
         ];
 
         const mergedOperators = operatorDefaults.map((defaultOperator, index) => {
@@ -145,7 +154,7 @@ function CrewRoster({ crew_id }) {
             body: JSON.stringify({ crew_id: null }),
           });
         }
-        
+
         const updatedRoster = [...roster];
         updatedRoster[index] = {
           ...updatedRoster[index],
@@ -155,6 +164,7 @@ function CrewRoster({ crew_id }) {
           first_name: undefined,
           last_name: undefined,
           user_experience: undefined,
+          crew_id: 7,
         };
         setRoster(updatedRoster);
         return;
@@ -197,8 +207,6 @@ function CrewRoster({ crew_id }) {
       alert('Failed to update crew roster.');
     }
   };
-
-  const crewName = roster.length > 0 ? roster[0].crew_name || "Unknown Crew" : "Unknown Crew";
 
   return (
     <>
