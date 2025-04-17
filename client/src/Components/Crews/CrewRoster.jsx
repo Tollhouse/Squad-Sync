@@ -163,17 +163,27 @@ function CrewRoster({ crew_id }) {
       });
 
       if (response.ok) {
-        alert(`Crew member for role "${row.role}" updated successfully!`);
+
+        const userRes = await fetch(`http://localhost:8080/users/${updatedUserId}`);
+        const updatedUser = await userRes.json();
+      
         const updatedRoster = [...roster];
-        updatedRoster[index].user_id = updatedUserId;
-        updatedRoster[index].isEditing = false;
+        updatedRoster[index] = {
+          ...updatedRoster[index],
+          user_id: updatedUserId,
+          isEditing: false,
+          user_experience: updatedUser.experience_type,
+          first_name: updatedUser.first_name,
+          last_name: updatedUser.last_name,
+        };
         setRoster(updatedRoster);
+        alert(`Crew member for role "${row.role}" updated successfully!`);
       } else {
         alert('Failed to update crew roster.');
       }
     } catch (error) {
-      console.error('Error updating crew roster:', error);
-      alert('Error updating crew roster.');
+      console.error("Error updating user:", error);
+      alert('Failed to update crew roster.');
     }
   };
 

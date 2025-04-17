@@ -61,7 +61,7 @@ export default function CoursePersonnel({ course, registeredUsers, onRosterChang
   }, [registeredUsers, course.seats, course.id]);
 
   const dropdownOptions = (assignedUserId, row) => {
-    // Try to find the assigned user in registeredUsers, then in availableUsers, then fallback to the row itself
+
     const assignedUser =
       registeredUsers.find((user) => user.user_id === assignedUserId) ||
       availableUsers.find((user) => user.id === assignedUserId) ||
