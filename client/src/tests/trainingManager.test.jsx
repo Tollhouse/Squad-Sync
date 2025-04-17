@@ -31,7 +31,7 @@ describe('Testing TrainingManager component ("/training-manager" route)', () => 
         expect(screen.getByText('Description')).toBeInTheDocument()
         expect(screen.getByText('Seats Offered')).toBeInTheDocument()
         expect(screen.getByText('Cert Granted')).toBeInTheDocument()
-        expect(screen.getByText('Actions')).toBeInTheDocument()
+        expect(screen.getByText('Edit')).toBeInTheDocument()
     })
 
     it('renders data from backend', async () => {
@@ -57,8 +57,8 @@ describe('Testing TrainingManager component ("/training-manager" route)', () => 
         const edit_button = await screen.findAllByTestId("test-editButton")
         expect(edit_button.length > 0).toBe(true)
         userEvent.click(edit_button[0])
-        const save_button = await screen.findByText('Save')
-        const cancel_button = await screen.findByText('Cancel')
+        const save_button = await screen.findByTestId('test-saveButton')
+        const cancel_button = await screen.findByTestId('test-cancelButton')
         expect(save_button).toBeInTheDocument()
         expect(cancel_button).toBeInTheDocument()
     })

@@ -23,6 +23,8 @@ import CancelIcon from '@mui/icons-material/Cancel';
 function CrewRoster({ crew_id }) {
   const [roster, setRoster] = useState([]);
   const [availableUsers, setAvailableUsers] = useState({});
+  const [crewName, setCrewName] = useState("Not Assigned");
+  const [crewId, setCrewId] = useState(crew_id);
 
   useEffect(() => {
     async function fetchData() {
@@ -31,6 +33,13 @@ function CrewRoster({ crew_id }) {
         let rosterData = await fetch(`http://localhost:8080/crews/roster/${crew_id}`);
         rosterData = await rosterData.json();
 
+        if (rosterData.length > 0) {
+          setCrewName(rosterData[0].crew_name || "Not Assigned");
+          setCrewId(rosterData[0].crew_id || crew_id);
+        } else {
+          setCrewName("Not Assigned");
+          setCrewId(crew_id);
+        }
 
         if (!Array.isArray(rosterData)) {
           rosterData = []
@@ -40,14 +49,14 @@ function CrewRoster({ crew_id }) {
         const nonOperators = rosterData.filter((member) => member.role !== "Operator");
 
         const operatorDefaults = [
-          { role: "Operator", crew_id, user_id: null, user_experience: null },
-          { role: "Operator", crew_id, user_id: null, user_experience: null },
-          { role: "Operator", crew_id, user_id: null, user_experience: null },
+          { role: "Operator", crew_id, user_id: null, user_experience: null, crew_name: crewName },
+          { role: "Operator", crew_id, user_id: null, user_experience: null, crew_name: crewName },
+          { role: "Operator", crew_id, user_id: null, user_experience: null, crew_name: crewName },
         ];
 
         const nonOperatorDefaults = [
-          { role: "Crew Commander", crew_id, user_id: null, user_experience: null },
-          { role: "Crew Chief", crew_id, user_id: null, user_experience: null },
+          { role: "Crew Commander", crew_id, user_id: null, user_experience: null, crew_name: crewName },
+          { role: "Crew Chief", crew_id, user_id: null, user_experience: null, crew_name: crewName },
         ];
 
         const mergedOperators = operatorDefaults.map((defaultOperator, index) => {
@@ -133,20 +142,33 @@ function CrewRoster({ crew_id }) {
     const oldUserId = row.user_id;
 
     try {
+      if (updatedUserId === null) {
+        if (oldUserId) {
 
-      if (oldUserId && oldUserId !== updatedUserId) {
-        const oldUserPayload = {
+          await fetch(`http://localhost:8080/users/${oldUserId}`, {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+              Accept: 'application/json',
+            },
+            body: JSON.stringify({ crew_id: null }),
+          });
+        }
+
+        const updatedRoster = [...roster];
+        updatedRoster[index] = {
+          ...updatedRoster[index],
+          user_id: null,
+          pendingUserId: null,
+          isEditing: false,
+          first_name: undefined,
+          last_name: undefined,
+          user_experience: undefined,
           crew_id: 7,
+          crew_name: "Not Assigned",
         };
-
-        await fetch(`http://localhost:8080/users/${oldUserId}`, {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-          },
-          body: JSON.stringify(oldUserPayload),
-        });
+        setRoster(updatedRoster);
+        return;
       }
 
       const newUserPayload = {
@@ -163,21 +185,29 @@ function CrewRoster({ crew_id }) {
       });
 
       if (response.ok) {
-        alert(`Crew member for role "${row.role}" updated successfully!`);
+
+        const userRes = await fetch(`http://localhost:8080/users/${updatedUserId}`);
+        const updatedUser = await userRes.json();
+
         const updatedRoster = [...roster];
-        updatedRoster[index].user_id = updatedUserId;
-        updatedRoster[index].isEditing = false;
+        updatedRoster[index] = {
+          ...updatedRoster[index],
+          user_id: updatedUserId,
+          isEditing: false,
+          user_experience: updatedUser.experience_type,
+          first_name: updatedUser.first_name,
+          last_name: updatedUser.last_name,
+        };
         setRoster(updatedRoster);
+        alert(`Crew member for role "${row.role}" updated successfully!`);
       } else {
         alert('Failed to update crew roster.');
       }
     } catch (error) {
-      console.error('Error updating crew roster:', error);
-      alert('Error updating crew roster.');
+      console.error("Error updating user:", error);
+      alert('Failed to update crew roster.');
     }
   };
-
-  const crewName = roster.length > 0 ? roster[0].crew_name || "Unknown Crew" : "Unknown Crew";
 
   return (
     <>

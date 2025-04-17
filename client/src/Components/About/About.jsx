@@ -54,7 +54,7 @@ export default function About() {
                     <img src="/images/feedback.png" alt="Feedback" />
                     <h4>Feedback</h4>
                     <p>Tell us what's working—and what you'd like to see added!</p>
-                    <p>Email: DevTeam@sqaudsync.com  Phone: 555-555-1234</p>
+                    <p>Email: DevTeam@squadsync.com  Phone: 555-555-1234</p>
                   </div>
                 </div>
             </div>

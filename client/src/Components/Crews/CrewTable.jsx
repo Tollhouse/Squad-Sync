@@ -117,7 +117,7 @@ function CrewTable({ schedule, setSchedule }) {
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
             <TableRow>
-              <TableCell>Crew ID</TableCell>
+              <TableCell>Rotation ID</TableCell>
               <TableCell>Crew Name</TableCell>
               <TableCell>Start Date</TableCell>
               <TableCell>End Date</TableCell>
