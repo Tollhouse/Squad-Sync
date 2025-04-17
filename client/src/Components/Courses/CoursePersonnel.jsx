@@ -228,7 +228,6 @@ export default function CoursePersonnel({
           {course.course_name} - Registered Personnel
         </Typography>
       </Box>
-
       <TableContainer component={Paper} sx={{ mt: 2 }}>
         <Table>
           <TableHead>
