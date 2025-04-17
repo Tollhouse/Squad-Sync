@@ -26,7 +26,8 @@ describe('Testing Signup component ("/signup" route)', () => {
         const firstNameInput = screen.getByLabelText(/first name/i);
         const lastNameInput = screen.getByLabelText(/last name/i);
         const userNameInput = screen.getByLabelText(/username/i);
-        const passwordInput = screen.getByLabelText(/password/i);
+        const passwordInput = screen.getByLabelText("Password");
+        const passwordInput2 = screen.getByLabelText("Re-Type Password");
 
         await userEvent.type(firstNameInput, 'John');
         await waitFor(() => {

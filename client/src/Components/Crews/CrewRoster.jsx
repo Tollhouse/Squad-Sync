@@ -8,19 +8,17 @@ import {
   TableHead,
   TableRow,
   Box,
-  Button,
   Typography,
   Select,
   MenuItem,
   IconButton,
 } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
 import { getAvailableUsers } from './getAvailableUsers';
 import { ExperienceChip } from '../AddOns/ExperienceChip';
 
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
-import CancelIcon from '@mui/icons-material/Close';
+import CancelIcon from '@mui/icons-material/Cancel';
 
 function CrewRoster({ crew_id }) {
   const [roster, setRoster] = useState([]);
@@ -243,15 +241,19 @@ function CrewRoster({ crew_id }) {
                   <TableCell>
                     {s.isEditing ? (
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <IconButton data-testid='test-crewRosterSave' onClick={() => handleSaveMember(index)} aria-label="save">
+                        <IconButton
+                        color="primary"
+                        data-testid='test-crewRosterSave' onClick={() => handleSaveMember(index)} aria-label="save">
                           <SaveIcon />
                         </IconButton>
-                        <IconButton onClick={() => handleCancelEdit(index)} aria-label="cancel">
+                        <IconButton                         color="error"
+                        onClick={() => handleCancelEdit(index)} aria-label="cancel">
                           <CancelIcon />
                         </IconButton>
                       </Box>
                     ) : (
-                      <IconButton data-testid='test-crewRosterEdit' onClick={() => handleEditClick(index)} aria-label="edit">
+                      <IconButton                         color="primary"
+                      data-testid='test-crewRosterEdit' onClick={() => handleEditClick(index)} aria-label="edit">
                         <EditIcon />
                       </IconButton>
                     )}

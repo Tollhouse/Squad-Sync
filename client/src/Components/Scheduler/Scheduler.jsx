@@ -549,6 +549,50 @@ export default function Scheduler() {
               {selectedEvent.cert_earned ? "✅ Yes" : "❌ No"}
             </Typography>
           )}
+
+          {selectedEvent.crew_id && (
+            <>
+              <Typography variant="body2" sx={{ mt: 2, mb: 1 }}>
+                <strong>Assigned Crew Members:</strong>
+              </Typography>
+              <Box
+                sx={{
+                  mt: 1,
+                  textAlign: "center",
+                }}
+              >
+                {users
+                  .filter((u) => u.crew_id === selectedEvent.crew_id)
+                  .map((member) => {
+                    const emojiMap = {
+                      green: "🟢",
+                      yellow: "🟡",
+                      red: "🔴",
+                    };
+                    const exp = member.experience_type?.toLowerCase();
+                    return (
+                      <Typography
+                        key={member.id}
+                        variant="body2"
+                        sx={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          gap: 1,
+                          mb: 0.5,
+                          width: "100%",
+                        }}
+                      >
+                        <span>{emojiMap[exp] || "⚪"}</span>
+                        <span>
+                          {member.first_name} {member.last_name} — {member.role}
+                        </span>
+                      </Typography>
+                    );
+                  })}
+              </Box>
+            </>
+          )}
           <Box mt={3} display="flex" justifyContent="flex-end">
             <button
               style={{
@@ -564,6 +608,8 @@ export default function Scheduler() {
               onClick={() => setSelectedEvent(null)}
               onMouseOver={(e) => (e.target.style.backgroundColor = "#555")}
               onMouseOut={(e) => (e.target.style.backgroundColor = "#333")}
+
+
             >
               Close
             </button>

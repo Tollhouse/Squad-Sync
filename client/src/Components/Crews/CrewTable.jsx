@@ -18,7 +18,7 @@ import {
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import SaveIcon from "@mui/icons-material/Save";
-import CancelIcon from "@mui/icons-material/Close";
+import CancelIcon from "@mui/icons-material/Cancel";
 import EditIcon from "@mui/icons-material/Edit";
 import {ExperienceChip} from "../AddOns/ExperienceChip";
 import CrewRoster from "./CrewRoster";
@@ -44,7 +44,7 @@ function CrewTable({ schedule, setSchedule }) {
 
   const handleSaveClick = () => {
     // Save the changes (you can also send this to the backend)
-    fetch(`http://localhost:8080/crew_rotations/${editFormData.crew_id}`, {
+    fetch(`http://localhost:8080/crew_rotations/${editFormData.rotation_id}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -129,19 +129,10 @@ function CrewTable({ schedule, setSchedule }) {
           <TableBody>
 
             {schedule.map((row) => (
-              <TableRow data-testid='test-rotationRow' key={row.crew_id} onClick={() => handleRosterMode(row)}>
-                <TableCell>{row.crew_id}</TableCell>
+              <TableRow data-testid='test-rotationRow' key={row.rotation_id} onClick={() => handleRosterMode(row)}>
+                <TableCell>{row.rotation_id}</TableCell>
                 <TableCell>
-                  {editingRowId === row.crew_id ? (
-                    <TextField
-                      name="crew_name"
-                      value={editFormData.crew_name || ""}
-                      onChange={handleInputChange}
-                      size="small"
-                    />
-                  ) : (
-                    row.crew_name
-                  )}
+                  {row.crew_name}
                 </TableCell>
                 <TableCell>
                   {editingRowId === row.crew_id ? (
@@ -178,9 +169,9 @@ function CrewTable({ schedule, setSchedule }) {
                       size="small"
                       fullWidth
                     >
-                      <MenuItem value="day">Day</MenuItem>
-                      <MenuItem value="swing">Swing</MenuItem>
-                      <MenuItem value="night">Night</MenuItem>
+                      <MenuItem value="Day">Day</MenuItem>
+                      <MenuItem value="Swing">Swing</MenuItem>
+                      <MenuItem value="Night">Night</MenuItem>
                     </Select>
                   ) : (
                     row.shift_type
@@ -201,7 +192,7 @@ function CrewTable({ schedule, setSchedule }) {
                         <SaveIcon />
                       </IconButton>
                       <IconButton
-                        color="secondary"
+                        color="error"
                         size="small"
                         onClick={handleCancelClick}
                       >

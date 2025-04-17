@@ -20,12 +20,12 @@ router.get("/:id", async (req, res) => {
       return
   } else{
       const course = await knex("courses")
-                                .select(
-                                  '*',
-                                  knex.raw(`TO_CHAR(date_start, 'YYYY-MM-DD') AS date_start`),
-                                  knex.raw(`TO_CHAR(date_end, 'YYYY-MM-DD') AS date_end`)
-                                ).
-                                where('id',id)
+        .select(
+          '*',
+          knex.raw(`TO_CHAR(date_start, 'YYYY-MM-DD') AS date_start`),
+          knex.raw(`TO_CHAR(date_end, 'YYYY-MM-DD') AS date_end`)
+        ).
+        where('id',id)
       if (course.length == 0) {
         return res.status(200).json({message: `No matching course found for id: ${id}.`})
       }
@@ -34,26 +34,28 @@ router.get("/:id", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
-  const { course_name, date_start, date_end, cert_granted } = req.body
+  const { course_name, description, seats, date_start, date_end, cert_granted } = req.body
   if(
       isNaN(Date.parse(date_start)) || typeof date_start !== "string" ||
       isNaN(Date.parse(date_end)) || typeof date_end !== "string" ||
-      course_name.trim() == "" || typeof course_name !== "string" ||
-      cert_granted.trim() == "" || typeof cert_granted !== "string"
+      typeof course_name !== "string" || course_name.trim() == "" ||
+      typeof cert_granted !== "string" || cert_granted.trim() == "" ||
+      typeof description !== "string" || description.trim() == "" ||
+      typeof seats !== "number"
   ){
       return res.status(400).json({ message: 'Submitted information is in the invalid format.' });
   }else{
       try{
           const course_input = await knex("courses")
-              .insert({ course_name, date_start, date_end, cert_granted })
+              .insert({ course_name, description, seats, date_start, date_end, cert_granted })
               .returning("id")
           const query = await knex('courses')
-                                    .select(
-                                      '*',
-                                      knex.raw(`TO_CHAR(date_start, 'YYYY-MM-DD') AS date_start`),
-                                      knex.raw(`TO_CHAR(date_end, 'YYYY-MM-DD') AS date_end`)
-                                    )
-                                    .where('id', course_input[0].id)
+            .select(
+              '*',
+              knex.raw(`TO_CHAR(date_start, 'YYYY-MM-DD') AS date_start`),
+              knex.raw(`TO_CHAR(date_end, 'YYYY-MM-DD') AS date_end`)
+            )
+            .where('id', course_input[0].id)
           res.status(201).json(query)
       }catch (error){
           return res.status(500).json({ error: 'Internal Server Error' });
@@ -76,16 +78,16 @@ router.patch("/:id", async (req, res) => {
       }
 
       const updated_course = await knex("courses")
-                                      .where('id',id)
-                                      .update(updates)
-                                      .returning("id")
+        .where('id',id)
+        .update(updates)
+        .returning("id")
       const query = await knex('courses')
-                                    .select(
-                                      '*',
-                                      knex.raw(`TO_CHAR(date_start, 'YYYY-MM-DD') AS date_start`),
-                                      knex.raw(`TO_CHAR(date_end, 'YYYY-MM-DD') AS date_end`)
-                                    )
-                                    .where('id', updated_course[0].id)
+        .select(
+          '*',
+          knex.raw(`TO_CHAR(date_start, 'YYYY-MM-DD') AS date_start`),
+          knex.raw(`TO_CHAR(date_end, 'YYYY-MM-DD') AS date_end`)
+        )
+        .where('id', updated_course[0].id)
       res.status(201).json(query)
   }catch (error){
       return res.status(500).json({ error: 'Internal Server Error' });

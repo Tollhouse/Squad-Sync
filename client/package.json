@@ -8,7 +8,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "start": "vite",
-    "test": "vitest watch",
+    "test": "vitest",
     "test:ui": "vitest --ui",
     "coverage": "vitest run --coverage",
     "coverage:open": "vitest run --coverage && open coverage/index.html"
