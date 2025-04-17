@@ -46,7 +46,7 @@ export default function SchedulerUser () {
 
         const mergedData = userData.map((user) => ({
           ...user,
-          crew_name: crewMapping[user.crew_id] || "Unknown Crew",
+          crew_name: crewMapping[user.crew_id] || "Not Assigned",
         }));
 
         if (

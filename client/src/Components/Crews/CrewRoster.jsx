@@ -165,6 +165,7 @@ function CrewRoster({ crew_id }) {
           last_name: undefined,
           user_experience: undefined,
           crew_id: 7,
+          crew_name: "Not Assigned",
         };
         setRoster(updatedRoster);
         return;
