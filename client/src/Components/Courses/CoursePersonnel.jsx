@@ -116,6 +116,7 @@ export default function CoursePersonnel({ course, registeredUsers, onRosterChang
       const oldUserId = row.user_id;
       let newRegistration = null;
       let userObj = registeredUsers.find(u => u.user_id === updatedUserId);
+      console.log(updatedUserId)
 
       try {
         if (oldUserId && oldUserId !== updatedUserId && row.id && typeof row.id === "number") {
@@ -129,7 +130,17 @@ export default function CoursePersonnel({ course, registeredUsers, onRosterChang
           });
         }
 
-        if (updatedUserId) {
+        if (updatedUserId == null) {
+          await fetch(`http://localhost:8080/course_registration/${row.id}`, {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+            },
+            body: JSON.stringify({ user_id: updatedUserId }),
+          });
+        }else
+         if (updatedUserId) {
           if (typeof row.id === "number" && row.user_id !== null) {
           await fetch(`http://localhost:8080/course_registration/${row.id}`, {
             method: "PATCH",
