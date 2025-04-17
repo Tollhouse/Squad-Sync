@@ -62,6 +62,7 @@ export default function Scheduler() {
         setRotations(rotData);
         setCrews(crewData);
         setLoading(false);
+
         const crewExperience = {};
         usersData.forEach((user) => {
           if (!crewExperience[user.crew_id])
@@ -105,6 +106,7 @@ export default function Scheduler() {
 
     const crewEvents = [];
     const shiftMap = {};
+    const conflictMap = {};
 
     rotations.forEach((rotation) => {
       const emojiMap = {
@@ -115,14 +117,13 @@ export default function Scheduler() {
 
       const crew = crews.find((c) => c.id === rotation.crew_id);
       const crewName = crew?.crew_name || "Unknown";
-
       const current = new Date(`${rotation.date_start}T12:00:00`);
       const end = new Date(`${rotation.date_end}T12:00:00`);
 
       while (current <= end) {
-        const start = new Date(current);
-        const eventStart = new Date(start);
-        const eventEnd = new Date(start);
+        // const start = new Date(current);
+        const eventStart = new Date(current);
+        const eventEnd = new Date(current);
 
         switch (rotation.shift_type?.toLowerCase()) {
           case "day":
@@ -155,35 +156,63 @@ export default function Scheduler() {
           experience_type: rotation.experience_type,
           shift_type: rotation.shift_type,
           crew_id: rotation.crew_id,
-          tooltip: `${crewName} Crew\n${
-            rotation.shift_type
-          } Shift\n${moment(eventStart).format("h:mm A")} – ${moment(
-            eventEnd
-          ).format("h:mm A")}`,
+          tooltip: `${crewName} Crew\n${rotation.shift_type} Shift\n${moment(eventStart).format("h:mm A")} – ${moment(eventEnd).format("h:mm A")}`,
         };
 
-        // Check for overlaps
-        const key = `${rotation.crew_id}-${eventStart.toDateString()}`;
+        const key = `${eventStart.toDateString()}-${rotation.shift_type}`;
         if (!shiftMap[key]) shiftMap[key] = [];
+
         for (let e of shiftMap[key]) {
-          if (
+          const overlapping =
             (eventStart < e.end && eventEnd > e.start) ||
-            (eventStart.getTime() === e.start.getTime() &&
-              eventEnd.getTime() === e.end.getTime())
-          ) {
-            setOverlapWarnings((prev) => [
-              ...prev,
-              `${crewName} Crew has overlapping shifts on ${eventStart.toDateString()}`,
-            ]);
-            break;
+            (eventStart.getTime() === e.start.getTime() && eventEnd.getTime() === e.end.getTime());
+
+          if (overlapping) {
+            const crewA = crewName;
+            const crewB = e.crewName;
+            const dateStr = eventStart.toDateString();
+
+            if (e.crewId === rotation.crew_id && e.shiftType !== rotation.shift_type) {
+              const key = `${crewA}|${e.shiftType}|${rotation.shift_type}`;
+              if (!conflictMap[key]) conflictMap[key] = [];
+              conflictMap[key].push(dateStr);
+            }
+
+            if (e.crewId !== rotation.crew_id && e.shiftType === rotation.shift_type) {
+              const key = `${crewA} Crew (${rotation.shift_type}) overlaps with ${crewB} Crew (${e.shiftType})`;
+              if (!conflictMap[key]) conflictMap[key] = [];
+              conflictMap[key].push(dateStr);
+            }
           }
         }
-        shiftMap[key].push({ start: eventStart, end: eventEnd });
+
+        shiftMap[key].push({
+          start: eventStart,
+          end: eventEnd,
+          crewName,
+          crewId: rotation.crew_id,
+          shiftType: rotation.shift_type,
+        });
+
         crewEvents.push(event);
         current.setDate(current.getDate() + 1);
       }
     });
 
+    const formattedWarnings = Object.entries(conflictMap).map(([key, dates]) => {
+      const sortedDates = dates.map(d => new Date(d)).sort((a, b) => a - b);
+      const startDate = sortedDates[0].toDateString();
+      const endDate = sortedDates[sortedDates.length - 1].toDateString();
+
+      if (key.includes("overlaps with")) {
+        return `${key} from ${startDate} to ${endDate}`;
+      }
+
+      const [crewName, shiftA, shiftB] = key.split("|");
+      return `${crewName} Crew has overlapping ${shiftA.toLowerCase()} and ${shiftB.toLowerCase()} shifts from ${startDate} to ${endDate}`;
+    });
+
+    setOverlapWarnings(formattedWarnings);
     setCalendarEvents([...registrationEvents, ...crewEvents]);
   }, [registrations, courses, users, rotations, crews]);
 
