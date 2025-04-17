@@ -12,8 +12,8 @@ import {
   Paper,
   useTheme,
 } from "@mui/material";
-
-import './TrainingManager.css'
+import AddIcon from "@mui/icons-material/Add";
+import './TrainingManager.css';
 
 export default function Courses() {
   const theme = useTheme();
@@ -81,6 +81,7 @@ export default function Courses() {
       );
 
       setEditingRowId(null);
+      window.location.reload();
     } catch (error) {
       console.error("Error saving changes:", error);
     }
@@ -159,13 +160,20 @@ export default function Courses() {
         <Typography variant="h4" gutterBottom>
           Course Management
         </Typography>
-        <button onClick={handleAddCourse}>Add Course</button>
+        <button
+          color="primary"
+          variant="contained"
+          startIcon={<AddIcon />}
+          onClick={handleAddCourse}>Add Course</button>
       </Box>
 
       {isAdding && (
         <Box component={Paper} sx={{ mt: 2, p: 2 }}>
           <Typography variant="h6" gutterBottom>
             Add New Course
+          </Typography>
+          <Typography variant="subtitle2" gutterBottom>
+            Must include all information
           </Typography>
           <div>
             <input
