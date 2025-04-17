@@ -196,7 +196,6 @@ export default function User () {
           },
         }}
         >
-
           {userInformation.length > 0 ? (
         <DataGrid
           rows={userInformation}
