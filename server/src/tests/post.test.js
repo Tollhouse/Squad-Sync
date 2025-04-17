@@ -216,13 +216,13 @@ describe('POST testing of /course_registration route', () => {
     it('returns id of created course registration', async () => {
         const res = await request(app).post('/course_registration').send(post_body)
         expect(res.status).toBe(201)
-        expect(typeof res.body[0].id).toBe('number')
+        expect(typeof res.body.id).toBe('number')
     })
 
     it('created course registration is visible in subsequent GET request', async () => {
         let res = await request(app).post('/course_registration').send(post_body)
         expect(res.status).toBe(201)
-        expect(typeof res.body[0].id).toBe('number')
+        expect(typeof res.body.id).toBe('number')
         res = await request(app).get('/course_registration')
         expect(res.body[res.body.length - 1].course_id).toBe(1)
         expect(res.body[res.body.length - 1].user_id).toBe(3)
