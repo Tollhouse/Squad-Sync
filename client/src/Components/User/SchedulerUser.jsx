@@ -225,19 +225,34 @@ export default function SchedulerUser () {
 
   //SETS UP THE COLUMNS FOR THE TABLE
   const columns = [
-    { field: "id", headerName: "ID", width: 10, editable: false },
-    { field: "user_name", headerName: "User Name", width: 125, editable: true },
+    {
+      field: "id",
+      headerName: "ID",
+      width: 100,
+      editable: false,
+    },
+    {
+      field: "user_name",
+      headerName: "User Name",
+      width: 150,
+      editable: true,
+    },
     {
       field: "first_name",
       headerName: "First Name",
-      width: 125,
+      width: 150,
       editable: true,
     },
-    { field: "last_name", headerName: "Last Name", width: 125, editable: true },
+    {
+      field: "last_name",
+      headerName: "Last Name",
+      width: 150,
+      editable: true
+    },
     {
       field: "flight",
       headerName: "Assigned Flight",
-      width: 125,
+      width: 175,
       editable: true,
       renderEditCell: (params) => {
         return (
@@ -273,7 +288,7 @@ export default function SchedulerUser () {
     {
       field: "crew_name",
       headerName: "Crew Name",
-      width: 125,
+      width: 165,
       editable: true,
       renderEditCell: (params) => {
         return (
@@ -381,7 +396,7 @@ export default function SchedulerUser () {
     {
       field: "experience_type",
       headerName: "Experience Level",
-      width: 150,
+      width: 175,
       editable: true,
       renderCell: (params) => <ExperienceChip level={params.value} />,
       renderEditCell: (params) => {
