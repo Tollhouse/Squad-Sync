@@ -20,6 +20,7 @@ import AddIcon from "@mui/icons-material/Add";
 import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Cancel";
 import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 import {ExperienceChip} from "../AddOns/ExperienceChip";
 import CrewRoster from "./CrewRoster";
 import HandleAddRotation from "./HandleAddRotation";
@@ -33,13 +34,34 @@ function CrewTable({ schedule, setSchedule }) {
   const [addRotationOpen, setAddRotationOpen] = useState(false);
 
   const handleEditClick = (row) => {
-    setEditingRowId(row.crew_id);
+    setEditingRowId(row.rotation_id);
     setEditFormData({ ...row });
   };
 
   const handleCancelClick = () => {
     setEditingRowId(null);
     setEditFormData({});
+  };
+
+  const handleDeleteClick = (rotation_id) => {
+    if (window.confirm("Are you sure you want to delete this crew rotation?")) {
+      fetch(`http://localhost:8080/crew_rotations/${rotation_id}`, {
+        method: "DELETE",
+      })
+        .then((response) => {
+          if (response.ok) {
+            setSchedule((prevSchedule) =>
+              prevSchedule.filter((row) => row.rotation_id !== rotation_id)
+            );
+          } else {
+            alert("Failed to delete crew rotation.");
+          }
+        })
+        .catch((error) => {
+          console.error("Error deleting crew rotation:", error);
+          alert("Error deleting crew rotation.");
+        });
+    }
   };
 
   const handleSaveClick = () => {
@@ -56,7 +78,7 @@ function CrewTable({ schedule, setSchedule }) {
         if (response.ok) {
           setSchedule((prevSchedule) =>
             prevSchedule.map((row) =>
-              row.crew_id === editFormData.crew_id ? editFormData : row
+              row.rotation_id === editFormData.rotation_id ? editFormData : row
             )
           );
           setEditingRowId(null); // Exit edit mode
@@ -135,7 +157,7 @@ function CrewTable({ schedule, setSchedule }) {
                   {row.crew_name}
                 </TableCell>
                 <TableCell>
-                  {editingRowId === row.crew_id ? (
+                  {editingRowId === row.rotation_id? (
                     <TextField
                       name="date_start"
                       type="date"
@@ -148,7 +170,7 @@ function CrewTable({ schedule, setSchedule }) {
                   )}
                 </TableCell>
                 <TableCell>
-                  {editingRowId === row.crew_id ? (
+                  {editingRowId === row.rotation_id ? (
                     <TextField
                       name="date_end"
                       type="date"
@@ -161,7 +183,7 @@ function CrewTable({ schedule, setSchedule }) {
                   )}
                 </TableCell>
                 <TableCell>
-                  {editingRowId === row.crew_id ? (
+                  {editingRowId === row.rotation_id ? (
                     <Select
                       name="shift_type"
                       value={editFormData.shift_type || ""}
@@ -181,7 +203,7 @@ function CrewTable({ schedule, setSchedule }) {
                   <ExperienceChip level={row.crew_experience} />
                 </TableCell>
                 <TableCell>
-                  {editingRowId === row.crew_id ? (
+                  {editingRowId === row.rotation_id ? (
                     <>
                       <IconButton
                         color="primary"
@@ -200,6 +222,7 @@ function CrewTable({ schedule, setSchedule }) {
                       </IconButton>
                     </>
                   ) : (
+                    <>
                     <IconButton
                       color="primary"
                       size="small"
@@ -208,6 +231,15 @@ function CrewTable({ schedule, setSchedule }) {
                     >
                       <EditIcon />
                     </IconButton>
+                    <IconButton
+                       color="error"
+                       size="small"
+                       data-testid='test-crewRotationDelete'
+                       onClick={() => handleDeleteClick(row.rotation_id)}
+                     >
+                       <DeleteIcon />
+                     </IconButton>
+                     </>
                   )}
                 </TableCell>
 
