@@ -91,8 +91,8 @@ export default function Scheduler() {
       const course = courses.find((c) => c.id === r.course_id);
       return {
         title: `${user?.first_name} ${user?.last_name} - ${course?.course_name}`,
-        start: new Date(course?.date_start),
-        end: new Date(course?.date_end),
+        start: new Date(`${course?.date_start}T12:00:00`),
+        end: new Date(`${course?.date_end}T12:00:00`),
         allDay: true,
         cert_earned: r.cert_earned,
         tooltip: `${user?.first_name} ${user?.last_name}\n${
@@ -113,12 +113,11 @@ export default function Scheduler() {
         red: "🔴",
       };
 
-      const emoji = emojiMap[rotation.experience_type?.toLowerCase()] || "⚪";
       const crew = crews.find((c) => c.id === rotation.crew_id);
       const crewName = crew?.crew_name || "Unknown";
 
-      const current = new Date(rotation.date_start);
-      const end = new Date(rotation.date_end);
+      const current = new Date(`${rotation.date_start}T12:00:00`);
+      const end = new Date(`${rotation.date_end}T12:00:00`);
 
       while (current <= end) {
         const start = new Date(current);
@@ -149,7 +148,7 @@ export default function Scheduler() {
         }
 
         const event = {
-          title: `${crewName} Crew - ${rotation.shift_type} ${emoji}`,
+          title: `${crewName} Crew - ${rotation.shift_type}`,
           start: eventStart,
           end: eventEnd,
           cert_earned: null,
@@ -158,7 +157,7 @@ export default function Scheduler() {
           crew_id: rotation.crew_id,
           tooltip: `${crewName} Crew\n${
             rotation.shift_type
-          } Shift ${emoji}\n${moment(eventStart).format("h:mm A")} – ${moment(
+          } Shift\n${moment(eventStart).format("h:mm A")} – ${moment(
             eventEnd
           ).format("h:mm A")}`,
         };
