@@ -133,20 +133,31 @@ function CrewRoster({ crew_id }) {
     const oldUserId = row.user_id;
 
     try {
+      if (updatedUserId === null) {
+        if (oldUserId) {
 
-      if (oldUserId && oldUserId !== updatedUserId) {
-        const oldUserPayload = {
-          crew_id: 7,
+          await fetch(`http://localhost:8080/users/${oldUserId}`, {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+              Accept: 'application/json',
+            },
+            body: JSON.stringify({ crew_id: null }),
+          });
+        }
+        
+        const updatedRoster = [...roster];
+        updatedRoster[index] = {
+          ...updatedRoster[index],
+          user_id: null,
+          pendingUserId: null,
+          isEditing: false,
+          first_name: undefined,
+          last_name: undefined,
+          user_experience: undefined,
         };
-
-        await fetch(`http://localhost:8080/users/${oldUserId}`, {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-          },
-          body: JSON.stringify(oldUserPayload),
-        });
+        setRoster(updatedRoster);
+        return;
       }
 
       const newUserPayload = {
@@ -166,7 +177,7 @@ function CrewRoster({ crew_id }) {
 
         const userRes = await fetch(`http://localhost:8080/users/${updatedUserId}`);
         const updatedUser = await userRes.json();
-      
+
         const updatedRoster = [...roster];
         updatedRoster[index] = {
           ...updatedRoster[index],
