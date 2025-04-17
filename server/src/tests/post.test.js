@@ -216,13 +216,13 @@ describe('POST testing of /course_registration route', () => {
     it('returns id of created course registration', async () => {
         const res = await request(app).post('/course_registration').send(post_body)
         expect(res.status).toBe(201)
-        expect(typeof res.body[0].id).toBe('number')
+        expect(typeof res.body.id).toBe('number')
     })
 
     it('created course registration is visible in subsequent GET request', async () => {
         let res = await request(app).post('/course_registration').send(post_body)
         expect(res.status).toBe(201)
-        expect(typeof res.body[0].id).toBe('number')
+        expect(typeof res.body.id).toBe('number')
         res = await request(app).get('/course_registration')
         expect(res.body[res.body.length - 1].course_id).toBe(1)
         expect(res.body[res.body.length - 1].user_id).toBe(3)
@@ -244,6 +244,8 @@ describe('POST testing of /courses route', () => {
 
     const post_body = {
         course_name: "Test Course",
+        description: 'Test Description',
+        seats: 20,
         date_start: '08-29-2025',
         date_end: '09-29-2025',
         cert_granted: 'Test Cert'
@@ -268,5 +270,7 @@ describe('POST testing of /courses route', () => {
         expect(res.body[res.body.length - 1].date_start).toBe("2025-08-29")
         expect(res.body[res.body.length - 1].date_end).toBe("2025-09-29")
         expect(res.body[res.body.length - 1].cert_granted).toBe("Test Cert")
+        expect(res.body[res.body.length - 1].description).toBe("Test Description")
+        expect(res.body[res.body.length - 1].seats).toBe(20)
     })
 })

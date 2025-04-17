@@ -76,7 +76,7 @@ export default function CourseTable({
   return (
     <>
       <TableContainer component={Paper}>
-        <Table>
+        <Table aria-label='course table'>
           <TableHead>
             <TableRow>
               <TableCell>ID</TableCell>

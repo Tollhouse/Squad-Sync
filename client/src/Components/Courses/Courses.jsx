@@ -11,8 +11,9 @@ export default function Courses() {
   const [users, setUsers] = useState([]);
   const [selectedCourseId, setSelectedCourseId] = useState(null);
   const [addCourseOpen, setAddCourseOpen] = useState(false);
+  const [registeredUsers, setRegisteredUsers] = useState([]);
 
-  useEffect(() => {
+
     const fetchData = async () => {
       try {
         const [courseRes, regRes, userRes] = await Promise.all([
@@ -39,8 +40,27 @@ export default function Courses() {
       }
     };
 
+  useEffect(() => {
     fetchData();
-  }, []);
+  }, [])
+
+  useEffect(() => {
+    if (!selectedCourseId) {
+      setRegisteredUsers([]);
+      return;
+    }
+    const filtered = registrations
+      .filter((reg) => reg.course_id === selectedCourseId)
+      .map((reg) => {
+        const user = users.find((u) => u.id === reg.user_id);
+        return {
+          ...reg,
+          first_name: user?.first_name || "N/A",
+          last_name: user?.last_name || "N/A",
+        };
+      });
+    setRegisteredUsers(filtered);
+  }, [registrations, users, selectedCourseId]);
 
   const handleAddCourse = (newCourse) => {
     setCourses((prev) => [...prev, newCourse]);
@@ -54,16 +74,6 @@ export default function Courses() {
   };
 
   const selectedCourse = courses.find((course) => course.id === selectedCourseId);
-  const registeredUsers = registrations
-    .filter((reg) => reg.course_id === selectedCourseId)
-    .map((reg) => {
-      const user = users.find((u) => u.id === reg.user_id);
-      return {
-        ...reg,
-        first_name: user?.first_name || "N/A",
-        last_name: user?.last_name || "N/A",
-      };
-    });
 
   return (
     <Container maxWidth="lg">
@@ -94,6 +104,7 @@ export default function Courses() {
         <CoursePersonnel
           course={selectedCourse}
           registeredUsers={registeredUsers}
+          onRosterChange={fetchData}
         />
       )}
 

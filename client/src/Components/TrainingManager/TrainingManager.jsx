@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import {
   Container,
   Box,
+  Button,
   Typography,
   Table,
   TableBody,
@@ -13,7 +14,14 @@ import {
   useTheme,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
+
 import './TrainingManager.css';
+
+import SaveIcon from "@mui/icons-material/Save";
+import CancelIcon from "@mui/icons-material/Cancel";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+
 
 export default function Courses() {
   const theme = useTheme();
@@ -160,11 +168,13 @@ export default function Courses() {
         <Typography variant="h4" gutterBottom>
           Course Management
         </Typography>
+
         <button
           color="primary"
           variant="contained"
           startIcon={<AddIcon />}
           onClick={handleAddCourse}>Add Course</button>
+
       </Box>
 
       {isAdding && (
@@ -239,7 +249,7 @@ export default function Courses() {
               <TableCell>Description</TableCell>
               <TableCell>Seats Offered</TableCell>
               <TableCell>Cert Granted</TableCell>
-              <TableCell>Actions</TableCell>
+              <TableCell>Edit</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -333,13 +343,37 @@ export default function Courses() {
                 <TableCell>
                   {editingRowId === course.id ? (
                     <>
-                      <button data-testid='test-saveButton' onClick={handleSaveClick}>Save</button>
-                      <button data-testid='test-cancelButton' onClick={handleCancelClick}>Cancel</button>
+                      <Button
+                        color="primary"
+                        size="small"
+                        data-testid='test-saveButton'
+                        onClick={handleSaveClick}>
+                          <SaveIcon />
+                        </Button>
+                      <Button
+                        color="error"
+                        size="small"
+                        data-testid='test-cancelButton'
+                        onClick={handleCancelClick}>
+                          <CancelIcon />
+                        </Button>
                     </>
                   ) : (
                     <>
-                      <button data-testid='test-editButton' onClick={() => handleEditClick(course)}>Edit</button>
-                      <button data-testid='test-deleteButton' onClick={() => handleDeleteCourse(course)}>Delete</button>
+                      <Button
+                        color="primary"
+                        size="small"
+                        data-testid='test-editButton'
+                        onClick={() => handleEditClick(course)}>
+                          <EditIcon />
+                        </Button>
+                      <Button
+                        color="error"
+                        size="small"
+                        data-testid='test-deleteButton'
+                        onClick={() => handleDeleteCourse(course)}>
+                          <DeleteIcon />
+                        </Button>
                     </>
                   )}
                 </TableCell>

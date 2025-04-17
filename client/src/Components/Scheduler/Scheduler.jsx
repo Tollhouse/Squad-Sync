@@ -62,6 +62,7 @@ export default function Scheduler() {
         setRotations(rotData);
         setCrews(crewData);
         setLoading(false);
+
         const crewExperience = {};
         usersData.forEach((user) => {
           if (!crewExperience[user.crew_id])
@@ -91,8 +92,8 @@ export default function Scheduler() {
       const course = courses.find((c) => c.id === r.course_id);
       return {
         title: `${user?.first_name} ${user?.last_name} - ${course?.course_name}`,
-        start: new Date(course?.date_start),
-        end: new Date(course?.date_end),
+        start: new Date(`${course?.date_start}T12:00:00`),
+        end: new Date(`${course?.date_end}T12:00:00`),
         allDay: true,
         cert_earned: r.cert_earned,
         tooltip: `${user?.first_name} ${user?.last_name}\n${
@@ -105,6 +106,7 @@ export default function Scheduler() {
 
     const crewEvents = [];
     const shiftMap = {};
+    const conflictMap = {};
 
     rotations.forEach((rotation) => {
       const emojiMap = {
@@ -113,17 +115,15 @@ export default function Scheduler() {
         red: "🔴",
       };
 
-      const emoji = emojiMap[rotation.experience_type?.toLowerCase()] || "⚪";
       const crew = crews.find((c) => c.id === rotation.crew_id);
       const crewName = crew?.crew_name || "Unknown";
-
-      const current = new Date(rotation.date_start);
-      const end = new Date(rotation.date_end);
+      const current = new Date(`${rotation.date_start}T12:00:00`);
+      const end = new Date(`${rotation.date_end}T12:00:00`);
 
       while (current <= end) {
-        const start = new Date(current);
-        const eventStart = new Date(start);
-        const eventEnd = new Date(start);
+        // const start = new Date(current);
+        const eventStart = new Date(current);
+        const eventEnd = new Date(current);
 
         switch (rotation.shift_type?.toLowerCase()) {
           case "day":
@@ -149,42 +149,70 @@ export default function Scheduler() {
         }
 
         const event = {
-          title: `${crewName} Crew - ${rotation.shift_type} ${emoji}`,
+          title: `${crewName} Crew - ${rotation.shift_type}`,
           start: eventStart,
           end: eventEnd,
           cert_earned: null,
           experience_type: rotation.experience_type,
           shift_type: rotation.shift_type,
           crew_id: rotation.crew_id,
-          tooltip: `${crewName} Crew\n${
-            rotation.shift_type
-          } Shift ${emoji}\n${moment(eventStart).format("h:mm A")} – ${moment(
-            eventEnd
-          ).format("h:mm A")}`,
+          tooltip: `${crewName} Crew\n${rotation.shift_type} Shift\n${moment(eventStart).format("h:mm A")} – ${moment(eventEnd).format("h:mm A")}`,
         };
 
-        // Check for overlaps
-        const key = `${rotation.crew_id}-${eventStart.toDateString()}`;
+        const key = `${eventStart.toDateString()}-${rotation.shift_type}`;
         if (!shiftMap[key]) shiftMap[key] = [];
+
         for (let e of shiftMap[key]) {
-          if (
+          const overlapping =
             (eventStart < e.end && eventEnd > e.start) ||
-            (eventStart.getTime() === e.start.getTime() &&
-              eventEnd.getTime() === e.end.getTime())
-          ) {
-            setOverlapWarnings((prev) => [
-              ...prev,
-              `${crewName} Crew has overlapping shifts on ${eventStart.toDateString()}`,
-            ]);
-            break;
+            (eventStart.getTime() === e.start.getTime() && eventEnd.getTime() === e.end.getTime());
+
+          if (overlapping) {
+            const crewA = crewName;
+            const crewB = e.crewName;
+            const dateStr = eventStart.toDateString();
+
+            if (e.crewId === rotation.crew_id && e.shiftType !== rotation.shift_type) {
+              const key = `${crewA}|${e.shiftType}|${rotation.shift_type}`;
+              if (!conflictMap[key]) conflictMap[key] = [];
+              conflictMap[key].push(dateStr);
+            }
+
+            if (e.crewId !== rotation.crew_id && e.shiftType === rotation.shift_type) {
+              const key = `${crewA} Crew (${rotation.shift_type}) overlaps with ${crewB} Crew (${e.shiftType})`;
+              if (!conflictMap[key]) conflictMap[key] = [];
+              conflictMap[key].push(dateStr);
+            }
           }
         }
-        shiftMap[key].push({ start: eventStart, end: eventEnd });
+
+        shiftMap[key].push({
+          start: eventStart,
+          end: eventEnd,
+          crewName,
+          crewId: rotation.crew_id,
+          shiftType: rotation.shift_type,
+        });
+
         crewEvents.push(event);
         current.setDate(current.getDate() + 1);
       }
     });
 
+    const formattedWarnings = Object.entries(conflictMap).map(([key, dates]) => {
+      const sortedDates = dates.map(d => new Date(d)).sort((a, b) => a - b);
+      const startDate = sortedDates[0].toDateString();
+      const endDate = sortedDates[sortedDates.length - 1].toDateString();
+
+      if (key.includes("overlaps with")) {
+        return `${key} from ${startDate} to ${endDate}`;
+      }
+
+      const [crewName, shiftA, shiftB] = key.split("|");
+      return `${crewName} Crew has overlapping ${shiftA.toLowerCase()} and ${shiftB.toLowerCase()} shifts from ${startDate} to ${endDate}`;
+    });
+
+    setOverlapWarnings(formattedWarnings);
     setCalendarEvents([...registrationEvents, ...crewEvents]);
   }, [registrations, courses, users, rotations, crews]);
 
@@ -549,6 +577,50 @@ export default function Scheduler() {
               {selectedEvent.cert_earned ? "✅ Yes" : "❌ No"}
             </Typography>
           )}
+
+          {selectedEvent.crew_id && (
+            <>
+              <Typography variant="body2" sx={{ mt: 2, mb: 1 }}>
+                <strong>Assigned Crew Members:</strong>
+              </Typography>
+              <Box
+                sx={{
+                  mt: 1,
+                  textAlign: "center",
+                }}
+              >
+                {users
+                  .filter((u) => u.crew_id === selectedEvent.crew_id)
+                  .map((member) => {
+                    const emojiMap = {
+                      green: "🟢",
+                      yellow: "🟡",
+                      red: "🔴",
+                    };
+                    const exp = member.experience_type?.toLowerCase();
+                    return (
+                      <Typography
+                        key={member.id}
+                        variant="body2"
+                        sx={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          gap: 1,
+                          mb: 0.5,
+                          width: "100%",
+                        }}
+                      >
+                        <span>{emojiMap[exp] || "⚪"}</span>
+                        <span>
+                          {member.first_name} {member.last_name} — {member.role}
+                        </span>
+                      </Typography>
+                    );
+                  })}
+              </Box>
+            </>
+          )}
           <Box mt={3} display="flex" justifyContent="flex-end">
             <button
               style={{
@@ -564,6 +636,8 @@ export default function Scheduler() {
               onClick={() => setSelectedEvent(null)}
               onMouseOver={(e) => (e.target.style.backgroundColor = "#555")}
               onMouseOut={(e) => (e.target.style.backgroundColor = "#333")}
+
+
             >
               Close
             </button>

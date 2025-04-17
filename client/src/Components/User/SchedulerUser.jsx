@@ -1,6 +1,6 @@
 //Authored by Curtis
 import React, { useState, useEffect, useMemo } from "react";
-import "./User.css";
+import "./SchedulerUser.css";
 import { useParams } from "react-router-dom";
 import Box from "@mui/material/Box";
 import EditIcon from "@mui/icons-material/Edit";
@@ -15,9 +15,10 @@ import {
 } from "@mui/x-data-grid";
 import { Chip } from "@mui/material";
 import { ConfirmSaveModal, ConfirmDeleteModal } from "../AddOns/ConfirmModal";
-
+import { useTheme } from "@mui/material/styles";
 
 export default function SchedulerUser () {
+  const theme = useTheme();
   const { id } = useParams()
   const [userInformation, setUserInformation] = useState([])
   const [rowModesModel, setRowModesModel] = useState({})
@@ -46,7 +47,7 @@ export default function SchedulerUser () {
 
         const mergedData = userData.map((user) => ({
           ...user,
-          crew_name: crewMapping[user.crew_id] || "Unknown Crew",
+          crew_name: crewMapping[user.crew_id] || "Not Assigned",
         }));
 
         if (
@@ -224,19 +225,34 @@ export default function SchedulerUser () {
 
   //SETS UP THE COLUMNS FOR THE TABLE
   const columns = [
-    { field: "id", headerName: "ID", width: 10, editable: false },
-    { field: "user_name", headerName: "User Name", width: 125, editable: true },
+    {
+      field: "id",
+      headerName: "ID",
+      width: 100,
+      editable: false,
+    },
+    {
+      field: "user_name",
+      headerName: "User Name",
+      width: 150,
+      editable: true,
+    },
     {
       field: "first_name",
       headerName: "First Name",
-      width: 125,
+      width: 150,
       editable: true,
     },
-    { field: "last_name", headerName: "Last Name", width: 125, editable: true },
+    {
+      field: "last_name",
+      headerName: "Last Name",
+      width: 150,
+      editable: true
+    },
     {
       field: "flight",
       headerName: "Assigned Flight",
-      width: 125,
+      width: 175,
       editable: true,
       renderEditCell: (params) => {
         return (
@@ -272,7 +288,7 @@ export default function SchedulerUser () {
     {
       field: "crew_name",
       headerName: "Crew Name",
-      width: 125,
+      width: 165,
       editable: true,
       renderEditCell: (params) => {
         return (
@@ -380,7 +396,7 @@ export default function SchedulerUser () {
     {
       field: "experience_type",
       headerName: "Experience Level",
-      width: 150,
+      width: 175,
       editable: true,
       renderCell: (params) => <ExperienceChip level={params.value} />,
       renderEditCell: (params) => {
@@ -468,7 +484,13 @@ export default function SchedulerUser () {
   );
 
   return (
-    <div className="user-container">
+    <div className="user-container"
+      style={{
+        background: theme.palette.background.default,
+        minHeight: "100vh",
+        minWidth: "100vw",
+        }}
+      >
       <div className="search-container">
         <input
           type='text'
@@ -491,6 +513,7 @@ export default function SchedulerUser () {
             mt: 4,
             textAlign: "center",
             width: "100%",
+            minHeight: "400px",
             "& .actions": {
               color: "text.secondary",
             },
@@ -499,7 +522,8 @@ export default function SchedulerUser () {
             },
           }}
         >
-          <DataGrid
+        <div className='data-grid-container'>
+         <DataGrid
             rows={filteredRows}
             columns={columns}
             getRowId={(row) => row.id}
@@ -516,8 +540,8 @@ export default function SchedulerUser () {
 
             hideFooter={false}
           />
+        </div>
         </Box>
-
         {/* Confirm Modals */}
 
         <ConfirmSaveModal
@@ -553,6 +577,7 @@ export default function SchedulerUser () {
           }}
         />
       </div>
+
     </div>
   );
 }
